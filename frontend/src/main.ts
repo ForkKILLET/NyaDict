@@ -1,0 +1,25 @@
+import { createApp } from 'vue'
+import { createPinia } from 'pinia'
+import { router } from './routes'
+import App from './App.vue'
+
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { faCirclePlus } from '@fortawesome/free-solid-svg-icons'
+
+import './styles/index.css'
+import './styles/word.css'
+
+library.add(...[
+    faCirclePlus
+])
+
+const pinia = createPinia()
+
+createApp(App)
+    .component('fa-icon', FontAwesomeIcon)
+    .use(pinia)
+    .use(router)
+    .mount('#app')
+
+Object.assign(window, { pinia })
