@@ -24,4 +24,16 @@
 .button > .card:hover {
     background-color: #ffffff;
 }
+
+.inline {
+    display: inline-block;
+    margin: 0 .5em;
+}
+
+.w1 > .card {
+    width: 6em;
+}
+.w2 > .card {
+    width: calc(6.8em * 2 + 1em);
+}
 </style>

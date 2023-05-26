@@ -8,6 +8,8 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faCirclePlus } from '@fortawesome/free-solid-svg-icons'
 
 import './styles/index.css'
+import './styles/atom.css'
+import './styles/animation.css'
 import './styles/word.css'
 
 library.add(...[

@@ -39,24 +39,36 @@ const setMode = (mode: TestMode) => {
         </p>
     </div>
     <div v-else-if="! answerShowed" class="testarea">
-        <span class="question">{{ currentWord![testMode] }}</span>
+        <div>
+            <span class="question">{{ currentWord![testMode] }}</span>
+        </div>
         <Card
-            class="button"
+            class="inline w2 button"
             @click="answerShowed = true"
         >答えを見る</Card>
     </div>
     <div v-else class="testarea">
-        <p><Word :word="currentWord!"></Word></p>
+        <div>
+            <Word :word="currentWord!"></Word>
+        </div>
         <Card
-            class="button"
+            class="inline w1 button"
             @click="answerShowed = false; drawWord()"
-        >次へ</Card>
+        >正しい</Card>
+        <Card
+            class="inline w1 button"
+            @click="answerShowed = false; drawWord()"
+        >間違った</Card>
     </div>
 </template>
     
 <style scoped>
 .testarea {
     text-align: center;
+}
+
+.testarea > div:first-child {
+    height: 8em;
 }
 
 .question {

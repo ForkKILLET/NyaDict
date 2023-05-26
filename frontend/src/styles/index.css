@@ -14,13 +14,8 @@
     -webkit-text-size-adjust: 100%;
 }
 
-@keyframes hop {
-    0%, 100% {
-        transform: none;
-    }
-    50% {
-        transform: scale(1.2);
-    }
+* {
+    outline: none;
 }
 
 a {
@@ -54,15 +49,6 @@ h1 {
 #app {
     max-width: 1280px;
     padding: 2rem;
-}
-
-.number {
-    color: #b5c113;
-    font-family: serif;
-}
-
-* {
-    outline: none;
 }
 
 input {

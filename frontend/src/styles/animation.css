@@ -1,0 +1,8 @@
+@keyframes hop {
+    0%, 100% {
+        transform: none;
+    }
+    50% {
+        transform: scale(1.2);
+    }
+}
