@@ -1,39 +1,36 @@
 <template>
-    <div>
-        <div class="card">
-            <slot></slot>
-        </div>
+    <div class="card">
+        <slot></slot>
     </div>
 </template>
 
 <style scoped>
 .card {
-    display: inline-block;
     padding: .8em;
     background-color: #fffaf6;
     border-radius: .8em;
     box-shadow: 0 0 .4em #faad704d;
 }
 
-.button > .card {
+.card.button {
     user-select: none;
     cursor: pointer;
     color: #f7b96e;
     transition: .5s background-color;
 }
-.button > .card:hover {
+.card.button:hover {
     background-color: #ffffff;
 }
 
-.inline {
+.inline.card {
     display: inline-block;
-    margin: 0 .5em;
+    margin-right: 1em;
 }
 
-.w1 > .card {
+.card.w1 {
     width: 6em;
 }
-.w2 > .card {
+.card.w2 {
     width: calc(6.8em * 2 + 1em);
 }
 </style>

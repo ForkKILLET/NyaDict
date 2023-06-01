@@ -2,6 +2,7 @@
 import type { IWord } from '../types/data'
 
 import Card from './Card.vue'
+import WordMemBrief from './WordMemBrief.vue'
 
 defineProps<{
     word: IWord
@@ -10,13 +11,24 @@ defineProps<{
 
 <template>
     <Card class="word">
-        <span class="word-disp">{{ word.disp }}</span>
-        <span class="word-sub">{{ word.sub }}</span>
+        <div>
+            <span class="word-disp">{{ word.disp }}</span>
+            <span class="word-sub">{{ word.sub }}</span>
+        </div>
+        <div class="word-info">
+            <WordMemBrief :mem="word.mem" />
+            <slot></slot>
+        </div>
     </Card>
 </template>
 
 <style scoped>
 .word {
-    font-size: 1.3em;
+    display: flex;
+    justify-content: space-between;
+}
+
+.word-info {
+    white-space: nowrap;
 }
 </style>

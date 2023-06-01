@@ -46,11 +46,33 @@ h1 {
     line-height: 1.1;
 }
 
+h2 {
+    font-size: 1.6em;
+    color: #db8e30;
+}
+h2::before {
+    content: '♯ ';
+}
+h2::after {
+    content: ' ♯';
+}
+
 #app {
     max-width: 1280px;
-    padding: 2rem;
+    padding: 2rem 2rem 0;
 }
 
 input {
     border: none;
+}
+
+svg.button {
+    color: #db8e30;
+    margin-left: .5em;
+    cursor: pointer;
+    animation: .3s hop;
+}
+
+svg.button:active {
+    animation: none;
 }

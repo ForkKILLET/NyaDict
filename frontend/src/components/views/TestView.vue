@@ -1,30 +1,39 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useWords } from '../../stores/words'
-import { IWord } from '../../types/data'
-import { randomItem } from '../../utils'
+import type { IWord, ITestMode } from '../../types/data'
 
 import Card from '../Card.vue'
 import Word from '../Word.vue'
 
-type TestMode = 'disp' | 'sub' | 'desc'
-const testModeInfo: Record<TestMode, string> = {
+const testModeInfo: Record<ITestMode, string> = {
     disp: '書き方によって',
     sub: '読み方によって',
     desc: '解　釈によって',
 }
 
-const testMode = ref<TestMode | null>(null)
+const testMode = ref<ITestMode | null>(null)
 const wordsStore = useWords()
-const currentWord = ref<IWord>()
+const currentWord = ref<[ number, IWord ]>()
 const answerShowed = ref(false)
 
 const drawWord = () => {
-    const { words } = wordsStore
-    currentWord.value = randomItem(words)
+    currentWord.value = wordsStore.randomWord()
 }
 
-const setMode = (mode: TestMode) => {
+const nextWord = (correct: boolean) => {
+    answerShowed.value = false
+    console.log(
+        wordsStore.addTestRec(currentWord.value![0], {
+            time: Date.now(),
+            correct,
+            mode: testMode.value!
+        })
+    )
+    drawWord()
+}
+
+const setMode = (mode: ITestMode) => {
     testMode.value = mode
     drawWord()
 }
@@ -33,14 +42,14 @@ const setMode = (mode: TestMode) => {
 <template>
     <div v-if="! testMode">
         <p v-for="info, mode in testModeInfo">
-            <Card class="button" @click="setMode(mode)">
+            <Card class="inline button" @click="setMode(mode)">
                 &gt; {{ info }}
             </Card>
         </p>
     </div>
     <div v-else-if="! answerShowed" class="testarea">
         <div>
-            <span class="question">{{ currentWord![testMode] }}</span>
+            <span class="question">{{ currentWord![1][testMode] }}</span>
         </div>
         <Card
             class="inline w2 button"
@@ -49,15 +58,15 @@ const setMode = (mode: TestMode) => {
     </div>
     <div v-else class="testarea">
         <div>
-            <Word :word="currentWord!"></Word>
+            <Word class="inline" :word="currentWord![1]"></Word>
         </div>
         <Card
             class="inline w1 button"
-            @click="answerShowed = false; drawWord()"
+            @click="nextWord(true)"
         >正しい</Card>
         <Card
             class="inline w1 button"
-            @click="answerShowed = false; drawWord()"
+            @click="nextWord(false)"
         >間違った</Card>
     </div>
 </template>
@@ -69,6 +78,10 @@ const setMode = (mode: TestMode) => {
 
 .testarea > div:first-child {
     height: 8em;
+}
+
+.word {
+    font-size: 1.3em;
 }
 
 .question {

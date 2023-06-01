@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { IWord } from '../types/data'
+import { emptyMem } from '../stores/words'
+import type { IWord } from '../types/data'
 
 import Card from './Card.vue'
 
@@ -13,11 +14,12 @@ const emit = defineEmits<{
 </script>
 
 <template>
-    <Card>
+    <Card class="inline">
         <span class="word-disp"><input v-model="disp" /></span>
         <span class="word-sub"><input v-model="sub" /></span>
         <fa-icon
-            @click="emit('add', { disp, sub })"
+            @click="emit('add', { disp, sub, mem: emptyMem() })"
+            class="button"
             icon="fa-solid fa-circle-plus"
         />
     </Card>
@@ -30,17 +32,6 @@ const emit = defineEmits<{
     border-radius: .4em;
     background-color: #ffffff;
     box-shadow: 0 0 .2em #f3aa6d4d inset;
-}
-
-.fa-circle-plus {
-    color: #db8e30;
-    margin-left: .5em;
-    cursor: pointer;
-    animation: .3s hop;
-}
-
-.fa-circle-plus:active {
-    animation: none;
 }
 
 input {

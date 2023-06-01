@@ -13,3 +13,8 @@ export const random = (a: number, b?: number) => {
 }
 
 export const randomItem = <T>(items: T[]): T => items[random(items.length)]
+
+export const randomEntry = <T>(items: T[]): [ number, T ] => {
+    const index = random(items.length)
+    return [ index, items[index] ]
+}

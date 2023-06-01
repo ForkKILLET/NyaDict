@@ -3,24 +3,31 @@ import { ref } from 'vue'
 import { useWords } from '../../stores/words';
 import { tryJSON } from '../../utils'
 
-const json = ref<string>()
-
 const wordsStore = useWords()
+const json = ref<string>(JSON.stringify(wordsStore.words, null, 2))
 
-const importWords = () => {
+const saveWords = () => {
     const words = tryJSON(json.value)
-    wordsStore.merge(words)
+    if (words) {
+        wordsStore.words = words
+        wordsStore.save()
+    }
 }
 </script>
 
 <template>
     <div>
-        <textarea v-model="json"></textarea> <br />
-        <button @click="importWords">Import words</button>
-    </div>
-
-    <div>
-        <textarea :value="JSON.stringify(wordsStore.words, null, 2)"></textarea> <br />
-        <button @click="wordsStore.save">Save words</button>
+        <textarea v-model="json" spellcheck="false"></textarea> <br />
+        <button @click="saveWords">Save words</button>
     </div>
 </template>
+
+<style scoped>
+textarea {
+    border: none;
+    background-color: #000;
+    color: #fff;
+    width: 100%;
+    height: 75vh;
+}
+</style>
