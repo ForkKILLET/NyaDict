@@ -7,6 +7,7 @@ import type { ITestRec, IWord } from '../types/data'
 export const useWords = defineStore('words', () => {
     const words = ref<IWord[]>(tryJSON(localStorage.getItem('words')) ?? [
         {
+            id: 0,
             disp: 'ニャディクト',
             sub: 'Nya Dict',
             desc: '',
@@ -18,14 +19,15 @@ export const useWords = defineStore('words', () => {
         localStorage.setItem('words', JSON.stringify(words.value))
     }
 
-    const add = (word: IWord) => {
+    const add = (word: Omit<IWord, 'id'>) => {
+        const id = (words.value.at(-1)?.id ?? -1) + 1
         if (words.value.some(i => i.disp === word.disp)) return false
-        words.value.push(word)
+        words.value.push({ ...word, id })
         save()
     }
 
     const modify = (word: IWord) => {
-        const oldIndex = words.value.findIndex(i => i.disp === word.disp)
+        const oldIndex = words.value.findIndex(i => i.id === word.id)
         if (oldIndex >= 0) words.value[oldIndex] = word
         else words.value.push(word)
         save()

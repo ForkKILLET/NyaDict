@@ -1,0 +1,47 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+import { useWords } from '../stores/words'
+import type { IWord } from '../types/data'
+
+import Word from './Word.vue'
+import WordEditor from './WordEditor.vue'
+
+const props = defineProps<{
+    word: IWord
+    active: boolean
+}>()
+
+const emit = defineEmits<{
+    (event: 'goto-word', word: IWord): void
+}>()
+
+const editMode = ref(false)
+const editWord = (newWord: Omit<IWord, 'id'>) => {
+    wordsStore.modify({ ...props.word, ...newWord })
+    editMode.value = false
+}
+
+const wordsStore = useWords()
+</script>
+
+<template>
+    <Word v-show="! editMode" :word="word">
+        <fa-icon
+            v-if="active"
+            class="button"
+            icon="fa-solid fa-pen-to-square"
+            @click="editMode = true"
+        />
+        <fa-icon
+            v-else
+            class="button"
+            icon="fa-solid fa-arrow-circle-right"
+            @click="emit('goto-word', word)"
+        />
+    </Word>
+    <WordEditor
+        v-show="editMode"
+        :word="word"
+        @change="editWord"
+    />
+</template>

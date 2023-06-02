@@ -1,12 +1,14 @@
 <template>
     <div class="back-to-home">
-        <RouterLink to="/">&lt; 戻る</RouterLink>
+        <RouterLink to="/">
+            <fa-icon icon="fa-solid fa-arrow-left" /> 戻る
+        </RouterLink>
     </div>
 </template>
 
 <style scoped>
 .back-to-home {
-    height: 1.5em;
-    margin-bottom: 2em;
+    height: 1.5rem;
+    padding: 1rem;
 }
 </style>

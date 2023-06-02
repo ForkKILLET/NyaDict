@@ -1,4 +1,5 @@
 export type IWord = {
+    id: number
     disp: string
     sub: string
     desc?: string

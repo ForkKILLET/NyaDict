@@ -5,6 +5,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "pnpm -F nyadict-frontend build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

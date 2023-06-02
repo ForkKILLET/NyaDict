@@ -35,6 +35,7 @@ body {
     margin: 0;
     min-width: 320px;
     min-height: 100vh;
+    overflow: hidden;
 }
 
 main {
@@ -59,7 +60,6 @@ h2::after {
 
 #app {
     max-width: 1280px;
-    padding: 2rem 2rem 0;
 }
 
 input {

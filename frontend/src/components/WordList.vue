@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import type { IWord } from '../types/data'
 
-import Word from './Word.vue'
+import WordListEntry from './WordListEntry.vue';
 
 defineProps<{
     words: IWord[]
+    activeWord?: IWord
 }>()
 
 const emit = defineEmits<{
@@ -16,13 +17,11 @@ const emit = defineEmits<{
     <div class="word-list">
         <p><span class="number">{{ words.length }}</span> 単語</p>
         <p v-for="word of words">
-            <Word :word="word">
-                <fa-icon
-                    class="button"
-                    icon="fa-solid fa-arrow-circle-right"
-                    @click="emit('goto-word', word)"
-                />
-            </Word>
+            <WordListEntry
+                :word="word"
+                :active="!! activeWord && activeWord.id === word.id"
+                @goto-word="word => emit('goto-word', word)"
+            />
         </p>
     </div>
 </template>

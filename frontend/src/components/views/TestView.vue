@@ -6,7 +6,7 @@ import type { IWord, ITestMode } from '../../types/data'
 import Card from '../Card.vue'
 import Word from '../Word.vue'
 
-const testModeInfo: Record<ITestMode, string> = {
+const testModeInfo: Record<Partial<ITestMode>, string> = {
     disp: '書き方によって',
     sub: '読み方によって',
     desc: '解　釈によって',
@@ -40,10 +40,10 @@ const setMode = (mode: ITestMode) => {
 </script>
 
 <template>
-    <div v-if="! testMode">
+    <div class="choose-mode" v-if="! testMode">
         <p v-for="info, mode in testModeInfo">
-            <Card class="inline button" @click="setMode(mode)">
-                &gt; {{ info }}
+            <Card v-if="mode !== 'desc'" class="inline button" @click="setMode(mode)">
+                {{ info }} <fa-icon icon="fa-solid fa-arrow-right" />
             </Card>
         </p>
     </div>
@@ -72,6 +72,10 @@ const setMode = (mode: ITestMode) => {
 </template>
     
 <style scoped>
+.choose-mode {
+    text-align: center;
+}
+
 .testarea {
     text-align: center;
 }
