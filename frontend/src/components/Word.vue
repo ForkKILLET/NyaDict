@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { IWord } from '../types/data'
+import type { IWord } from '../types'
 
 import Card from './Card.vue'
 import WordMemBrief from './WordMemBrief.vue'

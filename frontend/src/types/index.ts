@@ -19,4 +19,14 @@ export type ITestRec = {
     mode: ITestMode
 }
 
-export type ITestMode = 'disp' | 'sub' | 'desc'
+export type ITestMode = 'disp' | 'sub'
+
+export type ITest = {
+    createTime: number
+    accessTime: number
+    mode: ITestMode
+    wordIds: number[]
+    currentIndex: number
+    correctness: boolean[]
+    completed: boolean
+}

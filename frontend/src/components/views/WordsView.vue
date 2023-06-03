@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { useWords } from '../../stores/words'
 import WordEditor from '../WordEditor.vue'
-import type { IWord } from '../../types/data'
+import type { IWord } from '../../types'
 
 import WordList from '../WordList.vue'
 import WordDetail from '../WordDetail.vue'

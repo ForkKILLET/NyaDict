@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { emptyMem } from '../stores/words'
-import type { IWord } from '../types/data'
+import type { IWord } from '../types'
 
 import Card from './Card.vue'
 
@@ -14,13 +14,25 @@ const sub = ref(props.word?.sub ?? '')
 
 const emit = defineEmits<{
     (event: 'change', word: Omit<IWord, 'id'>): void
+    (event: 'cancel'): void
 }>()
+
+const onCancel = () => {
+    disp.value = ''
+    sub.value = ''
+    emit('cancel')
+}
 </script>
 
 <template>
     <Card>
         <span class="word-disp"><input v-model="disp" /></span>
         <span class="word-sub"><input v-model="sub" /></span>
+        <fa-icon
+            @click="onCancel"
+            class="button"
+            icon="fa-solid fa-times-circle"
+        />
         <fa-icon
             @click="emit('change', { disp, sub, mem: emptyMem() })"
             class="button"

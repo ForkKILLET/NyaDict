@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useWords } from '../stores/words'
-import type { IWord } from '../types/data'
+import type { IWord } from '../types'
 
 import Word from './Word.vue'
 import WordEditor from './WordEditor.vue'
@@ -16,7 +16,7 @@ const emit = defineEmits<{
 }>()
 
 const editMode = ref(false)
-const editWord = (newWord: Omit<IWord, 'id'>) => {
+const onChange = (newWord: Omit<IWord, 'id'>) => {
     wordsStore.modify({ ...props.word, ...newWord })
     editMode.value = false
 }
@@ -42,6 +42,7 @@ const wordsStore = useWords()
     <WordEditor
         v-show="editMode"
         :word="word"
-        @change="editWord"
+        @change="onChange"
+        @cancel="editMode = false"
     />
 </template>

@@ -7,7 +7,8 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import {
     faCirclePlus, faArrowCircleRight, faCheckCircle, faTimesCircle,
-    faArrowLeft, faArrowRight, faMagnifyingGlass, faPenToSquare
+    faArrowLeft, faArrowRight, faMagnifyingGlass, faPenToSquare,
+    faBook, faVial
 } from '@fortawesome/free-solid-svg-icons'
 
 import './styles/index.css'
@@ -17,7 +18,8 @@ import './styles/word.css'
 
 library.add(...[
     faCirclePlus, faArrowCircleRight, faCheckCircle, faTimesCircle,
-    faArrowLeft, faArrowRight, faMagnifyingGlass, faPenToSquare
+    faArrowLeft, faArrowRight, faMagnifyingGlass, faPenToSquare,
+    faBook, faVial
 ])
 
 const pinia = createPinia()

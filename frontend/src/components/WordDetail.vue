@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import type { IWord } from '../types/data'
+import dayjs from 'dayjs'
+import type { IWord } from '../types'
 import WordMemBrief from './WordMemBrief.vue'
-import WordMemCalendar from './WordMemCalendar.vue';
+import WordMemCalendar from './WordMemCalendar.vue'
 
 defineProps<{
     word: IWord
@@ -15,12 +16,7 @@ defineProps<{
         <div class="mem-detail">
             <h2>メモリー</h2>
             <span class="number">{{
-                new Date(word.mem.createTime).toLocaleString('ja', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    weekday:'short'
-                })
+                dayjs(word.mem.createTime).format('YYYY-MM-DD')
             }}</span>
             <WordMemBrief :mem="word.mem" />
             <WordMemCalendar :mem="word.mem" />

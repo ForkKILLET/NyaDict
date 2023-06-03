@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import dayjs from 'dayjs'
-import type { IMemory } from '../types/data'
+import type { IMemory } from '../types'
 
 const props = defineProps<{
     mem: IMemory
@@ -9,8 +9,14 @@ const props = defineProps<{
 
 type DayState = 'none' | 'idle' | 'correct' | 'wrong' | 'both'
 
-const createDay = computed(() => dayjs(props.mem.createTime))
-const startDay = computed(() => createDay.value.subtract(14, 'day'))
+const createDay = computed(() => dayjs(props.mem.createTime).startOf('day'))
+const startDay = computed(() => {
+    const today = dayjs().startOf('day')
+    const totalDays = today.diff(createDay.value, 'day') + 1
+    if (totalDays < 14)
+        return createDay.value.subtract(14 - totalDays, 'day')
+    return createDay.value
+})
 
 const days = computed(() => {
     const today = dayjs()

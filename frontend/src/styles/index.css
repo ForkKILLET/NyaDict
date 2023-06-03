@@ -26,9 +26,13 @@ a {
     text-decoration: inherit;
     transition: .3s color;
 }
-a:hover {
+a:not(.no-animation):hover {
     color: #f4a23e;
     animation: .3s hop;
+}
+
+em {
+    color: #db8e30;
 }
 
 body {

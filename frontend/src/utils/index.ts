@@ -18,3 +18,14 @@ export const randomEntry = <T>(items: T[]): [ number, T ] => {
     const index = random(items.length)
     return [ index, items[index] ]
 }
+
+export const sample = <T>(items: T[], size: number) => {
+    const { length } = items
+    items = [...items]
+    size = Math.max(Math.min(size, length), 0)
+    for (let i = 0; i < size; i ++) {
+        const r = random(i, length)
+        ; [ items[i], items[r] ] = [ items[r], items[i] ]
+    }
+    return items.slice(0, size)
+}

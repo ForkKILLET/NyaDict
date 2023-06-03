@@ -1,11 +1,11 @@
 import { defineStore } from 'pinia' 
 import { ref } from 'vue'
-import { randomEntry, tryJSON } from '../utils'
-
-import type { ITestRec, IWord } from '../types/data'
+import { randomItem } from '../utils'
+import { getStorage, setStorage } from '../utils/storage'
+import type { ITestRec, IWord } from '../types'
 
 export const useWords = defineStore('words', () => {
-    const words = ref<IWord[]>(tryJSON(localStorage.getItem('words')) ?? [
+    const words = ref<IWord[]>(getStorage('words') ?? [
         {
             id: 0,
             disp: 'ニャディクト',
@@ -16,7 +16,7 @@ export const useWords = defineStore('words', () => {
     ])
 
     const save = () => {
-        localStorage.setItem('words', JSON.stringify(words.value))
+        setStorage('words', words.value)
     }
 
     const add = (word: Omit<IWord, 'id'>) => {
@@ -37,8 +37,13 @@ export const useWords = defineStore('words', () => {
         words.forEach(word => modify(word))
     }
 
+    const getById = (id: number | undefined): IWord | undefined => {
+        if (id === undefined) return
+        return words.value.find(word => word.id === id)
+    }
+
     const addTestRec = (id: number, rec: ITestRec) => {
-        const word = words.value[id]
+        const word = getById(id)
         if (! word) return false
         word.mem.testRec.push(rec)
         if (rec.correct) word.mem.correctNum ++
@@ -47,12 +52,12 @@ export const useWords = defineStore('words', () => {
         return true
     }
 
-    const randomWord = () => randomEntry(words.value)
+    const randomWord = () => randomItem(words.value)
 
     return {
         words,
         save, add, modify, merge,
-        addTestRec, randomWord
+        getById, addTestRec, randomWord
     }
 })
 

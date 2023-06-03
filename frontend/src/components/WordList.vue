@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { IWord } from '../types/data'
+import type { IWord } from '../types'
 
 import WordListEntry from './WordListEntry.vue';
 

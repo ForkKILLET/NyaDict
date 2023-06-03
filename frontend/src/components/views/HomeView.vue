@@ -6,11 +6,13 @@ import { version } from '../../../package.json'
     <div class="home">
         <h1>
             Nya Dict
-            <span class="version">{{ version }}</span>
+            <a class="no-animation" target="_blank" href="https://github.com/ForkKILLET/NyaDict/">
+                <span class="version">{{ version }}</span>
+            </a>
         </h1>
         <p>
-            <RouterLink to="/words">単語</RouterLink> |
-            <RouterLink to="/test">テスト</RouterLink>
+            <fa-icon icon="fa-solid fa-book" /> <RouterLink to="/words">単語</RouterLink> &middot;
+            <fa-icon icon="fa-solid fa-vial" /> <RouterLink to="/test">テスト</RouterLink>
         </p>
     </div>
 </template>
@@ -33,6 +35,6 @@ h1 {
     font-size: .8rem;
     font-weight: normal;
     color: #fff;
-    background-color: #5a21f7;
+    background-color: #8358f9;
 }
 </style>

@@ -1,35 +1,11 @@
 <script setup lang="ts">
-import type { IMemory } from '../types/data'
-
+import type { IMemory } from '../types'
+import Correctness from './Correctness.vue';
 defineProps<{
     mem: IMemory
 }>()
 </script>
 
 <template>
-    <span class="mem-stat number correct">
-        {{ mem.correctNum }}
-        <fa-icon icon="fa-solid fa-check-circle" />
-    </span>
-    <span class="mem-stat number wrong">
-        {{ mem.wrongNum }}
-        <fa-icon icon="fa-solid fa-times-circle" />
-    </span>
+    <Correctness :correct="mem.correctNum" :wrong="mem.wrongNum" />
 </template>
-
-<style scoped>
-.mem-stat {
-    padding: 0 .5em;
-}
-.mem-stat > svg {
-    margin-left: .2em;
-}
-
-.correct {
-    color: #95e35d;
-}
-
-.wrong {
-    color: #ec4e1e;
-}
-</style>
