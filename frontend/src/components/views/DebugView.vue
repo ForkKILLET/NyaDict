@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useWords } from '../../stores/words';
+import { useWords } from '../../stores/words'
 import { tryJSON } from '../../utils'
+import Card from '../Card.vue'
 
 const wordsStore = useWords()
 const json = ref<string>(JSON.stringify(wordsStore.words, null, 2))
@@ -10,6 +11,7 @@ const saveWords = () => {
     const words = tryJSON(json.value)
     if (words) {
         wordsStore.words = words
+        wordsStore.updateMaxId()
         wordsStore.save()
     }
 }
@@ -17,8 +19,10 @@ const saveWords = () => {
 
 <template>
     <div>
-        <textarea v-model="json" spellcheck="false"></textarea> <br />
-        <button @click="saveWords">Save words</button>
+        <textarea v-model="json" spellcheck="false"></textarea>
+        <br />
+        <br />
+        <Card class="inline button" @click="saveWords">Save words</Card>
     </div>
 </template>
 

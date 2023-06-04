@@ -19,6 +19,7 @@ const testModeInfo: Record<ITestMode, string> = {
     sub: '読み方'
 }
 const testMode = ref<ITestMode | null>(null)
+const testSize = ref<number>(20)
 
 const test = ref<ITest>()
 const testConfirmed = ref(false)
@@ -31,12 +32,21 @@ const testWrongCount = ref(0)
 const currentWord = computed(() => wordsStore.getById(
     test.value?.wordIds[test.value.currentIndex]
 ))
-const testSize = computed(() => test.value?.wordIds.length)
 
 const useLastTest = () => {
     testMode.value = currentTest.value!.mode
+    testSize.value = currentTest.value!.wordIds.length
     test.value = currentTest.value!
     testConfirmed.value = true
+}
+
+const ableToCreateTest = computed(() => (
+    !! testMode.value && 0 < testSize.value && testSize.value < wordsStore.words.length
+))
+
+const createTest = () => {
+    if (! ableToCreateTest.value) return
+    test.value = testStore.generateTest(testMode.value!, testSize.value)
 }
 
 const dropLastTest = () => {
@@ -66,22 +76,34 @@ const nextWord = (correct: boolean) => {
 
     testStore.save()
 }
-
-const setMode = (mode: ITestMode) => {
-    testMode.value = mode
-    test.value = testStore.generateTest(mode, 5)
-}
 </script>
 
 <template>
     <div class="test-main">
         <template v-if="! test">
             <div v-if="! currentTest">
-                <h2>どのテスト・モードにしますか？</h2>
+                <h2>テスト設定</h2>
+                <p>どのテスト・モードにしますか？</p>
                 <p v-for="info, mode in testModeInfo">
-                    <Card class="inline button" @click="setMode(mode)">
-                        {{ info }} <fa-icon icon="fa-solid fa-arrow-right" />
+                    <Card
+                        class="inline button test-mode"
+                        :class="{ active: testMode === mode }"
+                        @click="testMode = mode"
+                    >
+                        {{ info }}
                     </Card>
+                </p>
+                <p>いくつの単語にしますか？</p>
+                <input
+                    v-model="testSize" type="number" placeholder="単語数"
+                    min="0" :max="wordsStore.words.length"
+                />
+                <p>
+                    <Card
+                        class="inline button"
+                        :class="{ disabled: ! ableToCreateTest }"
+                        @click="createTest"
+                    >OK</Card>
                 </p>
             </div>
             <div v-else>
@@ -165,6 +187,7 @@ const setMode = (mode: ITestMode) => {
 .test-main {
     text-align: center;
 }
+
 .test-area > div:first-child {
     height: 8em;
 }
@@ -191,4 +214,24 @@ const setMode = (mode: ITestMode) => {
     font-family: serif;
     font-size: 3em;
 }
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+    appearance: none;
+}
+input[type=number] {
+    appearance: textfield;
+}
+input {
+    padding: .8em;
+    color: #f7b96e;
+    background-color: #fffaf6;
+    border-radius: .8em;
+    box-shadow: 0 0 .4em #faad704d;
+    transition: .5s all;
+}
+input:focus {
+    background-color: #fff;
+}
+
 </style>

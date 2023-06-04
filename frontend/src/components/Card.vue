@@ -16,10 +16,25 @@
     user-select: none;
     cursor: pointer;
     color: #f7b96e;
-    transition: .5s background-color;
+    transition: .5s all;
 }
 .card.button:hover {
     background-color: #ffffff;
+}
+
+.card.active {
+    color: #fff;
+    background-color: #db8e30;
+}
+
+.test-mode.active:hover {
+    color: #f7b96e;
+    background-color: #db8e30;
+}
+
+.card.disabled {
+    color: #aaa;
+    text-decoration: line-through;
 }
 
 .inline.card {

@@ -16,7 +16,7 @@ const emit = defineEmits<{
 }>()
 
 const editMode = ref(false)
-const onChange = (newWord: Omit<IWord, 'id'>) => {
+const onChange = (newWord: Omit<IWord, 'id' | 'mem'>) => {
     wordsStore.modify({ ...props.word, ...newWord })
     editMode.value = false
 }
@@ -25,24 +25,26 @@ const wordsStore = useWords()
 </script>
 
 <template>
-    <Word v-show="! editMode" :word="word">
-        <fa-icon
-            v-if="active"
-            class="button"
-            icon="fa-solid fa-pen-to-square"
-            @click="editMode = true"
+    <div class="word-list-entry">
+        <Word v-show="! editMode" :word="word">
+            <fa-icon
+                v-if="active"
+                class="button"
+                icon="fa-solid fa-pen-to-square"
+                @click="editMode = true"
+            />
+            <fa-icon
+                v-else
+                class="button"
+                icon="fa-solid fa-arrow-circle-right"
+                @click="emit('goto-word', word)"
+            />
+        </Word>
+        <WordEditor
+            v-show="editMode"
+            :word="word"
+            @change="onChange"
+            @cancel="editMode = false"
         />
-        <fa-icon
-            v-else
-            class="button"
-            icon="fa-solid fa-arrow-circle-right"
-            @click="emit('goto-word', word)"
-        />
-    </Word>
-    <WordEditor
-        v-show="editMode"
-        :word="word"
-        @change="onChange"
-        @cancel="editMode = false"
-    />
+    </div>
 </template>

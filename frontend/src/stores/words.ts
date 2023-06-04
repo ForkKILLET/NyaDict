@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { randomItem } from '../utils'
 import { getStorage, setStorage } from '../utils/storage'
-import type { ITestRec, IWord } from '../types'
+import type { IMemory, ITestRec, IWord } from '../types'
 
 export const useWords = defineStore('words', () => {
     const words = ref<IWord[]>(getStorage('words') ?? [
@@ -15,15 +15,21 @@ export const useWords = defineStore('words', () => {
         }
     ])
 
+    const maxId = ref(0)
+    const updateMaxId = () => {
+        maxId.value = words.value.length ? Math.max(...words.value.map(word => word.id)) : -1
+    }
+    updateMaxId()
+
     const save = () => {
         setStorage('words', words.value)
     }
 
     const add = (word: Omit<IWord, 'id'>) => {
-        const id = (words.value.at(-1)?.id ?? -1) + 1
-        if (words.value.some(i => i.disp === word.disp)) return false
+        const id = ++ maxId.value
         words.value.push({ ...word, id })
         save()
+        return id
     }
 
     const modify = (word: IWord) => {
@@ -57,7 +63,7 @@ export const useWords = defineStore('words', () => {
     return {
         words,
         save, add, modify, merge,
-        getById, addTestRec, randomWord
+        getById, updateMaxId, addTestRec, randomWord
     }
 })
 
@@ -67,3 +73,8 @@ export const emptyMem = () => ({
     createTime: Date.now(),
     testRec: []
 })
+
+export const getCorrectness = (mem: IMemory) => {
+    const total = mem.correctNum + mem.wrongNum
+    return total ? mem.correctNum / total : 0
+}
