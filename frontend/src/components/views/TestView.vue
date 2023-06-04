@@ -8,7 +8,7 @@ import type { ITestMode, ITest } from '../../types'
 import Card from '../Card.vue'
 import Word from '../Word.vue'
 import Correctness from '../Correctness.vue'
-import dayjs from 'dayjs'
+import Date from '../Date.vue'
 
 const wordsStore = useWords()
 const testStore = useTest()
@@ -109,12 +109,8 @@ const nextWord = (correct: boolean) => {
             <div v-else>
                 <h2>終わらないテストがあります</h2>
                 <p>
-                    <span class="number">{{
-                        dayjs(currentTest.createTime).format('YYYY-MM-DD')
-                    }}</span> に作成 ・
-                    <span class="number">{{
-                        dayjs(currentTest.accessTime).format('YYYY-MM-DD')
-                    }}</span> にアクセス
+                    <Date :date="currentTest.createTime" /> に作成 ・
+                    <Date :date="currentTest.accessTime" /> にアクセス
                 </p>
                 <p>
                     プログレス
@@ -155,7 +151,10 @@ const nextWord = (correct: boolean) => {
             </div>
             <div v-if="test.completed">
                 <h2>テスト　クリーン！</h2>
-                <Correctness :correct="testCorrectCount" :wrong="testWrongCount" />
+                <Correctness
+                    :correct="test.correctness.filter(x => x).length"
+                    :wrong="test.correctness.filter(x => ! x).length"
+                />
             </div>
             <div v-else-if="! answerShowed" class="test-area">
                 <div>

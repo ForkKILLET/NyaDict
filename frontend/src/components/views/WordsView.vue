@@ -26,7 +26,10 @@ type ToolbarConfigItem = {
 
 const sortMethodInfo = {
     createTime: '作成時間',
-    correctness: '正確率'
+    correctness: '正確率',
+    correctCount: 'パス数',
+    wrongCount: 'ミス数',
+    id: 'ID'
 }
 type SortMethod = keyof typeof sortMethodInfo
 type SortDirection = 'up' | 'down'
@@ -37,6 +40,9 @@ const sortFunction = computed(() => (a: IWord, b: IWord) => {
     const delta =
         m === 'createTime' ? a.mem.createTime - b.mem.createTime :
         m === 'correctness' ? getCorrectness(a.mem) - getCorrectness(b.mem) :
+        m === 'correctCount' ? a.mem.correctNum - b.mem.correctNum :
+        m === 'wrongCount' ? a.mem.wrongNum - b.mem.wrongNum :
+        m === 'id' ? a.id - b.id :
         0
     return sortDirection.value === 'up' ? - delta : + delta
 })
@@ -137,6 +143,7 @@ const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
     margin: 0 .3em;
     padding: .2em .3em;
     border-radius: .4em;
+    color: #db8e30;
     box-shadow: 0 0 .4em #faad704d;
     cursor: pointer;
     user-select: none;
