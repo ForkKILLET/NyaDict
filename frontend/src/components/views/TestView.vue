@@ -8,7 +8,7 @@ import type { ITestMode, ITest } from '../../types'
 import Card from '../Card.vue'
 import Word from '../Word.vue'
 import Correctness from '../Correctness.vue'
-import Date from '../Date.vue'
+import NyaDate from '../Date.vue'
 
 const wordsStore = useWords()
 const testStore = useTest()
@@ -19,7 +19,7 @@ const testModeInfo: Record<ITestMode, string> = {
     sub: '読み方'
 }
 const testMode = ref<ITestMode | null>(null)
-const testSize = ref<number>(20)
+const testSize = ref(20)
 
 const test = ref<ITest>()
 const testConfirmed = ref(false)
@@ -38,6 +38,7 @@ const useLastTest = () => {
     testSize.value = currentTest.value!.wordIds.length
     test.value = currentTest.value!
     testConfirmed.value = true
+    completeTest()
 }
 
 const ableToCreateTest = computed(() => (
@@ -55,10 +56,22 @@ const dropLastTest = () => {
 }
 
 const completeTest = () => {
-    test.value!.completed = true
+    if (! test.value!.completed) {
+        test.value!.completed = true
+        testStore.save()
+    }
+
+    testCorrectCount.value = 0
+    testWrongCount.value = 0
     for (const correct of test.value!.correctness) {
         (correct ? testCorrectCount : testWrongCount).value ++
     }
+}
+
+const disposeTest = () => {
+    dropLastTest()
+    test.value = undefined
+    testMode.value = null
 }
 
 const nextWord = (correct: boolean) => {
@@ -95,8 +108,10 @@ const nextWord = (correct: boolean) => {
                 </p>
                 <p>いくつの単語にしますか？</p>
                 <input
-                    v-model="testSize" type="number" placeholder="単語数"
-                    min="0" :max="wordsStore.words.length"
+                    v-model="testSize"
+                    type="number" min="0" :max="wordsStore.words.length"
+                    placeholder="単語数"
+                    class="card"
                 />
                 <p>
                     <Card
@@ -109,8 +124,8 @@ const nextWord = (correct: boolean) => {
             <div v-else>
                 <h2>終わらないテストがあります</h2>
                 <p>
-                    <Date :date="currentTest.createTime" /> に作成 ・
-                    <Date :date="currentTest.accessTime" /> にアクセス
+                    <NyaDate :date="currentTest.createTime" /> に作成 ・
+                    <NyaDate :date="currentTest.accessTime" /> にアクセス
                 </p>
                 <p>
                     プログレス
@@ -151,10 +166,19 @@ const nextWord = (correct: boolean) => {
             </div>
             <div v-if="test.completed">
                 <h2>テスト　クリーン！</h2>
-                <Correctness
-                    :correct="test.correctness.filter(x => x).length"
-                    :wrong="test.correctness.filter(x => ! x).length"
-                />
+                <p>
+                    <Correctness
+                        :correct="testCorrectCount"
+                        :wrong="testWrongCount"
+                        :show-acc="true"
+                    />
+                </p>
+                <p>
+                    <Card
+                        class="inline w2 button"
+                        @click="disposeTest"
+                    >OK</Card>
+                </p>
             </div>
             <div v-else-if="! answerShowed" class="test-area">
                 <div>
@@ -212,25 +236,6 @@ const nextWord = (correct: boolean) => {
 .question {
     font-family: serif;
     font-size: 3em;
-}
-
-input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button { 
-    appearance: none;
-}
-input[type=number] {
-    appearance: textfield;
-}
-input {
-    padding: .8em;
-    color: #f7b96e;
-    background-color: #fffaf6;
-    border-radius: .8em;
-    box-shadow: 0 0 .4em #faad704d;
-    transition: .5s all;
-}
-input:focus {
-    background-color: #fff;
 }
 
 </style>

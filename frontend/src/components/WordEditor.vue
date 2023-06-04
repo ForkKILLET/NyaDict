@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import type { IWord } from '../types'
 
 import Card from './Card.vue'
@@ -8,8 +8,14 @@ const props = defineProps<{
     word?: IWord
 }>()
 
-const disp = ref(props.word?.disp ?? '')
-const sub = ref(props.word?.sub ?? '')
+const disp = ref('')
+const sub = ref('')
+
+watch(props, () => {
+    if (! props.word) return
+    disp.value = props.word.disp
+    sub.value = props.word.sub
+}, { immediate: true })
 
 const emit = defineEmits<{
     (event: 'change', word: Omit<IWord, 'id' | 'mem'>): void

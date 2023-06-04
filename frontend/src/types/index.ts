@@ -30,3 +30,5 @@ export type ITest = {
     correctness: boolean[]
     completed: boolean
 }
+
+export type IMemMode = 'disp' | 'sub' | 'both'

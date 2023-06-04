@@ -1,7 +1,8 @@
 <script setup lang="ts">
 defineProps<{
-    correct: number,
+    correct: number
     wrong: number
+    showAcc?: boolean
 }>()
 </script>
 
@@ -14,6 +15,11 @@ defineProps<{
         <fa-icon icon="fa-solid fa-times-circle" />
         <span>{{ wrong }}</span>
     </span>
+    <span v-if="showAcc" class="number">{{
+        (correct + wrong)
+            ? (correct / (correct + wrong) * 100).toFixed(2) + '%'
+            : 'N/A'
+    }}</span>
 </template>
 
 <style scoped>

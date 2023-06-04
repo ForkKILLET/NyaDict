@@ -26,7 +26,7 @@ type ToolbarConfigItem = {
 
 const sortMethodInfo = {
     createTime: '作成時間',
-    correctness: '正確率',
+    acc: '正確率',
     correctCount: 'パス数',
     wrongCount: 'ミス数',
     id: 'ID'
@@ -39,7 +39,7 @@ const sortFunction = computed(() => (a: IWord, b: IWord) => {
     const { value: m } = sortMethod
     const delta =
         m === 'createTime' ? a.mem.createTime - b.mem.createTime :
-        m === 'correctness' ? getCorrectness(a.mem) - getCorrectness(b.mem) :
+        m === 'acc' ? getCorrectness(a.mem) - getCorrectness(b.mem) :
         m === 'correctCount' ? a.mem.correctNum - b.mem.correctNum :
         m === 'wrongCount' ? a.mem.wrongNum - b.mem.wrongNum :
         m === 'id' ? a.id - b.id :
@@ -65,17 +65,16 @@ const toolbarConfig: ToolbarConfigItem[] = reactive([
     } 
 ])
 
-const recentlyAddedWordId = ref<number>()
 const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
     const id = wordsStore.add({ ...word, mem: emptyMem() })
-    recentlyAddedWordId.value = id
+    currentWord.value = wordsStore.getById(id)
 }
 </script>
 
 <template>
     <div class="content">
         <div class="left">
-            <div class="toolbar">
+            <div class="glowing toolbar">
                 <div class="toolbar-nav">
                     <fa-icon
                         v-for="conf of toolbarConfig"
@@ -89,11 +88,11 @@ const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
                         v-if="toolbarMode === 'add'"
                         @change="addWord"
                     />
-                    <div v-else-if="toolbarMode === 'sort'">
+                    <div v-else-if="toolbarMode === 'sort'" class="sort-methods">
                         <span
                             v-for="methodInfo, method in sortMethodInfo"
                             @click="onSortMethodClick(method)"
-                            class="sort-method"
+                            class="badge"
                         >
                             {{ methodInfo }}
                             <fa-icon
@@ -109,7 +108,6 @@ const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
             </div>
             <WordList
                 :active-word-id="currentWord?.id"
-                :recently-added-word-id="recentlyAddedWordId"
                 :words="sortedWords"
                 @goto-word="word => currentWord = word"
             />
@@ -122,13 +120,6 @@ const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
 </template>
 
 <style scoped>
-.toolbar {
-    margin: -.8em;
-    padding: .8em;
-    border-radius: .5em;
-    background: #faad700a;
-    box-shadow: 0 0 .2em #ffe6d14d;
-}
 .toolbar-nav {
     font-size: 1.2em;
 }
@@ -139,18 +130,9 @@ const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
     margin-top: .5em;
 }
 
-.sort-method {
-    margin: 0 .3em;
-    padding: .2em .3em;
-    border-radius: .4em;
-    color: #db8e30;
-    box-shadow: 0 0 .4em #faad704d;
-    cursor: pointer;
-    user-select: none;
-    transition: .3s background-color;
-}
-.sort-method:hover {
-    background-color: #fff;
+.sort-methods {
+    display: flex;
+    flex-wrap: wrap;
 }
 
 .content {

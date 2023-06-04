@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import type { IWord } from '../types'
 
-import WordListEntry from './WordListEntry.vue';
+import WordListEntry from './WordListEntry.vue'
 
 defineProps<{
     words: IWord[]
     activeWordId?: number
-    recentlyAddedWordId?: number
 }>()
 
 const emit = defineEmits<{
@@ -22,8 +21,7 @@ const emit = defineEmits<{
                 :word="word"
                 :active="activeWordId === word.id"
                 :class="{
-                    active: activeWordId === word.id,
-                    highlight: recentlyAddedWordId === word.id
+                    active: activeWordId === word.id
                 }"
                 @goto-word="word => emit('goto-word', word)"
             />
@@ -40,7 +38,7 @@ const emit = defineEmits<{
         background-position-x: 25px;
     }
 }
-.word-list-entry.highlight:deep(> .word) {
+.word-list-entry.active:deep(> .card) {
     background-image: linear-gradient(
         -45deg,
         #fff 0, #fff 25%, #fffaf6 25%, #fffaf6 50%,

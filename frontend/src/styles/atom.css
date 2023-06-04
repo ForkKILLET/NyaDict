@@ -10,3 +10,37 @@
 .wrong {
     color: #ec4e1e;
 }
+
+.glowing {
+    margin: -.8em;
+    padding: .8em;
+    border-radius: .5em;
+    background: #faad700a;
+    box-shadow: 0 0 .2em #ffe6d14d;
+}
+
+.badge {
+    display: inline-block;
+    margin: 0 .3em .3em 0;
+    padding: .2em .3em;
+    border-radius: .4em;
+    line-height: 1.1;
+    color: #db8e30;
+    box-shadow: 0 0 .4em #faad704d;
+    cursor: pointer;
+    user-select: none;
+    transition: .3s background-color;
+    white-space: nowrap;
+    transition: .3s all;
+}
+.badge.active {
+    color: #fff;
+    background-color: #db8e30;
+}
+.badge:hover {
+    color: #f7b96e;
+    background-color: #fff;
+}
+.badge.active:hover {
+    background-color: #db8e30;
+}

@@ -15,10 +15,11 @@
 .card.button {
     user-select: none;
     cursor: pointer;
-    color: #f7b96e;
-    transition: .5s all;
+    color: #db8e30;
+    transition: .3s all;
 }
 .card.button:hover {
+    color: #f7b96e;
     background-color: #ffffff;
 }
 
@@ -26,8 +27,7 @@
     color: #fff;
     background-color: #db8e30;
 }
-
-.test-mode.active:hover {
+.card.active:hover {
     color: #f7b96e;
     background-color: #db8e30;
 }

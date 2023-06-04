@@ -1,11 +1,19 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import dayjs from 'dayjs'
-import type { IMemory } from '../types'
+import type { IMemMode, IMemory } from '../types'
+import WordMemBrief from './WordMemBrief.vue'
 
 const props = defineProps<{
     mem: IMemory
 }>()
+
+const calendarMode = ref<IMemMode>('both')
+const calendarModeInfo: Record<IMemMode, string> = {
+    disp: '書き方',
+    sub: '読み方',
+    both: '合計'
+}
 
 type DayState = 'none' | 'idle' | 'correct' | 'wrong' | 'both'
 
@@ -32,6 +40,7 @@ const days = computed(() => {
         dates.push(date)
     }
     for (const rec of props.mem.testRec) {
+        if (calendarMode.value !== 'both' && rec.mode !== calendarMode.value) continue
         const date = + dayjs(rec.time).startOf('day')
         const state = rec.correct ? 'correct' : 'wrong'
         if (days[date] === 'idle') days[date] = state
@@ -42,15 +51,26 @@ const days = computed(() => {
 </script>
 
 <template>
-    <div class="calendar">
-        <div class="calendar-title" v-for="text of [...'日月火水木金土']">{{ text }}</div>
-        <div class="pad" :style="{ width: '1em', height: startDay.day() + 'em' }"></div>
-        <div v-for="day of days" class="calendar-day" :class="day"></div>
+    <div class="glowing calendar">
+        <div class="calendar-modes">
+            <span
+                v-for="modeInfo, mode in calendarModeInfo"
+                @click="calendarMode = mode"
+                class="badge"
+                :class="{ active: calendarMode === mode }"
+            >{{ modeInfo }}</span>
+        </div>
+        <WordMemBrief :mem="mem" :show-acc="true" :mem-mode="calendarMode" />
+        <div class="calendar-inner">
+            <div class="calendar-title" v-for="text of [...'日月火水木金土']">{{ text }}</div>
+            <div class="pad" :style="{ width: '1em', height: startDay.day() + 'em' }"></div>
+            <div v-for="day of days" class="calendar-day" :class="day"></div>
+        </div>
     </div>
 </template>
 
 <style scoped>
-.calendar {
+.calendar-inner {
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;

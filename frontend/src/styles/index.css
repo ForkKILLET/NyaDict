@@ -80,3 +80,22 @@ svg.button {
 svg.button:active {
     animation: none;
 }
+
+input.card[type=number]::-webkit-inner-spin-button, 
+input.card[type=number]::-webkit-outer-spin-button { 
+    appearance: none;
+}
+input.card[type=number] {
+    appearance: textfield;
+}
+input.card {
+    padding: .8em;
+    color: #db8e30;
+    background-color: #fffaf6;
+    border-radius: .8em;
+    box-shadow: 0 0 .4em #faad704d;
+    transition: .5s all;
+}
+input.card:focus {
+    background-color: #fff;
+}
