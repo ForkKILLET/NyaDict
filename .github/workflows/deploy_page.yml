@@ -26,7 +26,7 @@ jobs:
 
       - name: Build
         run: |
-          pnpm i
+          pnpm i --no-frozen-lockfile
           pnpm build
 
       - name: Deploy to GitHub Pages

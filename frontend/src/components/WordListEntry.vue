@@ -25,7 +25,7 @@ const wordsStore = useWords()
 </script>
 
 <template>
-    <div class="word-list-entry">
+    <div class="word-list-entry" :class="{ active }">
         <Word v-show="! editMode" :word="word">
             <fa-icon
                 v-if="active"
@@ -48,3 +48,24 @@ const wordsStore = useWords()
         />
     </div>
 </template>
+
+<style scoped>
+@keyframes barber {
+    from {
+        background-position-x: 0;
+    }
+    to {
+        background-position-x: 25px;
+    }
+}
+.word-list-entry.active > .card {
+    background-image: linear-gradient(
+        -45deg,
+        #fff 0, #fff 25%, #fffaf6 25%, #fffaf6 50%,
+        #fff 50%, #fff 75%, #fffaf6 75%, #fffaf6 100%
+    );
+    background-size: 25px 25px;
+
+    animation: barber .5s linear infinite;
+}
+</style>
