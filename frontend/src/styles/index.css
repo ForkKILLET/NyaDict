@@ -97,7 +97,7 @@ input.card {
     background-color: #fffaf6;
     border-radius: .8em;
     box-shadow: 0 0 .4em #faad704d;
-    transition: .5s all;
+    transition: .5s color, .5s background-color;
 }
 input.card:focus {
     background-color: #fff;

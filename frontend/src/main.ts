@@ -7,7 +7,7 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import {
     faCirclePlus, faArrowCircleRight, faCheckCircle, faTimesCircle,
-    faArrowLeft, faArrowRight, faMagnifyingGlass, faPenToSquare,
+    faArrowLeft, faArrowRight, faFilter, faPenToSquare,
     faBook, faVial, faSort, faSortUp, faSortDown
 } from '@fortawesome/free-solid-svg-icons'
 
@@ -18,7 +18,7 @@ import './styles/word.css'
 
 library.add(...[
     faCirclePlus, faArrowCircleRight, faCheckCircle, faTimesCircle,
-    faArrowLeft, faArrowRight, faMagnifyingGlass, faPenToSquare,
+    faArrowLeft, faArrowRight, faFilter, faPenToSquare,
     faBook, faVial, faSort, faSortUp, faSortDown
 ])
 
@@ -29,5 +29,3 @@ createApp(App)
     .use(pinia)
     .use(router)
     .mount('#app')
-
-Object.assign(window, { pinia })

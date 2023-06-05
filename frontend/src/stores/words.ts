@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia' 
 import { ref } from 'vue'
-import { toHiragana} from 'wanakana'
+import { toHiragana, toRomaji} from 'wanakana'
 import { randomItem } from '../utils'
 import { getStorage, setStorage } from '../utils/storage'
 import type { IMemory, ITestRec, IWord } from '../types'
@@ -78,6 +78,11 @@ export const emptyMem = () => ({
 export const getCorrectness = (mem: IMemory) => {
     const total = mem.correctNum + mem.wrongNum
     return total ? mem.correctNum / total : 0
+}
+
+export const getRomaji = (word: IWord) => {
+    if (word.sub.match(/[a-z]/)) return toRomaji(word.disp)
+    return toRomaji(word.sub)
 }
 
 export const getYomikataIndex = (word: IWord) => {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive, Ref, ref } from 'vue'
-import { emptyMem, getCorrectness, getYomikataIndex, useWords } from '../../stores/words'
+import { emptyMem, getCorrectness, getYomikataIndex, getRomaji, useWords } from '../../stores/words'
 import type { IWord } from '../../types'
 import WordEditor from '../WordEditor.vue'
 import WordList from '../WordList.vue'
@@ -10,7 +10,7 @@ const wordsStore = useWords()
 
 const currentWord = ref<IWord>()
 
-type ToolbarMode = 'add' | 'sort' | 'search'
+type ToolbarMode = 'add' | 'sort' | 'filter'
 const toolbarMode = ref<ToolbarMode | null>(null)
 const changeToolbarMode = (mode: ToolbarMode) => {
     toolbarMode.value = toolbarMode.value === mode ? null : mode
@@ -32,10 +32,20 @@ const toolbarConfig = reactive<ToolbarConfigItem[]>([
         icon: 'sort'
     },
     {
-        mode: 'search',
-        icon: 'magnifying-glass'
+        mode: 'filter',
+        icon: 'filter'
     }
 ])
+
+const searchText = ref('')
+const filteredWords = computed<IWord[]>(() => {
+    const pat = searchText.value
+    if (! pat) return wordsStore.words
+    return wordsStore.words.filter(word => (
+        word.disp.includes(pat) || word.sub.includes(pat) ||
+        getRomaji(word).includes(pat)
+    ))
+})
 
 const sortMethodInfo = {
     createTime: '作成時間',
@@ -61,7 +71,7 @@ const sortFunction = computed(() => (a: IWord, b: IWord) => {
         0
     return sortDirection.value === 'up' ? - delta : + delta
 })
-const sortedWords = computed(() => wordsStore.words.sort(sortFunction.value))
+const sortedWords = computed(() => filteredWords.value.sort(sortFunction.value))
 const onSortMethodClick = (method: SortMethod) => {
     if (method === sortMethod.value)
         sortDirection.value = sortDirection.value === 'up' ? 'down' : 'up'
@@ -107,6 +117,9 @@ const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
                                 ]"
                             />
                         </span>
+                    </div>
+                    <div v-else-if="toolbarMode === 'filter'">
+                        <input v-model="searchText" class="card search" />
                     </div>
                 </div>
             </div>
@@ -171,5 +184,9 @@ const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
     flex: 1;
     position: sticky;
     top: 0;
+}
+
+input.search {
+    width: calc(100% - 1.6em);
 }
 </style>

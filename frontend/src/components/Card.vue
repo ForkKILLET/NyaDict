@@ -16,7 +16,7 @@
     user-select: none;
     cursor: pointer;
     color: #db8e30;
-    transition: .3s all;
+    transition: .5s color, .5s background-color;
 }
 .card.button:hover {
     color: #f7b96e;
