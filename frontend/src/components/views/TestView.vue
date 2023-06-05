@@ -9,6 +9,7 @@ import Card from '../Card.vue'
 import Word from '../Word.vue'
 import Correctness from '../Correctness.vue'
 import NyaDate from '../Date.vue'
+import WordDetail from '../WordDetail.vue'
 
 const wordsStore = useWords()
 const testStore = useTest()
@@ -25,6 +26,7 @@ const test = ref<ITest>()
 const testConfirmed = ref(false)
 
 const answerShowed = ref(false)
+const showDetail = ref(false)
 
 const testCorrectCount = ref(0)
 const testWrongCount = ref(0)
@@ -38,7 +40,7 @@ const useLastTest = () => {
     testSize.value = currentTest.value!.wordIds.length
     test.value = currentTest.value!
     testConfirmed.value = true
-    completeTest()
+    if (test.value.completed) completeTest()
 }
 
 const ableToCreateTest = computed(() => (
@@ -56,11 +58,6 @@ const dropLastTest = () => {
 }
 
 const completeTest = () => {
-    if (! test.value!.completed) {
-        test.value!.completed = true
-        testStore.save()
-    }
-
     testCorrectCount.value = 0
     testWrongCount.value = 0
     for (const correct of test.value!.correctness) {
@@ -75,6 +72,7 @@ const disposeTest = () => {
 }
 
 const nextWord = (correct: boolean) => {
+    if (showDetail.value) showDetail.value = false
     answerShowed.value = false
 
     wordsStore.addTestRec(currentWord.value!.id, {
@@ -84,15 +82,18 @@ const nextWord = (correct: boolean) => {
     })
     test.value!.correctness.push(correct)
 
-    if (++ test.value!.currentIndex === testSize.value)
+    if (++ test.value!.currentIndex === testSize.value) {
+        test.value!.completed = true
+        testStore.save()
         completeTest()
+    }
 
     testStore.save()
 }
 </script>
 
 <template>
-    <div class="test-main">
+    <div class="content">
         <template v-if="! test">
             <div v-if="! currentTest">
                 <h2>テスト設定</h2>
@@ -184,35 +185,65 @@ const nextWord = (correct: boolean) => {
                 <div>
                     <span class="question">{{ currentWord![testMode!] }}</span>
                 </div>
-                <Card
-                    class="inline w2 button"
-                    @click="answerShowed = true"
-                >答えを見る</Card>
+                <p>
+                    <Card
+                        class="inline w2 button"
+                        @click="answerShowed = true"
+                    >答えを見る</Card>
+                </p>
             </div>
             <div v-else class="test-area">
                 <div>
-                    <Word class="inline" :word="currentWord!"></Word>
+                    <Word class="inline" :word="currentWord!">
+                        <fa-icon
+                            @click="showDetail = ! showDetail"
+                            class="button"
+                            icon="fa-solid fa-arrow-circle-right"
+                        />
+                    </Word>
                 </div>
-                <Card
-                    class="inline w1 button"
-                    @click="nextWord(true)"
-                >正しい</Card>
-                <Card
-                    class="inline w1 button"
-                    @click="nextWord(false)"
-                >間違った</Card>
+                <p>
+                    <Card
+                        class="inline w1 button"
+                        @click="nextWord(true)"
+                    >正しい</Card>
+                    <Card
+                        class="inline w1 button"
+                        @click="nextWord(false)"
+                    >間違った</Card>
+                </p>
+                <WordDetail v-if="showDetail" :word="currentWord!" />
             </div>
         </template>
     </div>
 </template>
     
 <style scoped>
-.test-main {
+.content {
     text-align: center;
+    height: calc(100vh - 3.5rem - 1em);
+}
+
+.test-area {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 1em 0;
+    overflow-y: scroll;
+    scrollbar-width: none;
+}
+.test-area::-webkit-scrollbar {
+    display: none;
 }
 
 .test-area > div:first-child {
     height: 8em;
+    flex-shrink: 0;
+}
+
+.test-area > p {
+    margin: .5em 0;
+    height: 3em;
 }
 
 .test-progress {
@@ -238,4 +269,11 @@ const nextWord = (correct: boolean) => {
     font-size: 3em;
 }
 
+.word-detail {
+    flex: 1;
+    width: 80%;
+    min-width: 600px;
+    margin: 2em auto;
+    text-align: left;
+}
 </style>

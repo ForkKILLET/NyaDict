@@ -72,11 +72,14 @@ input {
 
 svg.button {
     color: #db8e30;
-    margin-left: .5em;
+    padding: 0 .4rem;
     cursor: pointer;
     animation: .3s hop;
+    transition: .3s color;
 }
-
+svg.button:hover {
+    color: #f4a23e;
+}
 svg.button:active {
     animation: none;
 }

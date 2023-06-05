@@ -10,7 +10,7 @@ const wordsStore = useWords()
 
 const currentWord = ref<IWord>()
 
-type ToolbarMode = 'add' | 'sort'
+type ToolbarMode = 'add' | 'sort' | 'search'
 const toolbarMode = ref<ToolbarMode | null>(null)
 const changeToolbarMode = (mode: ToolbarMode) => {
     toolbarMode.value = toolbarMode.value === mode ? null : mode
@@ -22,6 +22,20 @@ type ToolbarConfigItem = {
     mode: ToolbarMode
     action?: (item: ToolbarConfigItem) => void
 }
+const toolbarConfig = reactive<ToolbarConfigItem[]>([
+    {
+        mode: 'add',
+        icon: 'circle-plus'
+    },
+    {
+        mode: 'sort',
+        icon: 'sort'
+    },
+    {
+        mode: 'search',
+        icon: 'magnifying-glass'
+    }
+])
 
 const sortMethodInfo = {
     createTime: '作成時間',
@@ -54,17 +68,6 @@ const onSortMethodClick = (method: SortMethod) => {
     else
         sortMethod.value = method
 }
-
-const toolbarConfig: ToolbarConfigItem[] = reactive([
-    {
-        mode: 'add',
-        icon: 'circle-plus'
-    },
-    {
-        mode: 'sort',
-        icon: 'sort'
-    } 
-])
 
 const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
     const id = wordsStore.add({ ...word, mem: emptyMem() })
@@ -115,12 +118,17 @@ const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
         </div>
         <WordDetail
             v-if="currentWord"
+            class="right"
             :word="currentWord"
         />
     </div>
 </template>
 
 <style scoped>
+.toolbar {
+    margin-bottom: 2em;
+}
+
 .toolbar-nav {
     font-size: 1.2em;
 }
@@ -138,21 +146,30 @@ const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
 
 .content {
     display: flex;
-    height: calc(100vh - 3.5rem);
+    height: calc(100vh - 3.5rem - 1em);
 }
 
 .left {
+    display: flex;
+    flex-direction: column;
     flex-basis: 50%;
-    padding: 1em 1.5em 0 1em;
+    padding: 1.2em 1.5em 0 1em;
+}
+
+.word-list {
+    flex: 1;
     overflow-y: scroll;
     scrollbar-width: none;
-    -ms-overflow-style: none;
+    margin: -1em -.5em;
+    padding: 1em .5em;
 }
-.left::-webkit-scrollbar {
+.word-list::-webkit-scrollbar {
     display: none;
 }
 
 .word-detail {
     flex: 1;
+    position: sticky;
+    top: 0;
 }
 </style>

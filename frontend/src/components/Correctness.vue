@@ -24,7 +24,7 @@ defineProps<{
 
 <style scoped>
 .number {
-    padding: 0 .5em;
+    padding: 0 .4rem;
 }
 .number > span {
     margin-left: .2em;

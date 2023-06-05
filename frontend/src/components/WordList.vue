@@ -15,7 +15,7 @@ const emit = defineEmits<{
 
 <template>
     <div class="word-list">
-        <p><span class="number">{{ words.length }}</span> 単語</p>
+        <p class="word-count"><span class="number">{{ words.length }}</span> 単語</p>
         <p v-for="word of words">
             <WordListEntry
                 :word="word"
@@ -30,6 +30,10 @@ const emit = defineEmits<{
 </template>
 
 <style scoped>
+.word-count {
+    margin-top: 0;
+}
+
 @keyframes barber {
     from {
         background-position-x: 0;
