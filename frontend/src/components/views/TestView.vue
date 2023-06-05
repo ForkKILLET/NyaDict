@@ -165,7 +165,7 @@ const nextWord = (correct: boolean) => {
                 ></div>
             </div>
             <div v-if="test.completed">
-                <h2>テスト　クリーン！</h2>
+                <h2>テスト　クリヤー！</h2>
                 <p>
                     <Correctness
                         :correct="testCorrectCount"

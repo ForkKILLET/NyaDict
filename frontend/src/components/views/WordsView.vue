@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { computed, reactive, Ref, ref } from 'vue'
 import { emptyMem, getCorrectness, useWords } from '../../stores/words'
-import WordEditor from '../WordEditor.vue'
 import type { IWord } from '../../types'
-
+import WordEditor from '../WordEditor.vue'
 import WordList from '../WordList.vue'
 import WordDetail from '../WordDetail.vue'
 
@@ -29,7 +28,8 @@ const sortMethodInfo = {
     acc: '正確率',
     correctCount: 'パス数',
     wrongCount: 'ミス数',
-    id: 'ID'
+    id: 'ID',
+    sub: '読み方'
 }
 type SortMethod = keyof typeof sortMethodInfo
 type SortDirection = 'up' | 'down'
@@ -43,6 +43,7 @@ const sortFunction = computed(() => (a: IWord, b: IWord) => {
         m === 'correctCount' ? a.mem.correctNum - b.mem.correctNum :
         m === 'wrongCount' ? a.mem.wrongNum - b.mem.wrongNum :
         m === 'id' ? a.id - b.id :
+        m === 'sub' ? a.sub.toLowerCase().charCodeAt(0) - b.sub.toLowerCase().charCodeAt(0) :
         0
     return sortDirection.value === 'up' ? - delta : + delta
 })
