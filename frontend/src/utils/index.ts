@@ -19,6 +19,11 @@ export const randomEntry = <T>(items: T[]): [ number, T ] => {
     return [ index, items[index] ]
 }
 
+export const range = (start: number, end: number) => Array
+    .from({ length: end - start })
+    .fill(0)
+    .map((_, i) => start + i)
+
 export const sample = <T>(items: T[], size: number) => {
     const { length } = items
     items = [...items]

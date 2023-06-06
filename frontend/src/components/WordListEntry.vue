@@ -15,13 +15,13 @@ const emit = defineEmits<{
     (event: 'goto-word', word: IWord): void
 }>()
 
+const wordsStore = useWords()
+
 const editMode = ref(false)
 const onChange = (newWord: Omit<IWord, 'id' | 'mem'>) => {
     wordsStore.modify({ ...props.word, ...newWord })
     editMode.value = false
 }
-
-const wordsStore = useWords()
 </script>
 
 <template>

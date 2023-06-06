@@ -225,8 +225,6 @@ const nextWord = (correct: boolean) => {
 }
 
 .test-area {
-    display: flex;
-    flex-direction: column;
     height: 100%;
     padding: 1em 0;
     overflow-y: scroll;

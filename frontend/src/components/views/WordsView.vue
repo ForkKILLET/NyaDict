@@ -66,7 +66,7 @@ const sortFunction = computed(() => (a: IWord, b: IWord) => {
         m === 'acc' ? getCorrectness(a.mem) - getCorrectness(b.mem) :
         m === 'correctCount' ? a.mem.correctNum - b.mem.correctNum :
         m === 'wrongCount' ? a.mem.wrongNum - b.mem.wrongNum :
-        m === 'id' ? a.id - b.id :
+        m === 'id' ? b.id - a.id :
         m === 'yomikata' ? getYomikataIndex(b) - getYomikataIndex(a) :
         0
     return sortDirection.value === 'up' ? - delta : + delta
@@ -139,7 +139,7 @@ const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
 
 <style scoped>
 .toolbar {
-    margin-bottom: 2em;
+    margin-bottom: .5em;
 }
 
 .toolbar-nav {
@@ -159,7 +159,7 @@ const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
 
 .content {
     display: flex;
-    height: calc(100vh - 3.5rem - 1em);
+    height: calc(100vh - 3.5rem);
 }
 
 .left {
@@ -169,21 +169,12 @@ const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
     padding: 1.2em 1.5em 0 1em;
 }
 
-.word-list {
-    flex: 1;
-    overflow-y: scroll;
-    scrollbar-width: none;
-    margin: -1em -.5em;
-    padding: 1em .5em;
-}
 .word-list::-webkit-scrollbar {
     display: none;
 }
 
 .word-detail {
     flex: 1;
-    position: sticky;
-    top: 0;
 }
 
 input.search {
