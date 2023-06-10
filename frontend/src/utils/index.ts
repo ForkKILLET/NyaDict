@@ -34,3 +34,12 @@ export const sample = <T>(items: T[], size: number) => {
     }
     return items.slice(0, size)
 }
+
+export const downloadURL = (url: string, filename: string) => {
+    const anchor = document.createElement('a')
+    anchor.href = url
+    anchor.download = filename
+    document.body.appendChild(anchor)
+    anchor.click()
+    document.body.removeChild(anchor)
+}

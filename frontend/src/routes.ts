@@ -4,6 +4,7 @@ import type { RouteRecordRaw } from 'vue-router'
 import HomeView from './components/views/HomeView.vue'
 import WordsView from './components/views/WordsView.vue'
 import TestView from './components/views/TestView.vue'
+import SyncView from './components/views/SyncView.vue'
 import DebugView from './components/views/DebugView.vue'
 
 export const routes = [
@@ -21,6 +22,11 @@ export const routes = [
         path: '/test',
         component: TestView,
         name: 'test'
+    },
+    {
+        path: '/sync',
+        component: SyncView,
+        name: 'sync'
     },
     {
         path: '/debug',

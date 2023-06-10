@@ -2,11 +2,20 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { toHiragana, toRomaji} from 'wanakana'
 import { randomItem } from '../utils'
-import { getStorage, setStorage } from '../utils/storage'
-import type { IMemory, ITestRec, IWord } from '../types'
+import { getStorage, setStorage, storageRef, storageReactive } from '../utils/storage'
+import type { IArchiveInfo, IMemory, ITestRec, IWord } from '../types'
 
 export const useWords = defineStore('words', () => {
-    const words = ref<IWord[]>(getStorage('words') ?? [
+    const archiveId = storageRef('archiveId', '0')
+    const archiveInfo = storageReactive<Record<string, IArchiveInfo>>('archiveInfo', {
+        0: {
+            title: '黙認',
+            accessTime: Date.now(),
+            size: 0,
+            wordCount: 0
+        }
+    })
+    const words = ref<IWord[]>(getStorage('words:' + archiveId.value) ?? [
         {
             id: 0,
             disp: 'ニャディクト',
@@ -23,7 +32,10 @@ export const useWords = defineStore('words', () => {
     updateMaxId()
 
     const save = () => {
-        setStorage('words', words.value)
+        const id = archiveId.value
+        setStorage('words:' + id, words.value)
+        archiveInfo[id].accessTime = Date.now()
+        archiveInfo[id].wordCount = words.value.length
     }
 
     const add = (word: Omit<IWord, 'id'>) => {
@@ -62,7 +74,7 @@ export const useWords = defineStore('words', () => {
     const randomWord = () => randomItem(words.value)
 
     return {
-        words,
+        words, archiveId, archiveInfo,
         save, add, modify, merge,
         getById, updateMaxId, addTestRec, randomWord
     }

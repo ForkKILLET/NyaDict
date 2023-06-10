@@ -20,11 +20,11 @@ const pages = computed(() => {
     let startPage = i - half
     let endPage = i + len - half
     if (startPage <= 0) {
-        endPage = 1 + len
+        endPage = Math.min(props.pageCount, 1 + len)
         startPage = 1
     }
     else if (endPage > props.pageCount) {
-        startPage = props.pageCount - len
+        startPage = Math.max(0, props.pageCount - len)
         endPage = props.pageCount
     }
     return range(startPage, endPage + 1)
@@ -34,7 +34,7 @@ const pages = computed(() => {
 <template>
     <div class="pager">
         <div class="page-button" :class="{ disabled: isFirstPage }">
-            <fa-icon @click="prev" icon="fa-solid fa-arrow-left" />
+            <fa-icon @click="prev" icon="arrow-left" />
         </div>
         <div class="page-ids">
             <div
@@ -45,7 +45,7 @@ const pages = computed(() => {
             >{{ id }}</div>
         </div>
         <div class="page-button" :class="{ disabled: isLastPage }">
-            <fa-icon @click="next" icon="fa-solid fa-arrow-right" />
+            <fa-icon @click="next" icon="arrow-right" />
         </div>
     </div>
 </template>

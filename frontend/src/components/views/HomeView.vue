@@ -11,8 +11,9 @@ import { version } from '../../../package.json'
             </a>
         </h1>
         <p>
-            <fa-icon icon="fa-solid fa-book" /> <RouterLink to="/words">単語</RouterLink> &middot;
-            <fa-icon icon="fa-solid fa-vial" /> <RouterLink to="/test">テスト</RouterLink>
+            <fa-icon icon="book" /> <RouterLink to="/words">単語</RouterLink> &middot;
+            <fa-icon icon="vial" /> <RouterLink to="/test">テスト</RouterLink> &middot;
+            <fa-icon icon="rotate" /> <RouterLink to="/sync">同期</RouterLink>
         </p>
     </div>
 </template>

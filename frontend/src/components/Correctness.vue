@@ -8,11 +8,11 @@ defineProps<{
 
 <template>
     <span class="correct number">
-        <fa-icon icon="fa-solid fa-check-circle" />
+        <fa-icon icon="check-circle" />
         <span>{{ correct }}</span>
     </span>
     <span class="wrong number">
-        <fa-icon icon="fa-solid fa-times-circle" />
+        <fa-icon icon="times-circle" />
         <span>{{ wrong }}</span>
     </span>
     <span v-if="showAcc" class="number">{{

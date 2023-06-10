@@ -32,3 +32,10 @@ export type ITest = {
 }
 
 export type IMemMode = 'disp' | 'sub' | 'both'
+
+export type IArchiveInfo = {
+    title: string
+    accessTime: number
+    size: number
+    wordCount?: number
+}

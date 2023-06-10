@@ -3,6 +3,15 @@
     font-family: serif;
 }
 
+.id {
+    color: #8358f9;
+    font-family: serif;
+    font-size: 1rem;
+}
+.id::before {
+    content: '#';
+}
+
 .correct {
     color: #95e35d;
 }
@@ -43,4 +52,23 @@
 }
 .badge.active:hover {
     background-color: #db8e30;
+}
+
+@keyframes barber {
+    from {
+        background-position-x: 0;
+    }
+    to {
+        background-position-x: 25px;
+    }
+}
+.barber {
+    background-image: linear-gradient(
+        -45deg,
+        #fff 0, #fff 25%, #fffaf6 25%, #fffaf6 50%,
+        #fff 50%, #fff 75%, #fffaf6 75%, #fffaf6 100%
+    );
+    background-size: 25px 25px;
+
+    animation: barber .5s linear infinite;
 }

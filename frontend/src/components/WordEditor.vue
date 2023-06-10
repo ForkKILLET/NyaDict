@@ -43,12 +43,12 @@ const onChange = () => {
         <fa-icon
             @click="onCancel"
             class="button"
-            icon="fa-solid fa-times-circle"
+            icon="times-circle"
         />
         <fa-icon
             @click="onChange"
             class="button"
-            icon="fa-solid fa-circle-check"
+            icon="circle-check"
         />
     </Card>
 </template>

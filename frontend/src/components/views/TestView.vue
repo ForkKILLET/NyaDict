@@ -198,7 +198,7 @@ const nextWord = (correct: boolean) => {
                         <fa-icon
                             @click="showDetail = ! showDetail"
                             class="button"
-                            icon="fa-solid fa-arrow-circle-right"
+                            icon="arrow-circle-right"
                         />
                     </Word>
                 </div>
