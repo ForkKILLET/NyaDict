@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia' 
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { toHiragana, toRomaji} from 'wanakana'
 import { randomItem } from '../utils'
 import { getStorage, setStorage, storageRef, storageReactive } from '../utils/storage'
@@ -24,6 +24,10 @@ export const useWords = defineStore('words', () => {
             mem: emptyMem()
         }
     ])
+
+    watch(archiveId, newId => {
+        words.value = getStorage('words:' + newId) ?? []
+    })
 
     const maxId = ref(0)
     const updateMaxId = () => {
