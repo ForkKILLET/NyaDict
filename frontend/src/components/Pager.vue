@@ -33,8 +33,8 @@ const pages = computed(() => {
 
 <template>
     <div class="pager">
-        <div class="page-button" :class="{ disabled: isFirstPage }">
-            <fa-icon @click="prev" icon="arrow-left" />
+        <div @click="prev" class="page-button" :class="{ disabled: isFirstPage }">
+            <fa-icon icon="arrow-left" />
         </div>
         <div class="page-ids">
             <div
@@ -44,8 +44,8 @@ const pages = computed(() => {
                 :class="{ active: id === page }"
             >{{ id }}</div>
         </div>
-        <div class="page-button" :class="{ disabled: isLastPage }">
-            <fa-icon @click="next" icon="arrow-right" />
+        <div @click="next" class="page-button" :class="{ disabled: isLastPage }">
+            <fa-icon icon="arrow-right" />
         </div>
     </div>
 </template>
