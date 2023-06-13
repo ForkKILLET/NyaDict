@@ -56,6 +56,13 @@ export const useWords = defineStore('words', () => {
         save()
     }
 
+    const withdraw = (id: number) => {
+        const index = words.value.findIndex(word => word.id === id)
+        if (index >= 0) words.value.splice(index, 1)
+        updateMaxId()
+        save()
+    }
+
     const merge = (words: IWord[]) => {
         words.forEach(word => modify(word))
     }
@@ -79,7 +86,7 @@ export const useWords = defineStore('words', () => {
 
     return {
         words, archiveId, archiveInfo,
-        save, add, modify, merge,
+        save, add, modify, withdraw, merge,
         getById, updateMaxId, addTestRec, randomWord
     }
 })

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed } from 'vue'
 import type { IMemMode, IMemory } from '../types'
 import Correctness from './Correctness.vue'
 

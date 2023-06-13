@@ -11,16 +11,19 @@
     border-radius: .8em;
     box-shadow: 0 0 .4em #faad704d;
 }
-
+.card.up {
+    background-color: #fff;
+}
 .card.button {
     user-select: none;
     cursor: pointer;
     color: #db8e30;
-    transition: .5s color, .5s background-color;
+    transition: .5s color, .5s background-color, .5s box-shadow;
 }
 .card.button:hover {
     color: #f7b96e;
     background-color: #ffffff;
+    box-shadow: 0 0 .4em #faae70ef;
 }
 
 .card.active {

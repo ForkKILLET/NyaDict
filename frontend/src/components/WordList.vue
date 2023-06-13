@@ -4,6 +4,7 @@ import type { IWord } from '../types'
 import { useOffsetPagination } from '@vueuse/core'
 import WordListEntry from './WordListEntry.vue'
 import Pager from './Pager.vue';
+import { computed } from 'vue';
 
 const props = defineProps<{
     words: IWord[]
@@ -14,6 +15,8 @@ const emit = defineEmits<{
     (event: 'goto-word', word: IWord): void
 }>()
 
+const total = computed(() => props.words.length)
+
 const {
     currentPage: page,
     currentPageSize: pageSize,
@@ -23,7 +26,7 @@ const {
     isFirstPage,
     isLastPage
 } = useOffsetPagination({
-    total: props.words.length,
+    total,
     page: 1,
     pageSize: 20
 })
@@ -60,7 +63,7 @@ const {
 <style scoped>
 .word-list {
     display: flex;
-    flex-direction: column;
+    flex-flow: column;
     overflow: hidden;
     margin: 0 -1em;
     padding: 0 1em;

@@ -105,12 +105,12 @@ input.sync-info-title {
 }
 
 .sync-info-content > div > svg:first-child {
-    margin-right: .3em;
+    margin-right: .5em;
 }
 
 .sync-info-action {
     display: flex;
-    flex-direction: column;
+    flex-flow: column;
     margin-top: 4px;
 }
 

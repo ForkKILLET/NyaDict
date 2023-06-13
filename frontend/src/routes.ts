@@ -5,33 +5,33 @@ import HomeView from './components/views/HomeView.vue'
 import WordsView from './components/views/WordsView.vue'
 import TestView from './components/views/TestView.vue'
 import SyncView from './components/views/SyncView.vue'
+import LoginView from './components/views/LoginView.vue'
 import DebugView from './components/views/DebugView.vue'
 
 export const routes = [
     {
         path: '/',
-        component: HomeView,
-        name: 'home'
+        component: HomeView
     },
     {
         path: '/words',
-        component: WordsView,
-        name: 'words'
+        component: WordsView
     },
     {
         path: '/test',
-        component: TestView,
-        name: 'test'
+        component: TestView
     },
     {
         path: '/sync',
-        component: SyncView,
-        name: 'sync'
+        component: SyncView
+    },
+    {
+        path: '/sync/login',
+        component: LoginView
     },
     {
         path: '/debug',
-        component: DebugView,
-        name: 'debug'
+        component: DebugView
     }
 ] as RouteRecordRaw[]
 

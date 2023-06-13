@@ -111,15 +111,12 @@ const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
                             {{ methodInfo }}
                             <fa-icon
                                 class="button"
-                                :icon="[
-                                    'fas',
-                                    method === sortMethod ? 'sort-' + sortDirection : 'sort'
-                                ]"
+                                :icon="method === sortMethod ? 'sort-' + sortDirection : 'sort'"
                             />
                         </span>
                     </div>
                     <div v-else-if="toolbarMode === 'filter'">
-                        <input v-model="searchText" class="card search" />
+                        <input v-model="searchText" class="card up search" />
                     </div>
                 </div>
             </div>
@@ -164,7 +161,7 @@ const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
 
 .left {
     display: flex;
-    flex-direction: column;
+    flex-flow: column;
     flex-basis: 50%;
     padding: 1.2em 1.5em 0 1em;
 }

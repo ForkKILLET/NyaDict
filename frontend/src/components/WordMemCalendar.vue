@@ -72,7 +72,7 @@ const days = computed(() => {
 <style scoped>
 .calendar-inner {
     display: flex;
-    flex-direction: column;
+    flex-flow: column;
     flex-wrap: wrap;
     align-content: start;
     height: 7em;
