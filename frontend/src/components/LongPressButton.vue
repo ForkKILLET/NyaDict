@@ -48,7 +48,7 @@ const onMouseUp = () => {
     height: 1rem;
     line-height: 1;
     color: var(--color);
-    background-color: #f3f3f3;
+    background-color: #f2f2f280;
     border-radius: 1rem;
     cursor: pointer;
 }

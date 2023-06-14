@@ -75,7 +75,7 @@ const {
     flex: 1;
     margin: 0 -1em;
     padding: 0 1em;
-    overflow-y: scroll;
+    overflow-y: auto;
     scrollbar-width: none;
 }
 .word-list-entries::-webkit-scrollbar {

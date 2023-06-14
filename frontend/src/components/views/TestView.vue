@@ -119,7 +119,9 @@ const nextWord = (correct: boolean) => {
                         class="inline button"
                         :class="{ disabled: ! ableToCreateTest }"
                         @click="createTest"
-                    >OK</Card>
+                    >
+                        <fa-icon icon="arrow-right" class="button" />
+                    </Card>
                 </p>
             </div>
             <div v-else>
@@ -227,7 +229,7 @@ const nextWord = (correct: boolean) => {
 .test-area {
     height: 100%;
     padding: 1em 0;
-    overflow-y: scroll;
+    overflow-y: auto;
     scrollbar-width: none;
 }
 .test-area::-webkit-scrollbar {

@@ -20,5 +20,7 @@ import ArchiveList from '../ArchiveList.vue'
 
 .archive-list {
     flex: 1;
+    height: calc(100vh - 3.5rem);
+    overflow: hidden;
 }
 </style>

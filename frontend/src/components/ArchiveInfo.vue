@@ -23,13 +23,13 @@ const endEditing = () => {
 </script>
 
 <template>
-    <Card class="sync-info" :class="{ barber: active }">
-        <div class="sync-info-content">
-            <div class="sync-info-header">
+    <Card class="archive-info" :class="{ barber: active }">
+        <div class="archive-info-content">
+            <div class="archive-info-header">
                 <span v-if="id !== undefined" class="id">{{ id }}</span>
-                <div class="sync-info-title-container">
+                <div class="archive-info-title-container">
                     <template v-if="! editMode">
-                        <span class="sync-info-title">{{ info.title }}</span>
+                        <span class="archive-info-title">{{ info.title }}</span>
                         <fa-icon @click="startEditing" icon="edit" class="button"></fa-icon>
                     </template>
                     <template v-else>
@@ -37,7 +37,7 @@ const endEditing = () => {
                             type="text"
                             autofocus="true"
                             v-model="newTitle"
-                            class="sync-info-title"
+                            class="archive-info-title"
                         />
                         <fa-icon @click="endEditing" icon="circle-check" class="button"></fa-icon>
                     </template>
@@ -56,23 +56,23 @@ const endEditing = () => {
                 <span><span class="number">{{ (info.size / 1024).toFixed(2) }}</span> KiB</span>
             </div>
         </div>
-        <div class="sync-info-action">
+        <div class="archive-info-action">
             <slot></slot>
         </div>
     </Card>
 </template>
 
 <style scoped>
-.sync-info {
+.archive-info {
     display: flex;
     justify-content: space-between;
 }
 
-.sync-info-content {
+.archive-info-content {
     flex: 1;
 }
 
-.sync-info-header {
+.archive-info-header {
     display: flex;
     white-space: nowrap;
 }
@@ -81,21 +81,21 @@ const endEditing = () => {
     margin-right: .5em;
 }
 
-.sync-info-title-container {
+.archive-info-title-container {
     display: inline-flex;
     flex: 1;
     justify-content: space-between;
     align-items: center;
 }
 
-.sync-info-title {
+.archive-info-title {
     display: inline-block;
     flex: 1;
     color: #db8e30;
     font-weight: bold;
 }
 
-input.sync-info-title {
+input.archive-info-title {
     max-width: 10em;
     font-size: 1em;
     font-family: inherit;
@@ -104,17 +104,17 @@ input.sync-info-title {
     box-shadow: 0 0 .2em #f3aa6d4d inset;
 }
 
-.sync-info-content > div > svg:first-child {
+.archive-info-content > div > svg:first-child {
     margin-right: .5em;
 }
 
-.sync-info-action {
+.archive-info-action {
     display: flex;
     flex-flow: column;
     margin-top: 4px;
 }
 
-.sync-info-action:deep(> .button) {
+.archive-info-action:deep(> .button) {
     margin-bottom: .8rem;
 }
 </style>

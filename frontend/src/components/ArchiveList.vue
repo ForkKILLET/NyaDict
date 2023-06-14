@@ -6,6 +6,7 @@ import { IWord } from '../types'
 import { downloadURL, tryJSON } from '../utils'
 import Card from './Card.vue'
 import ArchiveInfo from './ArchiveInfo.vue'
+import LongPressButton from './LongPressButton.vue'
 
 const { archiveId, archiveInfo } = storeToRefs(useWords())
 const archiveBlobs: Record<string, Blob> = {}
@@ -14,7 +15,10 @@ const makeArchiveBlob = (id: string) => {
         localStorage.getItem('words:' + id)!
     ])
 }
-
+const withdrawArchive = (id: string) => {
+    delete archiveInfo.value[id]
+    localStorage.removeItem('words:' + id)
+}
 const downloadArchive = (id: string) => {
     const url = URL.createObjectURL(archiveBlobs[id])
     downloadURL(url, `nyadict-${archiveInfo.value[id].title}-${Date.now()}.json`)
@@ -23,7 +27,8 @@ const downloadArchive = (id: string) => {
 
 const uploadedFile = ref<File>()
 const uploadedTitle = computed(() => {
-    const { name } = uploadedFile.value!
+    if (! uploadedFile.value) return
+    const { name } = uploadedFile.value
     return name.match(/^nyadict-(.+?)-\d+\.json$/)?.[1]
         ?? name.match(/^(.+?)\.json$/)?.[1]
         ?? name
@@ -42,7 +47,7 @@ const importArchive = async () => {
     let newId = 0
     while (newId in archiveInfo.value) newId ++
     archiveInfo.value[newId] = {
-        title: '新アップロード',
+        title: uploadedTitle.value!,
         accessTime: Date.now(),
         wordCount: newWords.length,
         size: file.size
@@ -59,57 +64,81 @@ for (const id in archiveInfo.value) {
 
 <template>
     <div class="archive-list">
-        <p><span class="number">{{ Object.keys(archiveInfo).length }}</span> アーカイブ</p>
-        <ArchiveInfo
-            v-memo="[ archiveId, archiveInfo ]"
-            v-for="info, id in archiveInfo"
-            :active="id === archiveId"
-            :id="id"
-            :info="info"
-        >
-            <fa-icon
-                @click="archiveId !== id && (archiveId = id)"
-                class="button"
-                icon="flag"
-                :fixed-width="true"
-                :class="{
-                    active: archiveId === id
+        <p class="archive-list-title">
+            <span class="number">{{ Object.keys(archiveInfo).length }}</span> アーカイブ
+        </p>
+        <div class="archive-list-entries">
+            <ArchiveInfo
+                v-for="info, id in archiveInfo"
+                :active="id === archiveId"
+                :id="id"
+                :info="info"
+            >
+                <fa-icon
+                    @click="archiveId !== id && (archiveId = id)"
+                    class="button"
+                    icon="flag"
+                    :fixed-width="true"
+                    :class="{
+                        active: archiveId === id
+                    }"
+                />
+                <fa-icon
+                    @click="downloadArchive(id)"
+                    class="button"
+                    icon="file-arrow-down"
+                    :fixed-width="true"
+                />
+                <LongPressButton
+                    @long-press="withdrawArchive(id)"
+                    icon="trash"
+                    color="#ec4e1e"
+                    :duration="1.5"
+                />
+            </ArchiveInfo>
+
+            <label for="file">
+                <Card class="inline button">
+                    <fa-icon icon="file-arrow-up" class="button" />
+                </Card>
+            </label>
+            <input id="file" type="file" accept=".json" @change="onUploadFile" />
+
+            <ArchiveInfo
+                v-if="uploadedFile"
+                :info="{
+                    title: uploadedTitle!,
+                    accessTime: uploadedFile.lastModified,
+                    size: uploadedFile.size
                 }"
-            />
-            <fa-icon
-                @click="downloadArchive(id)"
-                class="button"
-                icon="file-arrow-down"
-                :fixed-width="true"
-            />
-        </ArchiveInfo>
-
-        <label for="file">
-            <Card class="inline button">
-                <fa-icon icon="file-arrow-up" class="button" />
-            </Card>
-        </label>
-        <input id="file" type="file" accept=".json" @change="onUploadFile" />
-
-        <ArchiveInfo
-            v-if="uploadedFile"
-            :info="{
-                title: uploadedTitle,
-                accessTime: uploadedFile.lastModified,
-                size: uploadedFile.size
-            }"
-        >
-            <fa-icon
-                @click="importArchive"
-                class="button"
-                icon="file-import"
-            />
-        </ArchiveInfo>
+            >
+                <fa-icon
+                    @click="importArchive"
+                    class="button"
+                    icon="file-import"
+                />
+            </ArchiveInfo>
+        </div>
     </div>
 </template>
 
 <style scoped>
-.sync-info {
+.archive-list {
+    display: flex;
+    flex-flow: column;
+}
+
+.archive-list-entries {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 .5em;
+    scrollbar-width: none;
+}
+.archive-list-entries::-webkit-scrollbar {
+    display: none;
+}
+
+.archive-info {
     width: 40%;
     min-width: 16rem;
     margin: 1em 0;
@@ -122,7 +151,7 @@ for (const id in archiveInfo.value) {
 }
 
 svg.active, svg.active:hover {
-    color: #ec4e1e;
+    color: #8358f9;
     cursor: auto;
 }
 </style>
