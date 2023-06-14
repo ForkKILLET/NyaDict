@@ -4,7 +4,6 @@ import { computed, ref } from 'vue'
 import { useWords } from '../stores/words'
 import { IWord } from '../types'
 import { downloadURL, tryJSON } from '../utils'
-import Card from './Card.vue'
 import ArchiveInfo from './ArchiveInfo.vue'
 import LongPressButton from './LongPressButton.vue'
 
@@ -65,7 +64,11 @@ for (const id in archiveInfo.value) {
 <template>
     <div class="archive-list">
         <p class="archive-list-title">
-            <span class="number">{{ Object.keys(archiveInfo).length }}</span> アーカイブ
+            <span class="number">{{ Object.keys(archiveInfo).length }}</span> アーカイブ 
+            <label for="file">
+                <fa-icon icon="file-arrow-up" class="button" />
+            </label>
+            <input id="file" type="file" accept=".json" @change="onUploadFile" />
         </p>
         <div class="archive-list-entries">
             <ArchiveInfo
@@ -97,15 +100,9 @@ for (const id in archiveInfo.value) {
                 />
             </ArchiveInfo>
 
-            <label for="file">
-                <Card class="inline button">
-                    <fa-icon icon="file-arrow-up" class="button" />
-                </Card>
-            </label>
-            <input id="file" type="file" accept=".json" @change="onUploadFile" />
-
             <ArchiveInfo
                 v-if="uploadedFile"
+                id="アップ"
                 :info="{
                     title: uploadedTitle!,
                     accessTime: uploadedFile.lastModified,
@@ -131,7 +128,8 @@ for (const id in archiveInfo.value) {
 .archive-list-entries {
     flex: 1;
     overflow-y: auto;
-    padding: 0 .5em;
+    margin: -1em -.5em;
+    padding: 1em;
     scrollbar-width: none;
 }
 .archive-list-entries::-webkit-scrollbar {
@@ -141,7 +139,7 @@ for (const id in archiveInfo.value) {
 .archive-info {
     width: 40%;
     min-width: 16rem;
-    margin: 1em 0;
+    margin-bottom: 1.5em;
 }
 
 #file {

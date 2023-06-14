@@ -1,0 +1,73 @@
+<script setup lang="ts">
+import Card from './Card.vue'
+
+defineProps<{
+    title: string
+    submit: () => void
+    submitState: 'idle' | 'pending'
+    error: string | null
+}>()
+
+const icons = {
+    idle: 'arrow-right',
+    pending: 'spinner'
+}
+</script>
+
+<template>
+    <div class="content">
+        <Card class="panel">
+            <h2>{{ title }}</h2>
+            <slot></slot>
+            <div>
+                <Card @click="submit" class="inline button up">
+                    <fa-icon
+                        :icon="icons[submitState]"
+                        :spin="submitState === 'pending'"
+                        class="button no-animation"
+                    />
+                </Card>
+            </div>
+        </Card>
+        <Card v-if="error" class="wrong">
+           <fa-icon icon="times-circle" /> {{ error }}
+        </Card>
+    </div>
+</template>
+
+<style scoped>
+.content > .card {
+    width: 40%;
+    min-width: 200px;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.panel {
+    margin-bottom: 1em;
+    padding: 2em;
+}
+
+h2 {
+    margin: 0;
+}
+
+.panel:deep(> div) {
+    margin-top: .8em;
+}
+
+.panel:deep(> div > input) {
+    flex: 1;
+}
+
+.panel:deep(> .item) {
+    display: flex;
+    align-items: center;
+}
+
+.panel:deep(> .item) > svg:first-child {
+    margin-right: .5em;
+}
+</style>

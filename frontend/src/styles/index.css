@@ -74,8 +74,10 @@ svg.button {
     color: #db8e30;
     padding: 0 .4rem;
     cursor: pointer;
-    animation: .3s hop;
     transition: .3s color;
+}
+svg.button:not(.no-animation) {
+    animation: .3s hop;
 }
 svg.button:hover {
     color: #f4a23e;

@@ -11,11 +11,20 @@ const { jwtPayload } = storeToRefs(authStore)
     <Card class="auth-state">
         <template v-if="jwtPayload">
             <fa-icon icon="user-circle" />
-            <span class="username">{{ jwtPayload.name }}</span> さん
+            <span class="username">{{ jwtPayload.name }}</span> さん &middot;
+            <fa-icon
+                @click="authStore.jwt = null"
+                icon="right-from-bracket"
+                class="button"
+            />
         </template>
         <template v-else>
-            <RouterLink to="/sync/login">
+            <RouterLink to="/sync/sign-in">
                 <fa-icon icon="right-to-bracket" />
+                ログイン
+            </RouterLink> &middot;
+            <RouterLink to="/sync/sign-up">
+                <fa-icon icon="user-plus" />
                 登録
             </RouterLink>
         </template>

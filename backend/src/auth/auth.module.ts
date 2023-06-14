@@ -1,7 +1,7 @@
 import { Logger, Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { JwtModule } from '@nestjs/jwt'
+import { JwtModule, JwtModuleOptions } from '@nestjs/jwt'
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserSchema } from 'src/users/schema/user.schema';
 import { inspect } from 'util';
@@ -14,11 +14,12 @@ import { HashingService } from './hashing.service';
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
     JwtModule.registerAsync({
       useFactory: () => {
-        const option = {
+        const option: JwtModuleOptions = {
           secret: process.env.JWT_SECRET,
-          audience: process.env.JWT_TOKEN_AUDIENCE,
-          issuer: process.env.JWT_TOKEN_ISSUER,
-          accessTokenTtl: parseInt(process.env.JWT_ACCESS_TOKEN_TTL, 10),
+          signOptions: {
+            audience: process.env.JWT_TOKEN_AUDIENCE,
+            issuer: process.env.JWT_TOKEN_ISSUER,
+          },
         }
         Logger.log(`JWT option: ${inspect(option)}`, 'Config')
         return option

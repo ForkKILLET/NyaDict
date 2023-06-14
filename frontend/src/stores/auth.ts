@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import jwtDecode from 'jwt-decode'
 import { storageRef } from '../utils/storage'
 import type { IAuthPayload } from '../types/network'
@@ -13,7 +13,9 @@ export const useAuth = defineStore('auth', () => {
         return jwtDecode<IAuthPayload>(token)
     })
 
+    const recentlySignedUpUsername = ref<string | null>(null)
+
     return {
-        jwt, jwtPayload
+        jwt, jwtPayload, recentlySignedUpUsername
     }
 })
