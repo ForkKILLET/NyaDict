@@ -20,6 +20,10 @@ import { HashingService } from './hashing.service';
             audience: process.env.JWT_TOKEN_AUDIENCE,
             issuer: process.env.JWT_TOKEN_ISSUER,
           },
+          verifyOptions: {
+            audience: process.env.JWT_TOKEN_AUDIENCE,
+            issuer: process.env.JWT_TOKEN_ISSUER,
+          }
         }
         Logger.log(`JWT option: ${inspect(option)}`, 'Config')
         return option

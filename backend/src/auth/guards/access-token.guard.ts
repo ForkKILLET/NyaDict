@@ -17,17 +17,17 @@ export class AccessTokenGuard implements CanActivate {
     if (isPublic)
       return true
 
-    const request = context.switchToHttp().getRequest()
+    const request = context.switchToHttp().getRequest<FastifyRequest>()
     const token = this.extractTokenFromHeader(request)
-    if (!token)
-      throw new UnauthorizedException()
+    if (! token)
+      throw new UnauthorizedException('アクセスにはログインが必要です')
 
     try {
-      const payload = this.jwtService.verifyAsync(token)
+      const payload = await this.jwtService.verifyAsync(token)
       request[REQUEST_USER_KEY] = payload
     }
     catch (error) {
-      throw new UnauthorizedException()
+      throw new UnauthorizedException('不正ログインです')
     }
     return true
   }
