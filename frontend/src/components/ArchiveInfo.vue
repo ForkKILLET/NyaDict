@@ -4,26 +4,41 @@ import type { IArchiveInfo } from '../types'
 import Card from './Card.vue'
 import NyaDate from './Date.vue'
 
+type INoInfoReason = 'noAccount' | 'noRemote' | 'noLocal'
+
 const props = defineProps<{
-    info: IArchiveInfo
+    info?: IArchiveInfo
     id?: string
     active?: boolean
+    noInfoReason?: INoInfoReason
 }>()
+
+const noInfoReasons: Record<INoInfoReason, string> = {
+    noAccount: 'ログインしていません',
+    noRemote: 'アップロードしていません',
+    noLocal: 'ダウンロードしていません'
+}
 
 const editMode = ref(false)
 const newTitle = ref('')
 const startEditing = () => {
+    if (! props.info) return
     newTitle.value = props.info.title
     editMode.value = true
 }
 const endEditing = () => {
+    if (! props.info) return
     props.info.title = newTitle.value
     editMode.value = false
 }
 </script>
 
 <template>
-    <Card class="archive-info" :class="{ barber: active }">
+    <Card
+        v-if="info"
+        class="archive-info"
+        :class="{ barber: active }"
+    >
         <div class="archive-info-content">
             <div class="archive-info-header">
                 <span v-if="id !== undefined" class="id">{{ id }}</span>
@@ -60,12 +75,21 @@ const endEditing = () => {
             <slot></slot>
         </div>
     </Card>
+    <Card v-else class="archive-info none">
+        <span class="no-info-reason">{{ noInfoReasons[noInfoReason!] }}</span>
+    </Card>
 </template>
 
 <style scoped>
 .archive-info {
     display: flex;
     justify-content: space-between;
+}
+
+.archive-info.none {
+    justify-content: space-around;
+    align-items: center;
+    color: #db8e30;
 }
 
 .archive-info-content {

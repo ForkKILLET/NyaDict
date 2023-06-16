@@ -6,7 +6,7 @@ const router = useRouter()
 
 <template>
     <div class="back-to-home">
-        <a href="javascript:void 0;" @click="router.back">
+        <a href="javascript:void 0;" @click="router.push('..')">
             <fa-icon icon="arrow-left" /> 戻る
         </a>
     </div>

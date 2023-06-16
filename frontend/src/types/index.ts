@@ -34,6 +34,7 @@ export type ITest = {
 export type IMemMode = 'disp' | 'sub' | 'both'
 
 export type IArchiveInfo = {
+    remoteId?: string
     title: string
     accessTime: number
     size: number

@@ -5,10 +5,7 @@ export const api = axios.create({
 })
 
 api.interceptors.response.use(
-    resp => ({
-        statusCode: 200,
-        ...resp.data
-    }),
+    resp => Object.assign(resp.data, { statusCode: 200 }),
     (error: Error | AxiosError) => {
         if (error instanceof AxiosError) {
             if (error.response?.status === 401) {

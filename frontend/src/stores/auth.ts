@@ -15,7 +15,13 @@ export const useAuth = defineStore('auth', () => {
 
     const recentlySignedUpUsername = ref<string | null>(null)
 
+    const axiosHeader = computed(() => {
+        if (jwt.value) return {
+            Authorization: `Bearer ${jwt.value}`
+        }
+    })
+
     return {
-        jwt, jwtPayload, recentlySignedUpUsername
+        jwt, jwtPayload, recentlySignedUpUsername, axiosHeader
     }
 })

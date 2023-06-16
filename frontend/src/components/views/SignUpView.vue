@@ -29,7 +29,7 @@ const submit = async () => {
         error.value = 'ネットワーク・エラー'
         return
     }
-    if (resp.statusCode === 401) {
+    if (resp.statusCode !== 200) {
         error.value = resp.message
     }
     else {

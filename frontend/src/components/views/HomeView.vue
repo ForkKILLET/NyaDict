@@ -20,8 +20,11 @@ import { version } from '../../../package.json'
 
 <style scoped>
 .home {
-    text-align: center;
-    margin-top: 35vh;
+    display: flex;
+    flex-flow: column;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
 }
 
 h1 {

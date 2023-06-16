@@ -4,7 +4,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { resolveEnv } from 'config/env';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UsersModule } from './users/users.module';
 import { inspect } from 'util';
 import { AuthModule } from './auth/auth.module';
 import { ArchiveModule } from './archive/archive.module';
@@ -20,12 +19,11 @@ import { ArchiveModule } from './archive/archive.module';
         const option = {
           uri: process.env.MONGODB_URI,
           dbName: process.env.MONGODB_DBNAME,
-        }
-        Logger.log(`Mongoose option: ${inspect(option)}`, 'Config')
-        return option
-      }
+        };
+        Logger.log(`Mongoose option: ${inspect(option)}`, 'Config');
+        return option;
+      },
     }),
-    UsersModule,
     AuthModule,
     ArchiveModule,
   ],
