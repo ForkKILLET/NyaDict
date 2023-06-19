@@ -1,17 +1,16 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { HashingService } from './hashing.service';
+import { User } from '@prisma/client';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { SignInDto } from './dto/sign-in.dto';
 import { SignUpDto } from './dto/sign-up.dto';
-import { User } from 'src/schemas/user.schema';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { HashingService } from './hashing.service';
 import { ActiveUserData } from './interfaces/active-user-data.interface';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectModel('User') private user: Model<User>,
+    private prisma: PrismaService,
     private jwtService: JwtService,
     private hashingService: HashingService,
   ) {}
@@ -19,7 +18,9 @@ export class AuthService {
   async signUp(signUpDto: SignUpDto) {
     const { name, password, invitationCode } = signUpDto;
 
-    const existingUser = await this.user.findOne({ name });
+    const existingUser = await this.prisma.user.findUnique({
+      where: { name },
+    });
     if (existingUser)
       throw new UnauthorizedException('ユーザー名が使用されました');
 
@@ -28,16 +29,20 @@ export class AuthService {
 
     const hashedPassword = await this.hashingService.hash(password);
 
-    return this.user.create({
-      ...signUpDto,
-      password: hashedPassword,
+    return this.prisma.user.create({
+      data: {
+        name: signUpDto.name,
+        password: hashedPassword,
+      }
     });
   }
 
   async signIn(signInDto: SignInDto) {
     const { name, password } = signInDto;
 
-    const user = await this.user.findOne({ name });
+    const user = await this.prisma.user.findUnique({
+      where: { name },
+    });
     if (!user) throw new UnauthorizedException('ユーザーが存在しません');
 
     const isEqual = await this.hashingService.compare(password, user.password);
@@ -48,7 +53,7 @@ export class AuthService {
   }
 
   async generateToken(user: User) {
-    const token = await this.signToken<Omit<ActiveUserData, 'sub'>>(user._id, {
+    const token = await this.signToken<Omit<ActiveUserData, 'sub'>>(user.id, {
       name: user.name,
     });
     return { token };

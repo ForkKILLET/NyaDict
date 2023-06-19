@@ -1,38 +1,48 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { User } from 'src/schemas/user.schema';
-import { Archive, ArchiveT } from 'src/schemas/archive.schema';
-import { AddArchiveDto } from './dto/add-archive.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { Prisma } from '@prisma/client';
+import { UpsertArchiveDto } from './dto/upsert-archive.dto';
 
 @Injectable()
 export class ArchiveService {
   constructor(
-    @InjectModel('User') private user: Model<User>,
-    @InjectModel('Archive') private archive: Model<Archive>,
+    private prisma: PrismaService
   ) {}
 
-  create(owner: string, addArchiveDto: AddArchiveDto) {
+  async upsert(owner: string, data: UpsertArchiveDto) {
     try {
-      const data: [] = JSON.parse(addArchiveDto.content);
-      const size = Buffer.byteLength(addArchiveDto.content, 'utf-8');
-      const wordCount = data.length;
-      return this.archive.create({
-        owner,
-        wordCount,
-        size,
-        ...addArchiveDto,
-      });
+      const content: [] = JSON.parse(data.content);
+      const size = Buffer.byteLength(data.content, 'utf-8');
+      const wordCount = content.length;
+      return this.prisma.archive.upsert({
+        create: {
+          ...data,
+          owner,
+          size,
+          wordCount
+        },
+        update: {
+          content: data.content,
+          size,
+          wordCount,
+        },
+        where: {
+          owner_idPerUser: {
+            owner,
+            idPerUser: data.idPerUser,
+          },
+        },
+      })
     } catch (error) {
       throw new BadRequestException('アーカイブ・データは破損しました');
     }
   }
 
-  async findAllByOwner(owner: string): Promise<ArchiveT[]> {
-    const archives = await this.archive.find(
-      { owner },
-      {
-        _id: true,
+  findAllByOwner(owner: string) {
+    return this.prisma.archive.findMany({
+      select: {
+        id: true,
+        idPerUser: true,
         owner: true,
         title: true,
         wordCount: true,
@@ -40,15 +50,20 @@ export class ArchiveService {
         size: true,
         accessTime: true,
       },
-    );
-    return archives.map((archive) => ({
-      ...archive.toJSON(),
-      accessTime: +archive.accessTime,
-      createTime: +archive.createTime,
-    }));
+      where: {
+        owner,
+      },
+    });
   }
 
-  findById(owner: string, id: string) {
-    return this.archive.findOne({ _id: id, owner });
+  findByIdPerUser(owner: string, idPerUser: string) {
+    return this.prisma.archive.findUnique({
+      where: {
+        owner_idPerUser: {
+          owner,
+          idPerUser,
+        },
+      },
+    });
   }
 }

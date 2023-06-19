@@ -2,16 +2,14 @@ import { Logger, Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
-import { MongooseModule } from '@nestjs/mongoose';
-import { UserSchema } from 'src/schemas/user.schema';
 import { inspect } from 'util';
 import { APP_GUARD } from '@nestjs/core';
 import { AccessTokenGuard } from './guards/access-token.guard';
 import { HashingService } from './hashing.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
     JwtModule.registerAsync({
       useFactory: () => {
         const option: JwtModuleOptions = {
@@ -32,6 +30,7 @@ import { HashingService } from './hashing.service';
   ],
   controllers: [AuthController],
   providers: [
+    PrismaService,
     AuthService,
     {
       provide: APP_GUARD,

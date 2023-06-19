@@ -10,6 +10,7 @@ const props = defineProps<{
     info?: IArchiveInfo
     id?: string
     active?: boolean
+    remote?: boolean
     noInfoReason?: INoInfoReason
 }>()
 
@@ -43,9 +44,15 @@ const endEditing = () => {
             <div class="archive-info-header">
                 <span v-if="id !== undefined" class="id">{{ id }}</span>
                 <div class="archive-info-title-container">
+                    <fa-icon v-if="remote" class="archive-remote-mark" icon="cloud" />
                     <template v-if="! editMode">
                         <span class="archive-info-title">{{ info.title }}</span>
-                        <fa-icon @click="startEditing" icon="edit" class="button"></fa-icon>
+                        <fa-icon
+                            v-if="! remote"
+                            @click="startEditing"
+                            icon="edit"
+                            class="button" 
+                        />
                     </template>
                     <template v-else>
                         <input
@@ -54,7 +61,11 @@ const endEditing = () => {
                             v-model="newTitle"
                             class="archive-info-title"
                         />
-                        <fa-icon @click="endEditing" icon="circle-check" class="button"></fa-icon>
+                        <fa-icon
+                            @click="endEditing"
+                            icon="circle-check"
+                            class="button"
+                        />
                     </template>
                 </div>
             </div>
@@ -105,6 +116,10 @@ const endEditing = () => {
     margin-right: .5em;
 }
 
+.archive-remote-mark {
+    margin-right: .5em;
+}
+
 .archive-info-title-container {
     display: inline-flex;
     flex: 1;
@@ -135,10 +150,14 @@ input.archive-info-title {
 .archive-info-action {
     display: flex;
     flex-flow: column;
-    margin-top: 4px;
+    margin-top: -2px;
 }
 
 .archive-info-action:deep(> .button) {
-    margin-bottom: .8rem;
+    padding-top: .4rem;
+    padding-bottom: .4rem;
+}
+.archive-info-action:deep(> *:not(:last-child)) {
+    margin-bottom: .4rem;
 }
 </style>

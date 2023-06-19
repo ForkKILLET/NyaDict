@@ -11,7 +11,8 @@ import {
     faBook, faVial, faSort, faSortUp, faSortDown, faRotate, faCalendar,
     faFolder, faBox, faFileImport, faFileArrowDown, faFileArrowUp,
     faFlag, faFlagCheckered, faUserCircle, faUserPlus, faRightToBracket,
-    faRightFromBracket, faLock, faTrash, faTrashRestore, faGift, faSpinner
+    faRightFromBracket, faLock, faTrash, faTrashRestore, faGift, faSpinner,
+    faCloud, faCloudArrowDown, faCloudArrowUp
 } from '@fortawesome/free-solid-svg-icons'
 
 import './styles/index.css'
@@ -25,7 +26,8 @@ library.add(...[
     faBook, faVial, faSort, faSortUp, faSortDown, faRotate, faCalendar,
     faFolder, faBox, faFileArrowDown, faFileArrowUp, faFileImport,
     faFlag, faFlagCheckered, faUserCircle, faUserPlus, faRightToBracket,
-    faRightFromBracket, faLock, faTrash, faTrashRestore, faGift, faSpinner
+    faRightFromBracket, faLock, faTrash, faTrashRestore, faGift, faSpinner,
+    faCloud, faCloudArrowUp, faCloudArrowDown
 ])
 
 const pinia = createPinia()

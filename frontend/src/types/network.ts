@@ -23,13 +23,14 @@ export type ISignInResp = NyaResp<{
 }>
 
 export type ISignUpResp = NyaResp<{
-    _id: string
+    id: string
     name: string
 }>
 
-export type IRemoteArchive = {
-    _id: string
+export type IRemoteArchiveInfo = {
+    id: string
     owner: string
+    idPerUser: string
     title: string
     wordCount: number
     public: boolean
@@ -37,4 +38,9 @@ export type IRemoteArchive = {
     accessTime: number
 }
 
-export type IArchiveGetMineResp = NyaResp<IRemoteArchive[]>
+export type IArchiveGetMineResp = NyaResp<IRemoteArchiveInfo[]>
+
+export type IArchiveUploadResp = NyaResp<{}>
+
+export type IArchiveDownloadResp = NyaResp<IRemoteArchiveInfo & { content: string }>
+
