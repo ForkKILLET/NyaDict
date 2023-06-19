@@ -223,7 +223,7 @@ const nextWord = (correct: boolean) => {
 <style scoped>
 .content {
     text-align: center;
-    height: calc(100vh - 3.5rem - 1em);
+    height: calc(100vh - 5.5em);
 }
 
 .test-area {
