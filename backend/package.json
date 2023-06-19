@@ -10,7 +10,7 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "dotenv -e .env.production -- node dist/src/main",
+    "start:prod": "dotenv -e .env.production -- node dist/main",
     "start:prod:pm2": "pm2 start pnpm --name nyadict --interpreter bash -- start:prod",
     "format": "prettier --write \"src/**/*.ts\"",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix"

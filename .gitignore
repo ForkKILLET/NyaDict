@@ -24,4 +24,4 @@ dist-ssr
 *.sw?
 
 # Production
-backend/.env.prod
+backend/.env.production
