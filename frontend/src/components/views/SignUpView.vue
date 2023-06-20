@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { useAuth } from '../../stores/auth'
 import { ISignUpResp } from '../../types/network'
 import { api } from '../../utils/api'
+import { handleResp } from '../../utils/notifications'
 import ActionPanel from '../ActionPanel.vue'
 
 const authStore = useAuth()
@@ -13,30 +14,22 @@ const username = ref('')
 const password = ref('')
 const invitationCode = ref('')
 
-const state = ref<'idle' | 'pending'>('idle')
-const error = ref<string | null>(null)
+const pending = ref(false)
 const submit = async () => {
-    state.value = 'pending'
-    error.value = null
-    const resp = await api.post('/auth/sign-up', {
-        name: username.value,
-        password: password.value,
-        invitationCode: invitationCode.value
-    }) as ISignUpResp
+    pending.value = true
+    const resp = await handleResp({
+        name: '登録',
+        action: async () => await api.post('/auth/sign-up', {
+            name: username.value,
+            password: password.value,
+            invitationCode: invitationCode.value
+        }) as ISignUpResp
+    })
+    pending.value = false
+    if (! resp) return
 
-    state.value = 'idle'
-    if (! resp) {
-        error.value = 'ネットワーク・エラー'
-        return
-    }
-    if (resp.statusCode !== 200) {
-        error.value = resp.message
-    }
-    else {
-        authStore.recentlySignedUpUsername = resp.name
-        error.value = null
-        router.push('/sync/sign-in')
-    }
+    authStore.recentlySignedUpUsername = resp.name
+    router.push('/sync/sign-in')
 }
 </script>
 
@@ -44,8 +37,7 @@ const submit = async () => {
     <ActionPanel
         title="登録"
         :submit="submit"
-        :submit-state="state"
-        :error="error"
+        :pending="pending"
     >
         <div class="item">
             <fa-icon icon="user-circle" :fixed-width="true" />

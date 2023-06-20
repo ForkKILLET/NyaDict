@@ -4,9 +4,12 @@ import { computed, ref } from 'vue'
 import { useAuth } from '../stores/auth'
 import { useWords } from '../stores/words'
 import { IArchiveInfo, IWord } from '../types'
-import { IRemoteArchiveInfo, IArchiveGetMineResp, IArchiveUploadResp, IArchiveDownloadResp } from '../types/network'
+import {
+        IRemoteArchiveInfo, IArchiveGetMineResp, IArchiveUploadResp, IArchiveDownloadResp
+} from '../types/network'
 import { downloadURL, tryJSON } from '../utils'
 import { api } from '../utils/api'
+import { handleResp } from '../utils/notifications'
 import ArchiveInfo from './ArchiveInfo.vue'
 import LongPressButton from './LongPressButton.vue'
 
@@ -85,50 +88,57 @@ for (const id in archiveInfo.value) {
 }
 
 const getRemoteArchives = async () => {
-    const resp = await api.get('/archive/mine', {
-        headers: axiosHeader.value
-    }) as IArchiveGetMineResp
-
+    const resp = await handleResp({
+        name: 'アーカイブ・リストを取得',
+        silentSuccess: true,
+        action: async () => await api.get('/archive/mine', {
+            headers: axiosHeader.value
+        }) as IArchiveGetMineResp
+    })
     if (! resp) return
-    if (resp.statusCode !== 200) return
 
     const archives: RemoteArchives = {}
     resp.forEach(info => {
-        archives[info.idPerUser] = info
+        archives[info.idPerUser] = {
+            ...info,
+            accessTime: + new Date(info.accessTime)
+        }
     })
     remoteArchiveInfo.value = archives
 }
 const uploadArchive = async (id: string) => {
     const info = archiveInfo.value[id]
 
-    const resp = await api.post('/archive/upload', {
-        idPerUser: id,
-        title: info.title,
-        content: localStorage.getItem('words:' + id),
-        public: false
-    }, {
-        headers: axiosHeader.value
-    }) as IArchiveUploadResp
-
+    const resp = await handleResp({
+        name: 'アップロード',
+        action: async () => await api.post('/archive/upload', {
+            idPerUser: id,
+            title: info.title,
+            content: localStorage.getItem('words:' + id),
+            public: false
+        }, {
+            headers: axiosHeader.value
+        }) as IArchiveUploadResp
+    })
     if (! resp) return
-    if (resp.statusCode !== 200) return
 
     await getRemoteArchives()
 }
 
 const downloadArchive = async (id: string) => {
-    const resp = await api.get(`/archive/mine/${id}`, {
-        headers: axiosHeader.value
-    }) as IArchiveDownloadResp
-
+    const resp = await handleResp({
+        name: 'ダウンロード',
+        action: async () => await api.get(`/archive/mine/${id}`, {
+            headers: axiosHeader.value
+        }) as IArchiveDownloadResp
+    })
     if (! resp) return
-    if (resp.statusCode !== 200) return
 
     archiveInfo.value[resp.idPerUser] = {
         title: resp.title,
         size: resp.size,
         wordCount: resp.wordCount,
-        accessTime: resp.accessTime
+        accessTime: + new Date(resp.accessTime)
     }
 
     localStorage.setItem('words:' + resp.idPerUser, resp.content)
@@ -167,7 +177,10 @@ if (jwtPayload.value) {
                 />
             </ArchiveInfo>
 
-            <div class="archive-list-entry" v-for="[local, remote], id in archiveInfoWithRemotes">
+            <div
+                v-for="[ local, remote ], id in archiveInfoWithRemotes"
+                class="archive-list-entry"
+            >
                 <ArchiveInfo
                     :active="id === archiveId"
                     :id="id"

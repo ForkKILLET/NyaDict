@@ -4,14 +4,8 @@ import Card from './Card.vue'
 defineProps<{
     title: string
     submit: () => void
-    submitState: 'idle' | 'pending'
-    error: string | null
+    pending: boolean
 }>()
-
-const icons = {
-    idle: 'arrow-right',
-    pending: 'spinner'
-}
 </script>
 
 <template>
@@ -22,15 +16,12 @@ const icons = {
             <div>
                 <Card @click="submit" class="inline button up">
                     <fa-icon
-                        :icon="icons[submitState]"
-                        :spin="submitState === 'pending'"
+                        :icon="pending ? 'spinner' : 'arrow-right'"
+                        :spin="pending"
                         class="button no-animation"
                     />
                 </Card>
             </div>
-        </Card>
-        <Card v-if="error" class="wrong">
-           <fa-icon icon="times-circle" /> {{ error }}
         </Card>
     </div>
 </template>

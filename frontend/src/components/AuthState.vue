@@ -1,10 +1,16 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import { useAuth } from '../stores/auth'
+import { add as addNoti } from '../utils/notifications';
 import Card from './Card.vue'
 
 const authStore = useAuth()
 const { jwtPayload } = storeToRefs(authStore)
+
+const signOut = () => {
+    authStore.jwt = null
+    addNoti({ content: 'ログアウトしました', type: 'success' })
+}
 </script>
 
 <template>
@@ -13,7 +19,7 @@ const { jwtPayload } = storeToRefs(authStore)
             <fa-icon icon="user-circle" />
             <span class="username">{{ jwtPayload.name }}</span> さん &middot;
             <fa-icon
-                @click="authStore.jwt = null"
+                @click="signOut"
                 icon="right-from-bracket"
                 class="button"
             />

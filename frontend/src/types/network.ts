@@ -38,9 +38,18 @@ export type IRemoteArchiveInfo = {
     accessTime: number
 }
 
-export type IArchiveGetMineResp = NyaResp<IRemoteArchiveInfo[]>
+export type IArchiveGetMineResp = NyaResp<
+    Array<Omit<IRemoteArchiveInfo, 'accessTime'> & {
+        accessTime: string
+    }>
+>
 
 export type IArchiveUploadResp = NyaResp<{}>
 
-export type IArchiveDownloadResp = NyaResp<IRemoteArchiveInfo & { content: string }>
+export type IArchiveDownloadResp = NyaResp<
+    Omit<IRemoteArchiveInfo, 'accessTime'> & {
+        content: string
+        accessTime: string
+    }
+>
 

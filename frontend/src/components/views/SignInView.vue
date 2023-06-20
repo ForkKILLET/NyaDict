@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { useAuth } from '../../stores/auth'
 import { ISignInResp } from '../../types/network'
 import { api } from '../../utils/api'
+import { handleResp } from '../../utils/notifications'
 import ActionPanel from '../ActionPanel.vue'
 
 const authStore = useAuth()
@@ -12,30 +13,22 @@ const router = useRouter()
 const username = ref(authStore.recentlySignedUpUsername ?? '')
 const password = ref('')
 
-const state = ref<'idle' | 'pending'>('idle')
-const error = ref<string | null>(null)
+const pending = ref(false)
 const submit = async () => {
-    state.value = 'pending'
-    error.value = null
-    const resp = await api.post('/auth/sign-in', {
-        name: username.value,
-        password: password.value
-    }) as ISignInResp
+    pending.value = true
+    const resp = await handleResp({
+        name: 'ログイン',
+        action: async () => await api.post('/auth/sign-in', {
+            name: username.value,
+            password: password.value
+        }) as ISignInResp
+    })
+    pending.value = false
+    if (! resp) return
 
-    state.value = 'idle'
-    if (! resp) {
-        error.value = 'ネットワーク・エラー'
-        return
-    }
-    if (resp.statusCode !== 200) {
-        error.value = resp.message
-    }
-    else {
-        error.value = null
-        const { token } = resp
-        authStore.jwt = token
-        router.push('/sync')
-    }
+    const { token } = resp
+    authStore.jwt = token
+    router.push('/sync')
 }
 </script>
 
@@ -43,8 +36,7 @@ const submit = async () => {
     <ActionPanel
         title="ログイン"
         :submit="submit"
-        :submit-state="state"
-        :error="error"
+        :pending="pending"
     >
         <div class="item">
             <fa-icon icon="user-circle" :fixed-width="true" />
