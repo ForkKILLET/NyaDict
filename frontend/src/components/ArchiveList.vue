@@ -9,7 +9,7 @@ import {
 } from '../types/network'
 import { downloadURL, tryJSON } from '../utils'
 import { api } from '../utils/api'
-import { handleResp } from '../utils/notifications'
+import { handleResp } from '../utils/notif'
 import ArchiveInfo from './ArchiveInfo.vue'
 import LongPressButton from './LongPressButton.vue'
 
@@ -265,3 +265,4 @@ if (jwtPayload.value) {
     opacity: 0;
 }
 </style>
+../utils/notif

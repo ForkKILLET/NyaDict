@@ -1,25 +1,18 @@
 <script setup lang="ts">
-import { add, notis, remove } from '../../utils/notifications'
+import * as notif from '../../utils/notif'
 
 import Noti from './Noti.vue'
 import ListTransitionGroup from '../transitions/ListTransitionGroup.vue'
-
-add({
-    content: 'abcdefg',
-    type: 'info',
-    duration: 10 * 1000
-})
 </script>
 
 <template>
     <ListTransitionGroup class="notis">
-        <template v-for="noti, id of notis">
-            <div>
+        <template v-for="noti, id of notif.notis" :key="id">
+            <div v-if="noti">
                 <Noti
-                    v-if="noti"
                     :noti="noti"
-                    :key="id"
-                    @click="remove(id)"
+                    @click="notif.remove(id)"
+                    @expire="notif.remove(id)"
                 />
             </div>
         </template>

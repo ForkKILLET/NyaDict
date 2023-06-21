@@ -14,9 +14,7 @@ export const notis = reactive<Array<Noti | undefined>>([])
 export const add = (noti: Noti): number => {
     noti = reactive(noti)
     notis.push(noti)
-    const id =  notis.length - 1
-    if (noti.duration) setTimeout(() => remove(id), noti.duration + 200)
-    return id
+    return notis.length - 1
 }
 
 export const handleResp = async <T>(options: {
@@ -37,7 +35,7 @@ export const handleResp = async <T>(options: {
         if (! options.silentSuccess) add({
             content: `${options.name}・完了`,
             type: 'success',
-            duration: 700
+            duration: 2 * 1000
         })
         return resp
     }
@@ -49,7 +47,7 @@ export const handleResp = async <T>(options: {
     add({
         content,
         type: 'error',
-        duration: 1000
+        duration: 3 * 1000
     })
 }
 

@@ -1,8 +1,12 @@
 <script setup lang="ts">
-import type { Noti, NotiType } from '../../utils/notifications'
+import type { Noti, NotiType } from '../../utils/notif'
 
 defineProps<{
     noti: Noti
+}>()
+
+defineEmits<{
+    (event: 'expire'): void
 }>()
 
 const typeIcons: Record<NotiType, string> = {
@@ -26,6 +30,7 @@ const typeIcons: Record<NotiType, string> = {
             v-if="noti.duration"
             class="noti-lasting"
             :style="{ '--duration': noti.duration + 'ms' }"
+            @animationend="$emit('expire')"
         >
             <div class="noti-lasting-inner"></div>
         </div>
@@ -60,6 +65,9 @@ const typeIcons: Record<NotiType, string> = {
     height: 3px;
     width: calc(100% + 2em);
 }
+.noti:hover .noti-lasting-inner {
+    animation-play-state: paused;
+}
 
 .noti-lasting-inner {
     height: 100%;
@@ -68,7 +76,7 @@ const typeIcons: Record<NotiType, string> = {
 }
 
 .noti:hover {
-    opacity: .8;
+    opacity: .5;
 }
 
 .noti-type {
@@ -84,3 +92,4 @@ const typeIcons: Record<NotiType, string> = {
     color: #95e35d;
 }
 </style>
+../../utils/notif

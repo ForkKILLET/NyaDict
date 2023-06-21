@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import { useAuth } from '../../stores/auth'
 import { ISignUpResp } from '../../types/network'
 import { api } from '../../utils/api'
-import { handleResp } from '../../utils/notifications'
+import { handleResp } from '../../utils/notif'
 import ActionPanel from '../ActionPanel.vue'
 
 const authStore = useAuth()
@@ -68,3 +68,4 @@ const submit = async () => {
         </div>
     </ActionPanel>
 </template>
+../../utils/notif

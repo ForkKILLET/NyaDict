@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import { useAuth } from '../stores/auth'
-import { add as addNoti } from '../utils/notifications';
+import { add as addNoti } from '../utils/notif';
 import Card from './Card.vue'
 
 const authStore = useAuth()
@@ -9,7 +9,11 @@ const { jwtPayload } = storeToRefs(authStore)
 
 const signOut = () => {
     authStore.jwt = null
-    addNoti({ content: 'ログアウトしました', type: 'success' })
+    addNoti({
+        content: 'ログアウトしました',
+        type: 'success',
+        duration: 2 * 1000
+    })
 }
 </script>
 
@@ -46,3 +50,4 @@ const signOut = () => {
     color: #db8e30;
 }
 </style>
+../utils/notif
