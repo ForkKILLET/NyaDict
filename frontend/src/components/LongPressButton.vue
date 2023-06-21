@@ -12,8 +12,12 @@ const emit = defineEmits<{
 }>()
 
 const startTime = ref<number | null>(null)
-const onMouseUp = () => {
+const onLongPressStart = () => {
+    startTime.value = Date.now()
+}
+const onLongPressEnd = () => {
     if (! startTime.value) return
+
     const duration = Date.now() - startTime.value
     if (duration >= props.duration * 1000) {
         startTime.value = null
@@ -24,8 +28,10 @@ const onMouseUp = () => {
 
 <template>
     <div
-        @mousedown="startTime = Date.now()"
-        @mouseup="onMouseUp"
+        @mousedown="onLongPressStart"
+        @touchstart="onLongPressStart"
+        @mouseup="onLongPressEnd"
+        @touchend="onLongPressEnd"
         class="long-press-button"
         :style="{ '--duration': duration + 's', '--color': color }"
     >
