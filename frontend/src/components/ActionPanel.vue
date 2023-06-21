@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import Card from './Card.vue'
 
-defineProps<{
+const props = defineProps<{
     title: string
     submit: () => void
     pending: boolean
 }>()
+
+const onSubmit = () => {
+    if (props.pending) return
+    props.submit()
+}
 </script>
 
 <template>
@@ -14,7 +19,7 @@ defineProps<{
             <h2>{{ title }}</h2>
             <slot></slot>
             <div>
-                <Card @click="submit" class="inline button up">
+                <Card @click="onSubmit" class="inline button up">
                     <fa-icon
                         :icon="pending ? 'spinner' : 'arrow-right'"
                         :spin="pending"
