@@ -7,15 +7,19 @@ export type IWord = {
 }
 
 export type IMemory = {
+    easiness: number
+    testAfter: number
     correctNum: number
     wrongNum: number
     createTime: number
     testRec: ITestRec[] 
 }
 
+export type ICorrect = 0 | 0.5 | 1
+
 export type ITestRec = {
     time: number
-    correct: boolean
+    correct: ICorrect
     mode: ITestMode
 }
 
@@ -27,7 +31,7 @@ export type ITest = {
     mode: ITestMode
     wordIds: number[]
     currentIndex: number
-    correctness: boolean[]
+    correctness: ICorrect[]
     completed: boolean
 }
 

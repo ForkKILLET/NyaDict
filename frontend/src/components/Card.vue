@@ -6,6 +6,7 @@
 
 <style scoped>
 .card {
+    box-sizing: border-box;
     padding: .8em;
     background-color: #fffaf6;
     border-radius: .8em;
@@ -20,7 +21,7 @@
     color: #db8e30;
     transition: .5s color, .5s background-color, .5s box-shadow;
 }
-.card.button:hover {
+.card.button:hover, .card.button:active {
     color: #f7b96e;
     background-color: #ffffff;
     box-shadow: 0 0 .4em #faae70ef;
@@ -42,13 +43,18 @@
 
 .inline.card {
     display: inline-block;
+}
+.inline.card:not(:last-of-type) {
     margin-right: 1em;
 }
 
 .card.w1 {
-    width: 6em;
+    width: 5em;
 }
 .card.w2 {
-    width: calc(6.8em * 2 + 1em);
+    width: calc(5em * 2 + 1em);
+}
+.card.w3 {
+    width: calc(5em * 3 + 2em);
 }
 </style>

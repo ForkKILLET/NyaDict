@@ -7,20 +7,27 @@ const props = withDefaults(defineProps<{
     mem: IMemory
     memMode?: IMemMode
     showAcc?: boolean
+    showHalfCorrect?: boolean
 }>(), {
     memMode: 'both'
 })
 
 const correctWrong = computed<{
     correct: number
+    halfCorrect: number
     wrong: number
 }>(() => props.mem.testRec
     .reduce((acc, rec) => {
-        if (props.memMode === 'both' || props.memMode === rec.mode)
-            acc[rec.correct ? 'correct' : 'wrong'] ++
+        if (props.memMode === 'both' || props.memMode === rec.mode) {
+            const { correct } = rec
+            if (correct === 0) acc.correct ++
+            else if (correct === 1) acc.wrong ++
+            else acc.halfCorrect ++
+        }
         return acc
     }, {
         correct: 0,
+        halfCorrect: 0,
         wrong: 0
     })
 )
@@ -29,7 +36,9 @@ const correctWrong = computed<{
 <template>
     <Correctness
         :correct="correctWrong.correct"
+        :half-correct="correctWrong.halfCorrect"
         :wrong="correctWrong.wrong"
         :show-acc="showAcc"
+        :show-half-correct="showHalfCorrect"
     />
 </template>

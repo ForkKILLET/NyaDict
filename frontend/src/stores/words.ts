@@ -5,6 +5,8 @@ import { randomItem } from '../utils'
 import { getStorage, setStorage, storageRef, storageReactive } from '../utils/storage'
 import type { IArchiveInfo, IMemory, ITestRec, IWord } from '../types'
 
+export const baseInterval = 5
+
 export const useWords = defineStore('words', () => {
     const archiveId = storageRef('archiveId', '0')
     const archiveInfo = storageReactive<Record<string, IArchiveInfo>>('archiveInfo', {})
@@ -86,9 +88,17 @@ export const useWords = defineStore('words', () => {
     const addTestRec = (id: number, rec: ITestRec) => {
         const word = getById(id)
         if (! word) return false
+
         word.mem.testRec.push(rec)
         if (rec.correct) word.mem.correctNum ++
         else word.mem.wrongNum ++
+
+        // Note: SRS algorithm here
+        debugger
+        word.mem.easiness = Math.min(word.mem.easiness ?? 0 + rec.correct * 0.2, 3)
+        const interval = baseInterval * (1 / 24 + word.mem.easiness)
+        word.mem.testAfter = Date.now() + interval * 24 * 3600 * 1000 
+
         save()
         return true
     }
@@ -103,7 +113,9 @@ export const useWords = defineStore('words', () => {
     }
 })
 
-export const emptyMem = () => ({
+export const emptyMem = (): IMemory => ({
+    easiness: 0,
+    testAfter: 0,
     correctNum: 0,
     wrongNum: 0,
     createTime: Date.now(),
@@ -126,3 +138,5 @@ export const getYomikataIndex = (word: IWord) => (
         : toHiragana(word.disp[0])
     ).charCodeAt(0)
 )
+
+export const getLastTestTime = (word: IWord) => word.mem.testRec.at(-1)?.time ?? 0

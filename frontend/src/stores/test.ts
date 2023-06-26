@@ -16,17 +16,14 @@ export const useTest = defineStore('test', () => {
     }
 
     const generateTest = (mode: ITestMode, size = 20) => {
-        const testedWordIds: number[] = []
-        const untestedWordIds: number[] = []
-        wordsStore.words.forEach(word => {
-            const { testRec } = word.mem
-            if (! testRec.length || ! dayjs(testRec.at(-1)!.time).isSame(dayjs(), 'day'))
-                untestedWordIds.push(word.id)
-            else
-                testedWordIds.push(word.id)
-        })
-        const wordIds = sample(untestedWordIds, size)
-        if (wordIds.length < size) wordIds.push(...sample(testedWordIds, size - wordIds.length))
+        const now = Date.now()
+        const testableWordIds = wordsStore.words
+            .filter(word => {
+                const { testAfter } = word.mem
+                return ! testAfter || testAfter > now
+            })
+            .map(word => word.id)
+        const wordIds = sample(testableWordIds, size)
 
         const test: ITest = {
             createTime: Date.now(),

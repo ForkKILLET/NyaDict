@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useWords } from '../stores/words'
 import type { IWord } from '../types'
-import Date from './Date.vue'
+import NyaDate from './NyaDate.vue'
 import LongPressButton from './LongPressButton.vue'
 import WordMemCalendar from './WordMemCalendar.vue'
 
@@ -37,7 +37,12 @@ defineProps<{
         </p>
         <div class="mem-detail">
             <h2>メモリー</h2>
-            <Date :date="word.mem.createTime" />
+            <div>
+                <fa-icon icon="plus" /> <NyaDate :date="word.mem.createTime" />
+            </div>
+            <div>
+                <fa-icon icon="forward" /> <NyaDate :date="word.mem.testAfter" />
+            </div>
             <WordMemCalendar :mem="word.mem" />
         </div>
     </div>

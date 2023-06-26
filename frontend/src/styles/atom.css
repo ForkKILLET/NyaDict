@@ -15,7 +15,9 @@
 .correct {
     color: #95e35d;
 }
-
+.half-correct {
+    color: #db8e30;
+}
 .wrong {
     color: #ec4e1e;
 }

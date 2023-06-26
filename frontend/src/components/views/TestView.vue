@@ -3,12 +3,12 @@ import { ref, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useWords } from '../../stores/words'
 import { useTest } from '../../stores/test'
-import type { ITestMode, ITest } from '../../types'
+import type { ITestMode, ITest, ICorrect } from '../../types'
 
 import Card from '../Card.vue'
 import Word from '../Word.vue'
 import Correctness from '../Correctness.vue'
-import NyaDate from '../Date.vue'
+import NyaDate from '../NyaDate.vue'
 import WordDetail from '../WordDetail.vue'
 
 const wordsStore = useWords()
@@ -29,6 +29,7 @@ const answerShowed = ref(false)
 const showDetail = ref(false)
 
 const testCorrectCount = ref(0)
+const testHalfCorrectCount = ref(0)
 const testWrongCount = ref(0)
 
 const currentWord = computed(() => wordsStore.getById(
@@ -61,7 +62,9 @@ const completeTest = () => {
     testCorrectCount.value = 0
     testWrongCount.value = 0
     for (const correct of test.value!.correctness) {
-        (correct ? testCorrectCount : testWrongCount).value ++
+        if (correct === 0) testWrongCount.value ++
+        else if (correct === 1) testCorrectCount.value ++
+        else testHalfCorrectCount.value ++
     }
 }
 
@@ -71,7 +74,7 @@ const disposeTest = () => {
     testMode.value = null
 }
 
-const nextWord = (correct: boolean) => {
+const nextWord = (correct: ICorrect) => {
     if (showDetail.value) showDetail.value = false
     answerShowed.value = false
 
@@ -172,13 +175,14 @@ const nextWord = (correct: boolean) => {
                 <p>
                     <Correctness
                         :correct="testCorrectCount"
+                        :half-correct="testHalfCorrectCount"
                         :wrong="testWrongCount"
                         :show-acc="true"
                     />
                 </p>
                 <p>
                     <Card
-                        class="inline w2 button"
+                        class="inline w3 button"
                         @click="disposeTest"
                     >OK</Card>
                 </p>
@@ -189,7 +193,7 @@ const nextWord = (correct: boolean) => {
                 </div>
                 <p>
                     <Card
-                        class="inline w2 button"
+                        class="inline w3 button"
                         @click="answerShowed = true"
                     >答えを見る</Card>
                 </p>
@@ -207,12 +211,22 @@ const nextWord = (correct: boolean) => {
                 <p>
                     <Card
                         class="inline w1 button"
-                        @click="nextWord(true)"
-                    >正しい</Card>
+                        @click="nextWord(1)"
+                    >
+                        <fa-icon icon="check-circle" class="correct" />
+                    </Card>
                     <Card
                         class="inline w1 button"
-                        @click="nextWord(false)"
-                    >間違った</Card>
+                        @click="nextWord(0.5)"
+                    >
+                        <fa-icon icon="circle-question" />
+                    </Card>
+                    <Card
+                        class="inline w1 button"
+                        @click="nextWord(0)"
+                    >
+                        <fa-icon icon="times-circle" class="wrong" />
+                    </Card>
                 </p>
                 <WordDetail v-if="showDetail" :word="currentWord!" />
             </div>

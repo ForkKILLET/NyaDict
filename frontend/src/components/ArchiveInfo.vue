@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import type { IArchiveInfo } from '../types'
 import Card from './Card.vue'
-import NyaDate from './Date.vue'
+import NyaDate from './NyaDate.vue'
 
 type INoInfoReason = 'noAccount' | 'noRemote' | 'noLocal'
 

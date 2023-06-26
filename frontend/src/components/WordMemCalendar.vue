@@ -15,7 +15,7 @@ const calendarModeInfo: Record<IMemMode, string> = {
     both: '合計'
 }
 
-type DayState = 'none' | 'idle' | 'correct' | 'wrong' | 'both'
+type DayState = 'none' | 'idle' | 'correct' | 'wrong' | 'both' | 'half-correct'
 
 const createDay = computed(() => dayjs(props.mem.createTime).startOf('day'))
 const startDay = computed(() => {
@@ -42,7 +42,7 @@ const days = computed(() => {
     for (const rec of props.mem.testRec) {
         if (calendarMode.value !== 'both' && rec.mode !== calendarMode.value) continue
         const date = + dayjs(rec.time).startOf('day')
-        const state = rec.correct ? 'correct' : 'wrong'
+        const state = rec.correct === 1 ? 'correct' : rec.correct === 0 ? 'wrong' : 'half-correct'
         if (days[date] === 'idle') days[date] = state
         else if (days[date] !== state) days[date] = 'both'
     }
@@ -60,7 +60,12 @@ const days = computed(() => {
                 :class="{ active: calendarMode === mode }"
             >{{ modeInfo }}</span>
         </div>
-        <WordMemBrief :mem="mem" :show-acc="true" :mem-mode="calendarMode" />
+        <WordMemBrief
+            :mem="mem"
+            :show-acc="true"
+            :show-half-correct="true"
+            :mem-mode="calendarMode"
+        />
         <div class="calendar-inner">
             <div class="calendar-title" v-for="text of [...'日月火水木金土']">{{ text }}</div>
             <div class="pad" :style="{ width: '1em', height: startDay.day() + 'em' }"></div>
@@ -95,6 +100,9 @@ const days = computed(() => {
 }
 .calendar-day.correct {
     background-color: #95e35d;
+}
+.calendar-day.half-correct {
+    background-color: #db8e30;
 }
 .calendar-day.wrong {
     background-color: #ec4e1e;
