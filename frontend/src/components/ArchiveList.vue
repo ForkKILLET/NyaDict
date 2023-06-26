@@ -13,8 +13,9 @@ import { handleResp } from '../utils/notif'
 import ArchiveInfo from './ArchiveInfo.vue'
 import LongPressButton from './LongPressButton.vue'
 
+const wordsStore = useWords()
 const { jwtPayload, axiosHeader } = storeToRefs(useAuth())
-const { archiveId, archiveInfo } = storeToRefs(useWords())
+const { archiveId, archiveInfo } = storeToRefs(wordsStore)
 
 type RemoteArchives = Record<string, IRemoteArchiveInfo>
 const remoteArchiveInfo = ref<RemoteArchives | null>(null)
@@ -44,6 +45,7 @@ const makeArchiveBlob = (id: string) => {
 const withdrawArchive = (id: string) => {
     delete archiveInfo.value[id]
     localStorage.removeItem('words:' + id)
+    if (archiveId.value === id) wordsStore.load()
 }
 const exportArchive = (id: string) => {
     const url = URL.createObjectURL(archiveBlobs[id])
@@ -142,6 +144,7 @@ const downloadArchive = async (id: string) => {
     }
 
     localStorage.setItem('words:' + resp.idPerUser, resp.content)
+    if (archiveId.value === resp.idPerUser) wordsStore.load()
 }
 
 if (jwtPayload.value) {

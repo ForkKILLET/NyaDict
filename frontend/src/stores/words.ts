@@ -1,29 +1,14 @@
 import { defineStore } from 'pinia' 
 import { ref, watch } from 'vue'
-import { toHiragana, toRomaji} from 'wanakana'
+import { toHiragana, toRomaji, isHiragana} from 'wanakana'
 import { randomItem } from '../utils'
 import { getStorage, setStorage, storageRef, storageReactive } from '../utils/storage'
 import type { IArchiveInfo, IMemory, ITestRec, IWord } from '../types'
 
 export const useWords = defineStore('words', () => {
     const archiveId = storageRef('archiveId', '0')
-    const archiveInfo = storageReactive<Record<string, IArchiveInfo>>('archiveInfo', {
-        0: {
-            title: '黙認',
-            accessTime: Date.now(),
-            size: 0,
-            wordCount: 0
-        }
-    })
-    const words = ref<IWord[]>(getStorage('words:' + archiveId.value) ?? [
-        {
-            id: 0,
-            disp: 'ニャディクト',
-            sub: 'Nya Dict',
-            desc: '',
-            mem: emptyMem()
-        }
-    ])
+    const archiveInfo = storageReactive<Record<string, IArchiveInfo>>('archiveInfo', {})
+    const words = ref<IWord[]>([])
 
     watch(archiveId, newId => {
         words.value = getStorage('words:' + newId) ?? []
@@ -41,6 +26,32 @@ export const useWords = defineStore('words', () => {
         archiveInfo[id].accessTime = Date.now()
         archiveInfo[id].wordCount = words.value.length
     }
+
+    const load = () => {
+        const wordsActive = getStorage<IWord[]>('words:' + archiveId.value)
+        if (wordsActive) {
+            words.value = wordsActive
+            updateMaxId()
+        }
+        else {
+            archiveInfo[archiveId.value] = {
+                title: '黙認',
+                accessTime: Date.now(),
+                size: 0,
+                wordCount: 1
+            }
+            words.value = [
+                {
+                    id: 0,
+                    disp: 'ニャディクト',
+                    sub: 'Nya Dict',
+                    desc: '',
+                    mem: emptyMem()
+                }
+            ]
+        }
+    }
+    watch(archiveId, load, { immediate: true })
 
     const add = (word: Omit<IWord, 'id'>) => {
         const id = ++ maxId.value
@@ -86,8 +97,9 @@ export const useWords = defineStore('words', () => {
 
     return {
         words, archiveId, archiveInfo,
-        save, add, modify, withdraw, merge,
-        getById, updateMaxId, addTestRec, randomWord
+        updateMaxId, save, load,
+        add, modify, withdraw, merge,
+        getById, addTestRec, randomWord
     }
 })
 
@@ -108,7 +120,9 @@ export const getRomaji = (word: IWord) => {
     return toRomaji(word.sub)
 }
 
-export const getYomikataIndex = (word: IWord) => {
-    if (word.sub.match(/[a-z]/)) return toHiragana(word.disp[0]).charCodeAt(0)
-    return word.sub[0].charCodeAt(0)
-}
+export const getYomikataIndex = (word: IWord) => (
+    (isHiragana(word.sub[0])
+        ? word.sub[0]
+        : toHiragana(word.disp[0])
+    ).charCodeAt(0)
+)

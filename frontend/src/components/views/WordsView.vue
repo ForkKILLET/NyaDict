@@ -176,5 +176,8 @@ const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
 
 input.search {
     width: calc(100% - 1.6em);
+    font-family: serif;
+    font-size: 1rem;
+    padding: .2em .5em;
 }
 </style>
