@@ -3,13 +3,14 @@ import { ref, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useWords } from '../../stores/words'
 import { useTest } from '../../stores/test'
-import type { ITestMode, ITest, ICorrect } from '../../types'
+import { ITestMode, ITest, ICorrect, IWord } from '../../types'
 
 import Card from '../Card.vue'
 import Word from '../Word.vue'
 import Correctness from '../Correctness.vue'
 import NyaDate from '../NyaDate.vue'
 import WordDetail from '../WordDetail.vue'
+import WordList from '../WordList.vue'
 
 const wordsStore = useWords()
 const testStore = useTest()
@@ -31,6 +32,14 @@ const showDetail = ref(false)
 const testCorrectCount = ref(0)
 const testHalfCorrectCount = ref(0)
 const testWrongCount = ref(0)
+
+const missWords = ref<IWord[]>()
+
+const showMiss = () => {
+    missWords.value ??= test.value!.wordIds
+        .filter((_, index) => test.value!.correctness[index] !== 1)
+        .map(id => wordsStore.getById(id)!)
+}
 
 const currentWord = computed(() => wordsStore.getById(
     test.value?.wordIds[test.value.currentIndex]
@@ -123,7 +132,7 @@ const nextWord = (correct: ICorrect) => {
                         :class="{ disabled: ! ableToCreateTest }"
                         @click="createTest"
                     >
-                        <fa-icon icon="arrow-right" class="button" />
+                        <fa-icon icon="arrow-right" class="button no-animation" />
                     </Card>
                 </p>
             </div>
@@ -170,7 +179,7 @@ const nextWord = (correct: ICorrect) => {
                     :style="{ width: (100 / testSize! * test.currentIndex) + 'vw' }"
                 ></div>
             </div>
-            <div v-if="test.completed">
+            <div v-if="test.completed" class="completed-area">
                 <h2>テスト　クリヤー！</h2>
                 <p>
                     <Correctness
@@ -178,14 +187,24 @@ const nextWord = (correct: ICorrect) => {
                         :half-correct="testHalfCorrectCount"
                         :wrong="testWrongCount"
                         :show-acc="true"
+                        :show-half-correct="true"
                     />
                 </p>
                 <p>
                     <Card
-                        class="inline w3 button"
+                        class="inline w2 button"
+                        @click="showMiss"
+                    >
+                        今度の間違い
+                    </Card>
+                    <Card
+                        class="inline w1 button"
                         @click="disposeTest"
-                    >OK</Card>
+                    >
+                        <fa-icon icon="arrow-right" class="button no-animation" />
+                    </Card>
                 </p>
+                <WordList v-if="missWords" :words="missWords" />
             </div>
             <div v-else-if="! answerShowed" class="test-area">
                 <div>
@@ -251,7 +270,7 @@ const nextWord = (correct: ICorrect) => {
 }
 
 .test-area > div:first-child {
-    height: 8em;
+    height: 12em;
     flex-shrink: 0;
 }
 
@@ -289,5 +308,10 @@ const nextWord = (correct: ICorrect) => {
     min-width: 600px;
     margin: 2em auto;
     text-align: left;
+}
+
+.completed-area > .word-list {
+    max-width: 600px;
+    margin: 0 auto;
 }
 </style>

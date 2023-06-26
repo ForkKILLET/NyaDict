@@ -20,8 +20,8 @@ const correctWrong = computed<{
     .reduce((acc, rec) => {
         if (props.memMode === 'both' || props.memMode === rec.mode) {
             const { correct } = rec
-            if (correct === 0) acc.correct ++
-            else if (correct === 1) acc.wrong ++
+            if (correct === 1) acc.correct ++
+            else if (correct === 0) acc.wrong ++
             else acc.halfCorrect ++
         }
         return acc

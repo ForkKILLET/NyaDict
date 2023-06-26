@@ -38,10 +38,13 @@ defineProps<{
         <div class="mem-detail">
             <h2>メモリー</h2>
             <div>
-                <fa-icon icon="plus" /> <NyaDate :date="word.mem.createTime" />
+                <fa-icon icon="plus" :fixed-width="true" />
+                <NyaDate :date="word.mem.createTime" />
             </div>
             <div>
-                <fa-icon icon="forward" /> <NyaDate :date="word.mem.testAfter" />
+                <fa-icon icon="forward" :fixed-width="true" /> 
+                <NyaDate v-if="word.mem.testAfter" :date="word.mem.testAfter" />
+                <span v-else class="number">今</span>
             </div>
             <WordMemCalendar :mem="word.mem" />
         </div>
@@ -62,5 +65,9 @@ defineProps<{
 .calendar {
     width: 80%;
     margin-top: 1em;
+}
+
+.mem-detail > div > svg {
+    margin-right: .2em;
 }
 </style>
