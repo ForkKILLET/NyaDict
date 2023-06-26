@@ -36,63 +36,67 @@ const endEditing = () => {
 
 <template>
     <Card
-        v-if="info"
         class="archive-info"
-        :class="{ barber: active }"
+        :class="{ barber: active, none: ! info }"
     >
-        <div class="archive-info-content">
-            <div class="archive-info-header">
-                <span v-if="id !== undefined" class="id">{{ id }}</span>
-                <div class="archive-info-title-container">
-                    <fa-icon v-if="remote" class="archive-remote-mark" icon="cloud" />
-                    <template v-if="! editMode">
-                        <span class="archive-info-title">{{ info.title }}</span>
-                        <fa-icon
-                            v-if="! remote"
-                            @click="startEditing"
-                            icon="edit"
-                            class="button" 
-                        />
-                    </template>
-                    <template v-else>
-                        <input
-                            type="text"
-                            autofocus="true"
-                            v-model="newTitle"
-                            class="archive-info-title"
-                        />
-                        <fa-icon
-                            @click="endEditing"
-                            icon="circle-check"
-                            class="button"
-                        />
-                    </template>
+        <template v-if="info">
+            <div class="archive-info-content">
+                <div class="archive-info-header">
+                    <span v-if="id !== undefined" class="id">{{ id }}</span>
+                    <div class="archive-info-title-container">
+                        <template v-if="! editMode">
+                            <span class="archive-info-title">{{ info.title }}</span>
+                            <fa-icon
+                                v-if="! remote"
+                                @click="startEditing"
+                                icon="edit"
+                                class="button" 
+                            />
+                        </template>
+                        <template v-else>
+                            <input
+                                type="text"
+                                autofocus="true"
+                                v-model="newTitle"
+                                class="archive-info-title"
+                            />
+                            <fa-icon
+                                @click="endEditing"
+                                icon="circle-check"
+                                class="button"
+                            />
+                        </template>
+                    </div>
+                </div>
+                <div>
+                    <fa-icon icon="fa-solid fa-calendar" :fixed-width="true" />
+                    <NyaDate :date="info.accessTime" :long="true" />
+                </div>
+                <div>
+                    <fa-icon icon="fa-solid fa-folder" :fixed-width="true" />
+                    <span><span class="number">{{ info.wordCount ?? 'N/A' }}</span> 単語</span>
+                </div>
+                <div>
+                    <fa-icon icon="fa-solid fa-box" :fixed-width="true" />
+                    <span><span class="number">{{ (info.size / 1024).toFixed(2) }}</span> KiB</span>
                 </div>
             </div>
-            <div>
-                <fa-icon icon="fa-solid fa-calendar" :fixed-width="true" />
-                <NyaDate :date="info.accessTime" :long="true" />
+            <div class="archive-info-action">
+                <slot></slot>
             </div>
-            <div>
-                <fa-icon icon="fa-solid fa-folder" :fixed-width="true" />
-                <span><span class="number">{{ info.wordCount ?? 'N/A' }}</span> 単語</span>
-            </div>
-            <div>
-                <fa-icon icon="fa-solid fa-box" :fixed-width="true" />
-                <span><span class="number">{{ (info.size / 1024).toFixed(2) }}</span> KiB</span>
-            </div>
+        </template>
+        <template v-else>
+            <span class="no-info-reason">{{ noInfoReasons[noInfoReason!] }}</span>
+        </template>
+        <div class="archive-labels">
+            <slot name="labels"></slot>
         </div>
-        <div class="archive-info-action">
-            <slot></slot>
-        </div>
-    </Card>
-    <Card v-else class="archive-info none">
-        <span class="no-info-reason">{{ noInfoReasons[noInfoReason!] }}</span>
     </Card>
 </template>
 
 <style scoped>
 .archive-info {
+    position: relative;
     display: flex;
     justify-content: space-between;
 }
@@ -159,5 +163,20 @@ input.archive-info-title {
 }
 .archive-info-action:deep(> *:not(:last-child)) {
     margin-bottom: .4rem;
+}
+
+.archive-labels {
+    position: absolute;
+    left: 100%;
+    top: 0;
+    z-index: -1;
+    padding-top: 1em;
+}
+
+.archive-labels:deep(> div) {
+    background-color: #f9e9dc;
+    padding: .2em .5em;
+    border-radius: 0 .5em .5em 0;
+    box-shadow: 0 0 .4em #faad704d;
 }
 </style>

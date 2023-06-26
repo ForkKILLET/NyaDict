@@ -223,12 +223,17 @@ if (jwtPayload.value) {
                     :info="remote"
                     :no-info-reason="jwtPayload ? 'noRemote' : 'noAccount'"
                 >
-                    <LongPressButton
+                    <LongPressButton #default
                         @long-press="downloadArchive(id)"
                         icon="cloud-arrow-down"
                         color="#000"
                         :duration=".5"
                     />
+                    <template #labels>
+                        <div>
+                            <fa-icon icon="cloud" />
+                        </div>
+                    </template>
                 </ArchiveInfo>
             </div>
         </div>
@@ -254,10 +259,12 @@ if (jwtPayload.value) {
 
 .archive-list-entry {
     display: flex;
+    flex-wrap: wrap;
 }
 
 .archive-info {
     flex: 1;
+    min-width: 250px;
     max-width: calc(50% - 3.2em);
     margin: 0 .8em 1.5em .8em;
 }
@@ -268,4 +275,3 @@ if (jwtPayload.value) {
     opacity: 0;
 }
 </style>
-../utils/notif

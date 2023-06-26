@@ -4,7 +4,6 @@ import { ref } from 'vue'
 import { ITest, ITestMode } from '../types'
 import { getStorage, setStorage } from '../utils/storage'
 import { sample } from '../utils'
-import dayjs from 'dayjs'
 
 export const useTest = defineStore('test', () => {
     const wordsStore = useWords()
