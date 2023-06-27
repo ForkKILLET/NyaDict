@@ -19,7 +19,7 @@ export const useTest = defineStore('test', () => {
         const testableWordIds = wordsStore.words
             .filter(word => {
                 const { testAfter } = word.mem
-                return ! testAfter || testAfter > now
+                return ! testAfter || testAfter < now
             })
             .map(word => word.id)
         const wordIds = sample(testableWordIds, size)
