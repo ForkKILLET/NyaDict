@@ -70,6 +70,7 @@ const dropLastTest = () => {
 const completeTest = () => {
     testCorrectCount.value = 0
     testWrongCount.value = 0
+	testHalfCorrectCount.value = 0
     for (const correct of test.value!.correctness) {
         if (correct === 0) testWrongCount.value ++
         else if (correct === 1) testCorrectCount.value ++
