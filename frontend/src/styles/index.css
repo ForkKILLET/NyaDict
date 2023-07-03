@@ -1,17 +1,18 @@
 :root {
     font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-    line-height: 1.5;
+    font-size: 20px;
     font-weight: 400;
-
-    color-scheme: light;
-    color: #213547;
-    background-color: #ffffff;
+    line-height: 1.5;
 
     font-synthesis: none;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     -webkit-text-size-adjust: 100%;
+
+    color-scheme: light;
+    color: #213547;
+    background-color: #ffffff;
 }
 
 * {
@@ -90,9 +91,10 @@ input.card[type=number] {
 }
 input.card {
     padding: .8em;
+    border-radius: .8em;
+
     color: #db8e30;
     background-color: #fffaf6;
-    border-radius: .8em;
     box-shadow: 0 0 .4em #faad704d;
     transition: .5s color, .5s background-color, .5s box-shadow;
 }

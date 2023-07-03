@@ -56,6 +56,7 @@ h2 {
 
 .panel:deep(> div > input) {
     flex: 1;
+    width: 0;
 }
 
 .panel:deep(> .item) {
