@@ -1,9 +1,9 @@
 .word-disp {
-    font-family: serif;
+    font-family: var(--ja-serif);
     margin-right: .5em;
 }
 
 .word-sub {
     color: #aaa;
-    font-family: serif;
+    font-family: var(--ja-serif);
 }

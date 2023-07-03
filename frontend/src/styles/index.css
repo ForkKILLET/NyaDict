@@ -13,6 +13,8 @@
     color-scheme: light;
     color: #213547;
     background-color: #ffffff;
+
+    --ja-serif: 'Noto Serif CJK JP', serif;
 }
 
 * {

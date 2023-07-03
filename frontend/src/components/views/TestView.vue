@@ -309,7 +309,7 @@ const nextWord = (correct: ICorrect) => {
 }
 
 .question {
-    font-family: serif;
+    font-family: var(--ja-serif);
     font-size: 3em;
 }
 
