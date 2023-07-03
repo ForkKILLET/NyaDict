@@ -56,6 +56,7 @@ const sortMethodInfo = {
     acc: '正確率',
     correctCount: 'パス数',
     wrongCount: 'ミス数',
+    halfCorrectCount: 'ハーフパス数',
     id: 'ID',
     yomikata: '読み方',
     testTime: 'テスト時間'
@@ -65,15 +66,16 @@ type SortDirection = 'up' | 'down'
 const sortMethod = storageRef<SortMethod>('wordsSortMethod', 'createTime')
 const sortDirection = storageRef<SortDirection>('wordsSortDirection', 'up')
 const sortFunction = computed(() => (a: IWord, b: IWord) => {
-    const { value: m } = sortMethod
+    const { value: method } = sortMethod
     const delta =
-        m === 'createTime' ? a.mem.createTime - b.mem.createTime :
-        m === 'acc' ? getCorrectness(a.mem) - getCorrectness(b.mem) :
-        m === 'correctCount' ? a.mem.correctNum - b.mem.correctNum :
-        m === 'wrongCount' ? a.mem.wrongNum - b.mem.wrongNum :
-        m === 'id' ? b.id - a.id :
-        m === 'yomikata' ? getYomikataIndex(b) - getYomikataIndex(a) :
-        m === 'testTime' ? getLastTestTime(a) - getLastTestTime(b) :
+        method === 'createTime' ? a.mem.createTime - b.mem.createTime :
+        method === 'acc' ? getCorrectness(a.mem) - getCorrectness(b.mem) :
+        method === 'correctCount' ? a.mem.correctCount - b.mem.correctCount :
+        method === 'wrongCount' ? a.mem.wrongCount - b.mem.wrongCount :
+        method === 'halfCorrectCount' ? a.mem.halfCorrectCount - b.mem.halfCorrectCount :
+        method === 'id' ? b.id - a.id :
+        method === 'yomikata' ? getYomikataIndex(b) - getYomikataIndex(a) :
+        method === 'testTime' ? getLastTestTime(a) - getLastTestTime(b) :
         0
     return sortDirection.value === 'up' ? - delta : + delta
 })

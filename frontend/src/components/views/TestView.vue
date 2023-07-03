@@ -11,6 +11,7 @@ import Correctness from '../Correctness.vue'
 import NyaDate from '../NyaDate.vue'
 import WordDetail from '../WordDetail.vue'
 import WordList from '../WordList.vue'
+import { add } from '../../utils/notif'
 
 const wordsStore = useWords()
 const testStore = useTest()
@@ -58,7 +59,16 @@ const ableToCreateTest = computed(() => (
 ))
 
 const createTest = () => {
-    if (! ableToCreateTest.value) return
+    if (! ableToCreateTest.value) {
+        add({
+            type: 'error',
+            content: ! testMode.value
+                ? 'テスト・モードを選んでください'
+                : '単語数を入力してください',
+            duration: 2 * 1000
+        })
+        return
+    }
     test.value = testStore.generateTest(testMode.value!, testSize.value)
 }
 
@@ -125,7 +135,7 @@ const nextWord = (correct: ICorrect) => {
                     v-model="testSize"
                     type="number" min="0" :max="wordsStore.words.length"
                     placeholder="単語数"
-                    class="card"
+                    class="w1 card"
                 />
                 <p>
                     <Card
@@ -215,7 +225,7 @@ const nextWord = (correct: ICorrect) => {
                     <Card
                         class="inline w3 button"
                         @click="answerShowed = true"
-                    >答えを見る</Card>
+                    >答案を見る</Card>
                 </p>
             </div>
             <div v-else class="test-area">

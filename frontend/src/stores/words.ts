@@ -90,8 +90,9 @@ export const useWords = defineStore('words', () => {
         if (! word) return false
 
         word.mem.testRec.push(rec)
-        if (rec.correct) word.mem.correctNum ++
-        else word.mem.wrongNum ++
+        if (rec.correct === 1) word.mem.correctCount ++
+        else if (rec.correct === 0) word.mem.wrongCount ++
+        else word.mem.halfCorrectCount ++
 
         // Note: SRS algorithm here
         word.mem.easiness = Math.max(Math.min(word.mem.easiness ?? 0 + (rec.correct - 0.6) * 0.5, 3), 0)
@@ -115,15 +116,16 @@ export const useWords = defineStore('words', () => {
 export const emptyMem = (): IMemory => ({
     easiness: 0,
     testAfter: 0,
-    correctNum: 0,
-    wrongNum: 0,
+    correctCount: 0,
+    wrongCount: 0,
+    halfCorrectCount: 0,
     createTime: Date.now(),
     testRec: []
 })
 
 export const getCorrectness = (mem: IMemory) => {
-    const total = mem.correctNum + mem.wrongNum
-    return total ? mem.correctNum / total : 0
+    const total = mem.correctCount + mem.wrongCount + mem.halfCorrectCount
+    return total ? 1 - mem.wrongCount / total : 0
 }
 
 export const getRomaji = (word: IWord) => {

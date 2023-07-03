@@ -61,10 +61,6 @@ h2::after {
     content: ' ♯';
 }
 
-#app {
-    max-width: 1280px;
-}
-
 input {
     border: none;
 }

@@ -74,3 +74,13 @@
 
     animation: barber .5s linear infinite;
 }
+
+.w1 {
+    width: 5em;
+}
+.w2 {
+    width: calc(5em * 2 + 1em);
+}
+.w3 {
+    width: calc(5em * 3 + 2em);
+}

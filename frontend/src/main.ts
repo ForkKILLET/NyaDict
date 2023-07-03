@@ -16,6 +16,7 @@ import {
     faForward, faPlus
 } from '@fortawesome/free-solid-svg-icons'
 
+import 'normalize.css'
 import './styles/index.css'
 import './styles/atom.css'
 import './styles/animation.css'

@@ -9,8 +9,9 @@ export type IWord = {
 export type IMemory = {
     easiness: number
     testAfter: number
-    correctNum: number
-    wrongNum: number
+    correctCount: number
+    wrongCount: number
+    halfCorrectCount: number
     createTime: number
     testRec: ITestRec[] 
 }

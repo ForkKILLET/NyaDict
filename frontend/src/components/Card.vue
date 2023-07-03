@@ -21,7 +21,7 @@
     color: #db8e30;
     transition: .5s color, .5s background-color, .5s box-shadow;
 }
-.card.button:hover, .card.button:active {
+.card.button:not(.disabled):hover, .card.button:not(.disabled):active {
     color: #f7b96e;
     background-color: #ffffff;
     box-shadow: 0 0 .4em #faae70ef;
@@ -36,9 +36,10 @@
     background-color: #db8e30;
 }
 
-.card.disabled {
+.card.disabled, .card.disabled:deep( *) {
     color: #aaa;
     text-decoration: line-through;
+    cursor: not-allowed;
 }
 
 .inline.card {
@@ -46,15 +47,5 @@
 }
 .inline.card:not(:last-of-type) {
     margin-right: 1em;
-}
-
-.card.w1 {
-    width: 5em;
-}
-.card.w2 {
-    width: calc(5em * 2 + 1em);
-}
-.card.w3 {
-    width: calc(5em * 3 + 2em);
 }
 </style>
