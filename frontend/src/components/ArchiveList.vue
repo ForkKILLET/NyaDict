@@ -136,6 +136,8 @@ const downloadArchive = async (id: string) => {
     })
     if (! resp) return
 
+    makeArchiveBlob(id)
+
     archiveInfo.value[resp.idPerUser] = {
         title: resp.title,
         size: resp.size,
