@@ -136,8 +136,6 @@ const downloadArchive = async (id: string) => {
     })
     if (! resp) return
 
-    makeArchiveBlob(id)
-
     archiveInfo.value[resp.idPerUser] = {
         title: resp.title,
         size: resp.size,
@@ -146,6 +144,9 @@ const downloadArchive = async (id: string) => {
     }
 
     localStorage.setItem('words:' + resp.idPerUser, resp.content)
+
+    makeArchiveBlob(id)
+
     if (archiveId.value === resp.idPerUser) wordsStore.load()
 }
 
