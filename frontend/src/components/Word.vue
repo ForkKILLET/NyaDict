@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { IWord } from '../types'
 
-import Card from './Card.vue'
 import WordMemBrief from './WordMemBrief.vue'
 
 defineProps<{
@@ -10,7 +9,7 @@ defineProps<{
 </script>
 
 <template>
-    <Card class="word">
+    <div class="word card">
         <div>
             <span class="word-disp">{{ word.disp }}</span>
             <span class="word-sub">{{ word.sub }}</span>
@@ -19,7 +18,7 @@ defineProps<{
             <WordMemBrief :mem="word.mem" />
             <slot></slot>
         </div>
-    </Card>
+    </div>
 </template>
 
 <style scoped>

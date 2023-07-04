@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import type { IArchiveInfo } from '../types'
-import Card from './Card.vue'
 import NyaDate from './NyaDate.vue'
 
 type INoInfoReason = 'noAccount' | 'noRemote' | 'noLocal'
@@ -35,8 +34,8 @@ const endEditing = () => {
 </script>
 
 <template>
-    <Card
-        class="archive-info"
+    <div
+        class="archive-info card"
         :class="{ barber: active, none: ! info }"
     >
         <template v-if="info">
@@ -91,7 +90,7 @@ const endEditing = () => {
         <div class="archive-labels">
             <slot name="labels"></slot>
         </div>
-    </Card>
+    </div>
 </template>
 
 <style scoped>

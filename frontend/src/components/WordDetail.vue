@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useWords } from '../stores/words'
+import { useWords } from '@store/words'
 import type { IWord } from '../types'
 import NyaDate from './NyaDate.vue'
 import LongPressButton from './LongPressButton.vue'

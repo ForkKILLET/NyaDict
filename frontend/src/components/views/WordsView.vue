@@ -3,7 +3,7 @@ import { computed, reactive, Ref, ref } from 'vue'
 import {
     emptyMem, getCorrectness, getYomikataIndex,
     getRomaji, getLastTestTime, useWords,
-} from '../../stores/words'
+} from '@store/words'
 import type { IWord } from '../../types'
 import WordEditor from '../WordEditor.vue'
 import WordList from '../WordList.vue'
@@ -57,7 +57,6 @@ const sortMethodInfo = {
     correctCount: 'パス数',
     wrongCount: 'ミス数',
     halfCorrectCount: 'ハーフパス数',
-    id: 'ID',
     yomikata: '読み方',
     testTime: 'テスト時間'
 }
@@ -73,7 +72,6 @@ const sortFunction = computed(() => (a: IWord, b: IWord) => {
         method === 'correctCount' ? a.mem.correctCount - b.mem.correctCount :
         method === 'wrongCount' ? a.mem.wrongCount - b.mem.wrongCount :
         method === 'halfCorrectCount' ? a.mem.halfCorrectCount - b.mem.halfCorrectCount :
-        method === 'id' ? b.id - a.id :
         method === 'yomikata' ? getYomikataIndex(b) - getYomikataIndex(a) :
         method === 'testTime' ? getLastTestTime(a) - getLastTestTime(b) :
         0
@@ -131,7 +129,7 @@ const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
             <WordList
                 :active-word-id="currentWord?.id"
                 :words="sortedWords"
-                @goto-word="word => currentWord = word"
+                @goto-word="(word: IWord) => currentWord = word"
             />
         </div>
         <WordDetail

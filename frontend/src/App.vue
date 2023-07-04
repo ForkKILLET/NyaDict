@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 
-import BackToHome from './components/BackToHome.vue'
-import Notifications from './components/notifications/Notifications.vue';
+import BackToHome from '@comp/BackToHome.vue'
+import Notifications from '@comp/notifications/Notifications.vue';
 
 const route = useRoute()
 </script>

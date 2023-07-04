@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import { computed, ref } from 'vue'
-import { useAuth } from '../stores/auth'
-import { useWords } from '../stores/words'
-import { IArchiveInfo, IWord } from '../types'
+import { useAuth } from '@store/auth'
+import { useWords } from '@store/words'
+import { IArchiveInfo, IWord } from '@type'
 import {
         IRemoteArchiveInfo, IArchiveGetMineResp, IArchiveUploadResp, IArchiveDownloadResp
 } from '../types/network'

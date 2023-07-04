@@ -2,7 +2,7 @@
 import * as notif from '../../utils/notif'
 
 import Noti from './Noti.vue'
-import ListTransitionGroup from '../transitions/ListTransitionGroup.vue'
+import ListTransitionGroup from '@comp/transitions/ListTransitionGroup.vue'
 </script>
 
 <template>

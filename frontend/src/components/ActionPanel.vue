@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import Card from './Card.vue'
-
 const props = defineProps<{
     title: string
     submit: () => void
@@ -14,20 +12,20 @@ const onSubmit = () => {
 </script>
 
 <template>
-    <div class="content">
-        <Card class="panel">
+    <div class="content card">
+        <div class="panel">
             <h2>{{ title }}</h2>
             <slot></slot>
             <div>
-                <Card @click="onSubmit" class="inline button up">
+                <button @click="onSubmit" class="card inline up">
                     <fa-icon
                         :icon="pending ? 'spinner' : 'arrow-right'"
                         :spin="pending"
                         class="button no-animation"
                     />
-                </Card>
+                </button>
             </div>
-        </Card>
+        </div>
     </div>
 </template>
 

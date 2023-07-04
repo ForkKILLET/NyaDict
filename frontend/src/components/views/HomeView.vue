@@ -13,7 +13,8 @@ import { version } from '../../../package.json'
         <p>
             <fa-icon icon="book" /> <RouterLink to="/words">単語</RouterLink> &middot;
             <fa-icon icon="vial" /> <RouterLink to="/test">テスト</RouterLink> &middot;
-            <fa-icon icon="rotate" /> <RouterLink to="/sync">同期</RouterLink>
+            <fa-icon icon="rotate" /> <RouterLink to="/sync">同期</RouterLink> &middot;
+            <fa-icon icon="chart-line" /> <RouterLink to="/statistics">統計</RouterLink>
         </p>
     </div>
 </template>

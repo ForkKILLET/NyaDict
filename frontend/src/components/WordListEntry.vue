@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useWords } from '../stores/words'
+import { useWords } from '@store/words'
 import type { IWord } from '../types'
 
 import Word from './Word.vue'

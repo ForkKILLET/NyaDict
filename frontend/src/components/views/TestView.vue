@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useWords } from '../../stores/words'
-import { useTest } from '../../stores/test'
+import { useWords } from '@store/words'
+import { useTest } from '@store/test'
 import { ITestMode, ITest, ICorrect, IWord } from '../../types'
 
-import Card from '../Card.vue'
 import Word from '../Word.vue'
 import Correctness from '../Correctness.vue'
 import NyaDate from '../NyaDate.vue'
@@ -122,13 +121,13 @@ const nextWord = (correct: ICorrect) => {
                 <h2>テスト設定</h2>
                 <p>どのテスト・モードにしますか？</p>
                 <p v-for="info, mode in testModeInfo">
-                    <Card
-                        class="inline button test-mode"
+                    <button
+                        class="inline button card test-mode"
                         :class="{ active: testMode === mode }"
                         @click="testMode = mode"
                     >
                         {{ info }}
-                    </Card>
+                    </button>
                 </p>
                 <p>いくつの単語にしますか？</p>
                 <input
@@ -138,13 +137,13 @@ const nextWord = (correct: ICorrect) => {
                     class="w1 card"
                 />
                 <p>
-                    <Card
-                        class="inline button"
+                    <button
+                        class="inline button card"
                         :class="{ disabled: ! ableToCreateTest }"
                         @click="createTest"
                     >
                         <fa-icon icon="arrow-right" class="button no-animation" />
-                    </Card>
+                    </button>
                 </p>
             </div>
             <div v-else>
@@ -159,14 +158,14 @@ const nextWord = (correct: ICorrect) => {
                     <span class="number">{{ currentTest.wordIds.length }}</span>
                 </p>
                 <p>
-                    <Card
-                        class="inline w1 button"
+                    <button
+                        class="inline w1 button card"
                         @click="useLastTest"
-                    >続く</Card>
-                    <Card
-                        class="inline w1 button"
+                    >続く</button>
+                    <button
+                        class="inline w1 button card"
                         @click="dropLastTest"
-                    >捨てる</Card>
+                    >捨てる</button>
                 </p>
             </div>
         </template>
@@ -177,10 +176,10 @@ const nextWord = (correct: ICorrect) => {
                 <em>{{ testModeInfo[testMode!] }}</em>による
             </p>
             <p>
-                <Card
-                    class="inline button"
+                <button
+                    class="inline button card"
                     @click="testConfirmed = true"
-                >スタート！</Card>
+                >スタート！</button>
             </p>
         </div>
         <template v-else>
@@ -191,7 +190,7 @@ const nextWord = (correct: ICorrect) => {
                 ></div>
             </div>
             <div v-if="test.completed" class="completed-area">
-                <h2>テスト　クリヤー！</h2>
+                <h2>テスト・クリヤー！</h2>
                 <p>
                     <Correctness
                         :correct="testCorrectCount"
@@ -202,18 +201,18 @@ const nextWord = (correct: ICorrect) => {
                     />
                 </p>
                 <p>
-                    <Card
-                        class="inline w2 button"
+                    <button
+                        class="inline w2 button card"
                         @click="showMiss"
                     >
                         今度の間違い
-                    </Card>
-                    <Card
-                        class="inline w1 button"
+                    </button>
+                    <button
+                        class="inline w1 button card"
                         @click="disposeTest"
                     >
                         <fa-icon icon="arrow-right" class="button no-animation" />
-                    </Card>
+                    </button>
                 </p>
                 <WordList v-if="missWords" :words="missWords" />
             </div>
@@ -222,10 +221,10 @@ const nextWord = (correct: ICorrect) => {
                     <span class="question">{{ currentWord![testMode!] }}</span>
                 </div>
                 <p>
-                    <Card
-                        class="inline w3 button"
+                    <button
+                        class="inline w3 button card"
                         @click="answerShowed = true"
-                    >答案を見る</Card>
+                    >答案を見る</button>
                 </p>
             </div>
             <div v-else class="test-area">
@@ -239,24 +238,24 @@ const nextWord = (correct: ICorrect) => {
                     </Word>
                 </div>
                 <p>
-                    <Card
-                        class="inline w1 button"
+                    <button
+                        class="inline w1 button card"
                         @click="nextWord(1)"
                     >
                         <fa-icon icon="check-circle" class="correct" />
-                    </Card>
-                    <Card
-                        class="inline w1 button"
+                    </button>
+                    <button
+                        class="inline w1 button card"
                         @click="nextWord(0.5)"
                     >
                         <fa-icon icon="circle-question" />
-                    </Card>
-                    <Card
-                        class="inline w1 button"
+                    </button>
+                    <button
+                        class="inline w1 button card"
                         @click="nextWord(0)"
                     >
                         <fa-icon icon="times-circle" class="wrong" />
-                    </Card>
+                    </button>
                 </p>
                 <WordDetail v-if="showDetail" :word="currentWord!" />
             </div>

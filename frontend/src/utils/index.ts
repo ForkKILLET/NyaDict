@@ -35,6 +35,22 @@ export const sample = <T>(items: T[], size: number) => {
     return items.slice(0, size)
 }
 
+export type Grade = 'top' | 'high' | 'medium' | 'low' | 'none'
+export const gradeColors: Record<Grade, string> = {
+    top: '#39d353',
+    high: '#26a641',
+    medium: '#006d32',
+    low: '#0e4429',
+    none: '#eee'
+}  
+export const gradeBy = (x: number, base: number): Grade => {
+    if (x >= base * .9) return 'top'
+    if (x >= base * .5) return 'high'
+    if (x >= base * .1) return 'medium'
+    if (x >= 0) return 'low'
+    return 'none'
+}
+
 export const downloadURL = (url: string, filename: string) => {
     const anchor = document.createElement('a')
     anchor.href = url

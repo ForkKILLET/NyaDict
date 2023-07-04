@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuth } from '../../stores/auth'
+import { useAuth } from '@store/auth'
 import { ISignUpResp } from '../../types/network'
 import { api } from '../../utils/api'
 import { handleResp } from '../../utils/notif'

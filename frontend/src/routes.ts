@@ -1,13 +1,14 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 
-import HomeView from './components/views/HomeView.vue'
-import WordsView from './components/views/WordsView.vue'
-import TestView from './components/views/TestView.vue'
-import SyncView from './components/views/SyncView.vue'
-import SignInView from './components/views/SignInView.vue'
-import SignUpView from './components/views/SignUpView.vue'
-import DebugView from './components/views/DebugView.vue'
+import HomeView from '@comp/views/HomeView.vue'
+import WordsView from '@comp/views/WordsView.vue'
+import TestView from '@comp/views/TestView.vue'
+import SyncView from '@comp/views/SyncView.vue'
+import SignInView from '@comp/views/SignInView.vue'
+import SignUpView from '@comp/views/SignUpView.vue'
+import StatisticsView from '@comp/views/StatisticsView.vue'
+import DebugView from '@comp/views/DebugView.vue'
 
 export const routes = [
     {
@@ -33,6 +34,10 @@ export const routes = [
     {
         path: '/sync/sign-up',
         component: SignUpView
+    },
+    {
+        path: '/statistics',
+        component: StatisticsView
     },
     {
         path: '/debug',

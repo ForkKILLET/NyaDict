@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useWords } from '../../stores/words'
+import { useWords } from '@store/words'
 import { tryJSON } from '../../utils'
-import Card from '../Card.vue'
 
 const wordsStore = useWords()
 const json = ref<string>(JSON.stringify(wordsStore.words, null, 2))
@@ -22,7 +21,7 @@ const saveWords = () => {
         <textarea v-model="json" spellcheck="false"></textarea>
         <br />
         <br />
-        <Card class="inline button" @click="saveWords">Archive words</Card>
+        <button class="inline button card" @click="saveWords">保存</button>
     </div>
 </template>
 

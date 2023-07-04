@@ -42,7 +42,7 @@ const {
                 :display-page-count="6"
                 :prev="prev"
                 :next="next"
-                :goto="id => page = id"
+                :goto="(id: number) => page = id"
                 :is-first-page="isFirstPage"
                 :is-last-page="isLastPage"
             />
@@ -53,7 +53,7 @@ const {
                     :key="word.id"
                     :word="word"
                     :active="activeWordId === word.id"
-                    @goto-word="word => emit('goto-word', word)"
+                    @goto-word="(word: IWord) => emit('goto-word', word)"
                 />
             </p>
         </div>

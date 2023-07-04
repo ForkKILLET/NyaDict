@@ -2,7 +2,6 @@
 import { ref, watch } from 'vue'
 import type { IWord } from '../types'
 
-import Card from './Card.vue'
 
 const props = defineProps<{
     word?: IWord
@@ -37,7 +36,7 @@ const onChange = () => {
 </script>
 
 <template>
-    <Card>
+    <div class="card">
         <span class="word-disp"><input v-model="disp" /></span>
         <span class="word-sub"><input v-model="sub" @keydown.enter="onChange" /></span>
         <fa-icon
@@ -50,7 +49,7 @@ const onChange = () => {
             class="button"
             icon="circle-check"
         />
-    </Card>
+    </div>
 </template>
 
 <style scoped>

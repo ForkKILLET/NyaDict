@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { useAuth } from '../stores/auth'
+import { useAuth } from '@store/auth'
 import { add as addNoti } from '../utils/notif';
-import Card from './Card.vue'
 
 const authStore = useAuth()
 const { jwtPayload } = storeToRefs(authStore)
@@ -18,7 +17,7 @@ const signOut = () => {
 </script>
 
 <template>
-    <Card class="auth-state">
+    <div class="auth-state card">
         <template v-if="jwtPayload">
             <fa-icon icon="user-circle" />
             <span class="username">{{ jwtPayload.name }}</span> さん &middot;
@@ -38,7 +37,7 @@ const signOut = () => {
                 登録
             </RouterLink>
         </template>
-    </Card>
+    </div>
 </template>
 
 <style scoped>
