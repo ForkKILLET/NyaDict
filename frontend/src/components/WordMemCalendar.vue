@@ -84,5 +84,7 @@ const data = computed(() => {
 </template>
 
 <style scoped>
-
+.calendar-modes {
+    white-space: nowrap;
+}
 </style>
