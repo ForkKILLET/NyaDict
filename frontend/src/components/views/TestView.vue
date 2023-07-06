@@ -199,7 +199,8 @@ const nextWord = (correct: ICorrect) => {
                         :half-correct="testHalfCorrectCount"
                         :wrong="testWrongCount"
                         :show-acc="true"
-                        :show-half-correct="true"
+                        :show-count="true"
+                        :show-ring="true"
                     />
                 </p>
                 <p>
@@ -316,7 +317,7 @@ const nextWord = (correct: ICorrect) => {
     background-color: #8358f9;
 }
 
-.word {
+:deep(.word-disp), :deep(.word-sub) {
     font-size: 1.3em;
 }
 

@@ -66,8 +66,9 @@ const data = computed(() => {
         <WordMemBrief
             :mem="mem"
             :show-acc="true"
-            :show-half-correct="true"
             :mem-mode="calendarMode"
+            :show-count="true"
+            :show-ring="true"
         />
         <Calendar
             :start-day="startDate.day()"

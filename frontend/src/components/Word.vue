@@ -15,7 +15,11 @@ defineProps<{
             <span class="word-sub">{{ word.sub }}</span>
         </div>
         <div class="word-info">
-            <WordMemBrief :mem="word.mem" />
+            <WordMemBrief
+                :mem="word.mem"
+                :show-count="false"
+                :show-ring="true"
+            />
             <slot></slot>
         </div>
     </div>
@@ -27,7 +31,8 @@ defineProps<{
     justify-content: space-between;
 }
 
-.word-info {
+.word-info:deep(> *) {
     white-space: nowrap;
+    vertical-align: baseline;
 }
 </style>

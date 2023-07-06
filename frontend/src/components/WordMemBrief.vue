@@ -7,7 +7,8 @@ const props = withDefaults(defineProps<{
     mem: IMemory
     memMode?: IMemMode
     showAcc?: boolean
-    showHalfCorrect?: boolean
+    showCount: boolean
+    showRing: boolean
 }>(), {
     memMode: 'both'
 })
@@ -39,6 +40,7 @@ const correctWrong = computed<{
         :half-correct="correctWrong.halfCorrect"
         :wrong="correctWrong.wrong"
         :show-acc="showAcc"
-        :show-half-correct="showHalfCorrect"
+        :show-count="showCount"
+        :show-ring="showRing"
     />
 </template>
