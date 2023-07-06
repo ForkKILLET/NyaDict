@@ -70,7 +70,7 @@ const data = {
                             <NyaDate :date="value.date" />
                             に単語を
                             <span class="number">{{ value.num ?? 0 }}</span>
-                            個作成した
+                            個作成しました
                         </div>
                     </template>
                 </Calendar>

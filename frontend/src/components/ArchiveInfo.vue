@@ -156,7 +156,7 @@ input.archive-info-title {
     margin-top: -2px;
 }
 
-.archive-info-action:deep(> .button) {
+.archive-info-action:deep(> svg.button) {
     padding-top: .4rem;
     padding-bottom: .4rem;
 }

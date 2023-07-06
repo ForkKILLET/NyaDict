@@ -119,26 +119,26 @@ const nextWord = (correct: ICorrect) => {
         <template v-if="! test">
             <div v-if="! currentTest">
                 <h2>テスト設定</h2>
-                <p>どのテスト・モードにしますか？</p>
+                <p>どのテスト・モードにしますか。</p>
                 <p v-for="info, mode in testModeInfo">
                     <button
-                        class="inline button card test-mode"
+                        class="inline card test-mode"
                         :class="{ active: testMode === mode }"
                         @click="testMode = mode"
                     >
                         {{ info }}
                     </button>
                 </p>
-                <p>いくつの単語にしますか？</p>
+                <p>いくつの単語にしますか。</p>
                 <input
                     v-model="testSize"
                     type="number" min="0" :max="wordsStore.words.length"
                     placeholder="単語数"
-                    class="w1 card"
+                    class="w1 card center"
                 />
                 <p>
                     <button
-                        class="inline button card"
+                        class="inline card"
                         :class="{ disabled: ! ableToCreateTest }"
                         @click="createTest"
                     >
@@ -159,11 +159,11 @@ const nextWord = (correct: ICorrect) => {
                 </p>
                 <p>
                     <button
-                        class="inline w1 button card"
+                        class="inline w1 card"
                         @click="useLastTest"
                     >続く</button>
                     <button
-                        class="inline w1 button card"
+                        class="inline w1 card"
                         @click="dropLastTest"
                     >捨てる</button>
                 </p>
@@ -177,7 +177,7 @@ const nextWord = (correct: ICorrect) => {
             </p>
             <p>
                 <button
-                    class="inline button card"
+                    class="inline card"
                     @click="testConfirmed = true"
                 >スタート！</button>
             </p>
@@ -204,13 +204,13 @@ const nextWord = (correct: ICorrect) => {
                 </p>
                 <p>
                     <button
-                        class="inline w2 button card"
+                        class="inline w2 card"
                         @click="showMiss"
                     >
                         今度の間違い
                     </button>
                     <button
-                        class="inline w1 button card"
+                        class="inline w1 card"
                         @click="disposeTest"
                     >
                         <fa-icon icon="arrow-right" class="button no-animation" />
@@ -224,7 +224,7 @@ const nextWord = (correct: ICorrect) => {
                 </div>
                 <p>
                     <button
-                        class="inline w3 button card"
+                        class="inline w3 card"
                         @click="answerShowed = true"
                     >答案を見る</button>
                 </p>
@@ -241,19 +241,19 @@ const nextWord = (correct: ICorrect) => {
                 </div>
                 <p class="choose-correctness">
                     <button
-                        class="inline w1 button card"
+                        class="inline w1 card"
                         @click="nextWord(1)"
                     >
                         <fa-icon icon="check-circle" class="correct" />
                     </button>
                     <button
-                        class="inline w1 button card"
+                        class="inline w1 card"
                         @click="nextWord(0.5)"
                     >
                         <fa-icon icon="circle-question" />
                     </button>
                     <button
-                        class="inline w1 button card"
+                        class="inline w1 card"
                         @click="nextWord(0)"
                     >
                         <fa-icon icon="times-circle" class="wrong" />

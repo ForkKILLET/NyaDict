@@ -21,7 +21,7 @@ const saveWords = () => {
         <textarea v-model="json" spellcheck="false"></textarea>
         <br />
         <br />
-        <button class="inline button card" @click="saveWords">保存</button>
+        <button class="inline card" @click="saveWords">保存</button>
     </div>
 </template>
 

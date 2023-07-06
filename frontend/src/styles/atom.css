@@ -84,3 +84,7 @@
 .w3 {
     width: calc(5em * 3 + 2em);
 }
+
+.center {
+    text-align: center;
+}
