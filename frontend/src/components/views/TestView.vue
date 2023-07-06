@@ -183,6 +183,8 @@ const nextWord = (correct: ICorrect) => {
             </p>
         </div>
         <template v-else>
+            <span class="test-progress-text">
+                <span>{{ test.currentIndex }}</span> / <span>{{ testSize }}</span></span>
             <div class="test-progress">
                 <div
                     class="test-progress-inner"
@@ -237,7 +239,7 @@ const nextWord = (correct: ICorrect) => {
                         />
                     </Word>
                 </div>
-                <p>
+                <p class="choose-correctness">
                     <button
                         class="inline w1 button card"
                         @click="nextWord(1)"
@@ -271,7 +273,8 @@ const nextWord = (correct: ICorrect) => {
 
 .test-area {
     height: 100%;
-    padding: 1em 0;
+    margin: 0 -1em;
+    padding: 1em;
     overflow-y: auto;
     scrollbar-width: none;
 }
@@ -298,6 +301,16 @@ const nextWord = (correct: ICorrect) => {
     background-color: #eee;
 }
 
+.test-progress-text {
+    position: fixed;
+    bottom: 10px;
+    left: 50vw;
+    transform: translateX(-50%);
+}
+.test-progress-text > span {
+    color: #8358f9;
+}
+
 .test-progress-inner {
     height: 10px;
     background-color: #8358f9;
@@ -310,6 +323,10 @@ const nextWord = (correct: ICorrect) => {
 .question {
     font-family: var(--ja-serif);
     font-size: 3em;
+}
+
+.choose-correctness {
+    white-space: nowrap;
 }
 
 .word-detail {
