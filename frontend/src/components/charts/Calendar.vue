@@ -27,7 +27,9 @@ const currentValue = ref<T | undefined>()
                 :class="{ current: index === currentIndex }"
             ></div>
         </div>
-        <slot name="current" :value="currentValue"></slot>
+        <div class="current-message">
+            <slot name="current" :value="currentValue"></slot>
+        </div>
     </div>
 </template>
 
@@ -51,5 +53,8 @@ const currentValue = ref<T | undefined>()
 }
 .calendar-day.current {
     outline: 2px solid #db8e3090;
+}
+.current-message {
+    font-size: small;
 }
 </style>

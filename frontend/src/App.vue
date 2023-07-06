@@ -11,6 +11,10 @@ const route = useRoute()
     <BackToHome v-if="route.path !== '/'" />
     <Notifications />
     <main>
-        <RouterView />
+        <RouterView v-slot="{ Component }">
+            <KeepAlive>
+                <component :is="Component" />
+            </KeepAlive>
+        </RouterView>
     </main>
 </template>

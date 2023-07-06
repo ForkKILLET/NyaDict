@@ -69,7 +69,7 @@ const data = {
                         <div v-if="value">
                             <NyaDate :date="value.date" />
                             に単語を
-                            <span class="number">{{ value.num }}</span>
+                            <span class="number">{{ value.num ?? 0 }}</span>
                             個作成した
                         </div>
                     </template>
@@ -89,10 +89,12 @@ const data = {
 .statistics-item {
     flex: 1;
     margin: 0 .5em;
+    min-width: 250px;
     max-width: calc(50% - 1em);
 }
 
-.calendar:deep( .calendar-inner) {
+
+.calendar:deep(> .calendar-inner) {
     max-width: 50em;
     overflow-x: auto;
 }
