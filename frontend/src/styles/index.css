@@ -17,6 +17,12 @@
     --ja-serif: 'Noto Serif CJK JP', serif;
 }
 
+@media screen and (orientation: portrait) and (max-device-width: 600px) {
+	:root {
+		font-size: 16px;
+	}
+}
+
 * {
     outline: none;
     border: none;
