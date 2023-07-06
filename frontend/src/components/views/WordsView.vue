@@ -121,8 +121,13 @@ const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
                             />
                         </span>
                     </div>
-                    <div v-else-if="toolbarMode === 'filter'">
+                    <div v-else-if="toolbarMode === 'filter'" class="filter">
                         <input v-model="searchText" class="card up search" />
+                        <fa-icon
+                            @click="searchText = ''"
+                            icon="times-circle"
+                            class="button"
+                        />
                     </div>
                 </div>
             </div>
@@ -185,5 +190,14 @@ input.search {
     font-family: serif;
     font-size: 1rem;
     padding: .2em .5em;
+}
+
+.filter {
+    display: flex;
+    align-items: center;
+}
+
+.filter > input {
+    font-family: var(--ja-serif);
 }
 </style>
