@@ -33,11 +33,11 @@ const onCancel = () => {
 }
 
 const onChange = () => {
-    clearInput()
     emit('change', {
         disp: disp.value,
         sub: sub.value
     })
+    clearInput()
 }
 
 const onCompositionUpdate = (event: CompositionEvent) => {
