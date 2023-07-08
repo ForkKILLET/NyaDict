@@ -274,7 +274,7 @@ const nextWord = (correct: ICorrect) => {
 
 .test-area {
     height: 100%;
-    margin: 0 -1em;
+    margin: 1.5rem -1em 0 -1em;
     padding: 1em;
     overflow-y: auto;
     scrollbar-width: none;
@@ -295,7 +295,7 @@ const nextWord = (correct: ICorrect) => {
 
 .test-progress {
     position: fixed;
-    bottom: 0;
+    top: 3rem;
     left: 0;
     width: 100vw;
     height: 10px;
@@ -304,7 +304,7 @@ const nextWord = (correct: ICorrect) => {
 
 .test-progress-text {
     position: fixed;
-    bottom: 10px;
+    top: calc(3rem + 10px);
     left: 50vw;
     transform: translateX(-50%);
 }
