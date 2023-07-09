@@ -73,7 +73,7 @@ const perimeter = 2 * Math.PI * radius
                 }}
             </span>
             <span v-if="showEasiness">
-                EZ[<span class="number">{{ (easiness ?? 0).toFixed(1) }}</span>]
+                EZ[<span class="number">{{ (easiness ?? 0).toFixed(2) }}</span>]
             </span>
         </span>
     </div>

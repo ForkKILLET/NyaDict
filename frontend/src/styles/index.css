@@ -82,14 +82,18 @@ svg.button {
     cursor: pointer;
     transition: .3s color;
 }
-svg.button:not(.no-animation) {
+svg.button:not(.no-animation, .disabled) {
     animation: .3s hop;
 }
-svg.button:hover {
+svg.button:not(.disabled):hover {
     color: #f4a23e;
 }
 svg.button:active {
     animation: none;
+}
+svg.button.disabled {
+    color: #aaa;
+    cursor: unset;
 }
 
 input.card[type=number]::-webkit-inner-spin-button, 

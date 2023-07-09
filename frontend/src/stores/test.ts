@@ -29,6 +29,7 @@ export const useTest = defineStore('test', () => {
             accessTime: Date.now(),
             mode,
             wordIds,
+            maxIndex: 0,
             currentIndex: 0,
             correctness: [],
             completed: false

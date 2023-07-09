@@ -22,6 +22,7 @@ export type ITestRec = {
     time: number
     correct: ICorrect
     mode: ITestMode
+    oldEasiness: number
 }
 
 export type ITestMode = 'disp' | 'sub'
@@ -32,6 +33,7 @@ export type ITest = {
     mode: ITestMode
     wordIds: number[]
     currentIndex: number
+    maxIndex: number
     correctness: ICorrect[]
     completed: boolean
 }

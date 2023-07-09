@@ -85,11 +85,11 @@ export const useWords = defineStore('words', () => {
         return words.value.find(word => word.id === id)
     }
 
-    const addTestRec = (id: number, rec: ITestRec) => {
-        const word = getById(id)
-        if (! word) return false
-
-        word.mem.testRec.push(rec)
+    const pushTestRec = (word: IWord, rec: Omit<ITestRec, 'oldEasiness'>) => {
+        word.mem.testRec.push({
+            ...rec,
+            oldEasiness: word.mem.easiness
+        })
         if (rec.correct === 1) word.mem.correctCount ++
         else if (rec.correct === 0) word.mem.wrongCount ++
         else word.mem.halfCorrectCount ++
@@ -100,7 +100,13 @@ export const useWords = defineStore('words', () => {
         word.mem.testAfter = Date.now() + interval * 24 * 3600 * 1000 
 
         save()
-        return true
+    }
+
+    const popTestRec = (word: IWord): ITestRec | undefined => {
+        const rec = word.mem.testRec.pop()
+
+        save()
+        return rec
     }
 
     const randomWord = () => randomItem(words.value)
@@ -109,7 +115,7 @@ export const useWords = defineStore('words', () => {
         words, archiveId, archiveInfo,
         updateMaxId, save, load,
         add, modify, withdraw, merge,
-        getById, addTestRec, randomWord
+        getById, pushTestRec, popTestRec, randomWord
     }
 })
 

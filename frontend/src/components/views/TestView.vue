@@ -14,7 +14,7 @@ import WordList from '@comp/WordList.vue'
 
 const wordsStore = useWords()
 const testStore = useTest()
-const { currentTest } = storeToRefs(testStore)
+const { currentTest: existingTest } = storeToRefs(testStore)
 
 const testModeInfo: Record<ITestMode, string> = {
     disp: '書き方',
@@ -23,10 +23,10 @@ const testModeInfo: Record<ITestMode, string> = {
 const testMode = ref<ITestMode | null>(null)
 const testSize = ref(20)
 
-const test = ref<ITest>()
+const currentTest = ref<ITest>()
 const testConfirmed = ref(false)
 
-const answerShowed = ref(false)
+const showAnswer = ref(false)
 const showDetail = ref(false)
 
 const testCorrectCount = ref(0)
@@ -36,21 +36,23 @@ const testWrongCount = ref(0)
 const missWords = ref<IWord[]>()
 
 const showMiss = () => {
-    missWords.value ??= test.value!.wordIds
-        .filter((_, index) => test.value!.correctness[index] !== 1)
+    const test = currentTest.value!
+    missWords.value ??= test.wordIds
+        .filter((_, index) => test.correctness[index] !== 1)
         .map(id => wordsStore.getById(id)!)
 }
 
 const currentWord = computed(() => wordsStore.getById(
-    test.value?.wordIds[test.value.currentIndex]
+    currentTest.value?.wordIds[currentTest.value.currentIndex]
 ))
 
-const useLastTest = () => {
-    testMode.value = currentTest.value!.mode
-    testSize.value = currentTest.value!.wordIds.length
-    test.value = currentTest.value!
+const useExistingTest = () => {
+    const test = existingTest.value!
+    currentTest.value = test
+    testMode.value = test.mode
+    testSize.value = test.wordIds.length
     testConfirmed.value = true
-    if (test.value.completed) completeTest()
+    if (currentTest.value.completed) completeTest()
 }
 
 const ableToCreateTest = computed(() => (
@@ -68,7 +70,7 @@ const createTest = () => {
         })
         return
     }
-    test.value = testStore.generateTest(testMode.value!, testSize.value)
+    currentTest.value = testStore.generateTest(testMode.value!, testSize.value)
 }
 
 const dropLastTest = () => {
@@ -80,7 +82,9 @@ const completeTest = () => {
     testCorrectCount.value = 0
     testWrongCount.value = 0
 	testHalfCorrectCount.value = 0
-    for (const correct of test.value!.correctness) {
+
+    const { correctness } = currentTest.value!
+    for (const correct of correctness) {
         if (correct === 0) testWrongCount.value ++
         else if (correct === 1) testCorrectCount.value ++
         else testHalfCorrectCount.value ++
@@ -89,35 +93,56 @@ const completeTest = () => {
 
 const disposeTest = () => {
     dropLastTest()
-    test.value = undefined
+    currentTest.value = undefined
     testMode.value = null
 }
 
 const nextWord = (correct: ICorrect) => {
     if (showDetail.value) showDetail.value = false
-    answerShowed.value = false
+    showAnswer.value = false
 
-    wordsStore.addTestRec(currentWord.value!.id, {
+    const word = currentWord.value!
+    const test = currentTest.value!
+
+    if (test.currentIndex < test.maxIndex) {
+        const { oldEasiness } = wordsStore.popTestRec(word)!
+        word.mem.easiness = oldEasiness
+    }
+    else {
+        test.maxIndex ++
+    }
+
+    wordsStore.pushTestRec(word, {
         time: Date.now(),
         correct,
         mode: testMode.value!
     })
-    test.value!.correctness.push(correct)
+    test.correctness.push(correct)
 
-    if (++ test.value!.currentIndex === testSize.value) {
-        test.value!.completed = true
+    if (++ test.currentIndex === testSize.value) {
+        test.completed = true
         testStore.save()
         completeTest()
     }
 
     testStore.save()
 }
+
+const navigateTestedWord = (delta: number) => {
+    const test = currentTest.value!
+    const nextIndex = test.currentIndex + delta
+    if (nextIndex < 0 || nextIndex > test.maxIndex) return
+    test.currentIndex = nextIndex
+    testStore.save()
+
+    showAnswer.value = false
+}
 </script>
 
 <template>
     <div class="content">
-        <template v-if="! test">
-            <div v-if="! currentTest">
+        <template v-if="! currentTest">
+            <div v-if="! existingTest">
                 <h2>テスト設定</h2>
                 <p>どのテスト・モードにしますか。</p>
                 <p v-for="info, mode in testModeInfo">
@@ -149,18 +174,18 @@ const nextWord = (correct: ICorrect) => {
             <div v-else>
                 <h2>終わらないテストがあります</h2>
                 <p>
-                    <NyaDate :date="currentTest.createTime" /> に作成 ・
-                    <NyaDate :date="currentTest.accessTime" /> にアクセス
+                    <NyaDate :date="existingTest.createTime" /> に作成 ・
+                    <NyaDate :date="existingTest.accessTime" /> にアクセス
                 </p>
                 <p>
                     プログレス
-                    <span class="number">{{ currentTest.currentIndex }}</span> /
-                    <span class="number">{{ currentTest.wordIds.length }}</span>
+                    <span class="test-progress-number">{{ existingTest.currentIndex }}</span> /
+                    <span class="test-progress-number">{{ existingTest.wordIds.length }}</span>
                 </p>
                 <p>
                     <button
                         class="inline w1 card"
-                        @click="useLastTest"
+                        @click="useExistingTest"
                     >続く</button>
                     <button
                         class="inline w1 card"
@@ -183,15 +208,29 @@ const nextWord = (correct: ICorrect) => {
             </p>
         </div>
         <template v-else>
-            <span class="test-progress-text">
-                <span>{{ test.currentIndex }}</span> / <span>{{ testSize }}</span></span>
+            <span class="test-progress-message">
+                <fa-icon
+                    @click="navigateTestedWord(- 1)"
+                    icon="circle-arrow-left"
+                    class="button"
+                    :class="{ disabled: currentTest.currentIndex === 0 }"
+                />
+                <span class="test-progress-number">{{ currentTest.currentIndex }}</span> /
+                <span class="test-progress-number">{{ testSize }}</span>
+                <fa-icon
+                    @click="navigateTestedWord(+ 1)"
+                    icon="circle-arrow-right"
+                    class="button"
+                    :class="{ disabled: currentTest.currentIndex >= currentTest.maxIndex }"
+                />
+            </span>
             <div class="test-progress">
                 <div
                     class="test-progress-inner"
-                    :style="{ width: (100 / testSize! * test.currentIndex) + 'vw' }"
+                    :style="{ width: (100 / testSize! * currentTest.currentIndex) + 'vw' }"
                 ></div>
             </div>
-            <div v-if="test.completed" class="completed-area">
+            <div v-if="currentTest.completed" class="completed-area">
                 <h2>テスト・クリヤー！</h2>
                 <p>
                     <Correctness
@@ -219,14 +258,14 @@ const nextWord = (correct: ICorrect) => {
                 </p>
                 <WordList v-if="missWords" :words="missWords" />
             </div>
-            <div v-else-if="! answerShowed" class="test-area">
+            <div v-else-if="! showAnswer" class="test-area">
                 <div>
                     <span class="question">{{ currentWord![testMode!] }}</span>
                 </div>
                 <p>
                     <button
                         class="inline w3 card"
-                        @click="answerShowed = true"
+                        @click="showAnswer = true"
                     >答案を見る</button>
                 </p>
             </div>
@@ -302,13 +341,13 @@ const nextWord = (correct: ICorrect) => {
     background-color: #eee;
 }
 
-.test-progress-text {
+.test-progress-message {
     position: fixed;
     top: calc(3rem + 10px);
     left: 50vw;
     transform: translateX(-50%);
 }
-.test-progress-text > span {
+.test-progress-number {
     color: #8358f9;
 }
 
