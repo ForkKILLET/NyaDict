@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 
-const router = useRouter()
+const route = useRoute()
 </script>
 
 <template>
     <div class="back-to-home">
-        <a href="javascript:void 0;" @click="router.push('..')">
+        <RouterLink :to="route.path.replace(/\/[^/]+$/, '') || '/'">
             <fa-icon icon="arrow-left" /> 戻る
-        </a>
+        </RouterLink>
     </div>
 </template>
 
