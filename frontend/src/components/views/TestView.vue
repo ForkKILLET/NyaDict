@@ -74,7 +74,7 @@ const createTest = () => {
 }
 
 const dropLastTest = () => {
-    currentTest.value = undefined
+    existingTest.value = undefined
     testStore.save()
 }
 
@@ -117,7 +117,7 @@ const nextWord = (correct: ICorrect) => {
         correct,
         mode: testMode.value!
     })
-    test.correctness.push(correct)
+    test.correctness[test.currentIndex] = correct
 
     if (++ test.currentIndex === testSize.value) {
         test.completed = true
