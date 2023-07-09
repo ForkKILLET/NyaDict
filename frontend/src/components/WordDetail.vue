@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { useWords } from '@store/words'
-import type { IWord } from '../types'
-import NyaDate from './NyaDate.vue'
-import LongPressButton from './LongPressButton.vue'
-import WordMemCalendar from './WordMemCalendar.vue'
+import type { IWord } from '@type'
+import NyaDate from '@comp/NyaDate.vue'
+import LongPressButton from '@comp/LongPressButton.vue'
+import WordMemCalendar from '@comp/WordMemCalendar.vue'
 
 const wordsStore = useWords()
 

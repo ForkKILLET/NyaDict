@@ -10,7 +10,8 @@ export default defineConfig({
             '@comp': '/src/components/',
             '@type': '/src/types/',
             '@store': '/src/stores/',
-            '@util': '/src/utils/'
+            '@util': '/src/utils/',
+            '@style': '/src/styles/'
         }
     }
 })

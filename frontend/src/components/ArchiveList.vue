@@ -3,15 +3,16 @@ import { storeToRefs } from 'pinia'
 import { computed, ref } from 'vue'
 import { useAuth } from '@store/auth'
 import { useWords } from '@store/words'
-import { IArchiveInfo, IWord } from '@type'
-import {
+import { downloadURL, tryJSON } from '@util'
+import { api } from '@util/api'
+import { handleResp } from '@util/notif'
+import type { IArchiveInfo, IWord } from '@type'
+import type {
         IRemoteArchiveInfo, IArchiveGetMineResp, IArchiveUploadResp, IArchiveDownloadResp
-} from '../types/network'
-import { downloadURL, tryJSON } from '../utils'
-import { api } from '../utils/api'
-import { handleResp } from '../utils/notif'
-import ArchiveInfo from './ArchiveInfo.vue'
-import LongPressButton from './LongPressButton.vue'
+} from '@type/network'
+
+import ArchiveInfo from '@comp/ArchiveInfo.vue'
+import LongPressButton from '@comp/LongPressButton.vue'
 
 const wordsStore = useWords()
 const { jwtPayload, axiosHeader } = storeToRefs(useAuth())

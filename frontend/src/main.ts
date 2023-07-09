@@ -17,11 +17,11 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 
 import 'normalize.css'
-import './styles/index.css'
-import './styles/atom.css'
-import './styles/animation.css'
-import './styles/word.css'
-import './styles/card.css'
+import '@style/index.css'
+import '@style/atom.css'
+import '@style/animation.css'
+import '@style/word.css'
+import '@style/card.css'
 
 library.add(...[
     faCirclePlus, faArrowCircleRight, faCheckCircle, faTimesCircle,

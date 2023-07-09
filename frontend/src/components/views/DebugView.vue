@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useWords } from '@store/words'
-import { tryJSON } from '../../utils'
+import { tryJSON } from '@util'
 
 const wordsStore = useWords()
 const json = ref<string>(JSON.stringify(wordsStore.words, null, 2))

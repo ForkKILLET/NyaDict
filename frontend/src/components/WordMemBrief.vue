@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { IMemMode, IMemory } from '../types'
-import Correctness from './Correctness.vue'
+import type { IMemMode, IMemory } from '@type'
+import Correctness from '@comp/Correctness.vue'
 
 const props = withDefaults(defineProps<{
     mem: IMemory
     memMode?: IMemMode
     showAcc?: boolean
+    showEasiness?: boolean
     showCount: boolean
     showRing: boolean
 }>(), {
@@ -39,7 +40,9 @@ const correctWrong = computed<{
         :correct="correctWrong.correct"
         :half-correct="correctWrong.halfCorrect"
         :wrong="correctWrong.wrong"
+        :easiness="mem.easiness"
         :show-acc="showAcc"
+        :show-easiness="showEasiness"
         :show-count="showCount"
         :show-ring="showRing"
     />

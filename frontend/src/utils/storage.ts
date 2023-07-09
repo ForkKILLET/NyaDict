@@ -1,5 +1,5 @@
 import { reactive, ref, UnwrapNestedRefs, watch } from 'vue'
-import { tryJSON } from '.'
+import { tryJSON } from '@util'
 
 export const getStorage = <T>(key: string): T | undefined => {
     return tryJSON(localStorage.getItem(key))

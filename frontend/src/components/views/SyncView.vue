@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AuthState from '../AuthState.vue'
-import ArchiveList from '../ArchiveList.vue'
+import AuthState from '@comp/AuthState.vue'
+import ArchiveList from '@comp/ArchiveList.vue'
 </script>
 
 <template>

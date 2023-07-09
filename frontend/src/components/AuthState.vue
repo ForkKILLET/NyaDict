@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import { useAuth } from '@store/auth'
-import { add as addNoti } from '../utils/notif';
+import { add as addNoti } from '@util/notif';
 
 const authStore = useAuth()
 const { jwtPayload } = storeToRefs(authStore)

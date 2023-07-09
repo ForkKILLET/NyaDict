@@ -3,9 +3,9 @@ import { useWords } from '@/stores/words'
 import dayjs from 'dayjs'
 
 import { gradeBy, gradeColors } from '@/utils'
-import Calendar from '../charts/Calendar.vue'
-import NyaDate from '../NyaDate.vue'
-import StatisticsItem from '../StatisticsItem.vue'
+import Calendar from '@comp/charts/Calendar.vue'
+import NyaDate from '@comp/NyaDate.vue'
+import StatisticsItem from '@comp/StatisticsItem.vue'
 
 const wordsStore = useWords()
 

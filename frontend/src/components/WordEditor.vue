@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { isHiragana } from 'wanakana'
-import type { IWord } from '../types'
+import type { IWord } from '@type'
 
 const props = defineProps<{
     word?: IWord

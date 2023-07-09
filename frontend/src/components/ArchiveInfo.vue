@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import type { IArchiveInfo } from '../types'
-import NyaDate from './NyaDate.vue'
+import type { IArchiveInfo } from '@type'
+import NyaDate from '@comp/NyaDate.vue'
 
 type INoInfoReason = 'noAccount' | 'noRemote' | 'noLocal'
 

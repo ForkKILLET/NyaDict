@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useWords } from '@store/words'
-import type { IWord } from '../types'
+import type { IWord } from '@type'
 
-import Word from './Word.vue'
-import WordEditor from './WordEditor.vue'
+import Word from '@comp/Word.vue'
+import WordEditor from '@comp/WordEditor.vue'
 
 const props = defineProps<{
     word: IWord

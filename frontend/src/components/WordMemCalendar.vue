@@ -66,6 +66,7 @@ const data = computed(() => {
         <WordMemBrief
             :mem="mem"
             :show-acc="true"
+            :show-easiness="true"
             :mem-mode="calendarMode"
             :show-count="true"
             :show-ring="true"

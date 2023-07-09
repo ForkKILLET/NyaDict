@@ -5,8 +5,10 @@ const props = defineProps<{
     correct: number
     halfCorrect: number
     wrong: number
+    easiness?: number
 
     showAcc?: boolean
+    showEasiness?: boolean
     showCount: boolean
     showRing: boolean
 }>()
@@ -20,7 +22,7 @@ const perimeter = 2 * Math.PI * radius
 <template>
     <div class="correctness">
         <span v-if="showRing" class="ring">
-            <svg width="20" height="20">
+            <svg width="1em" height="1em" viewBox="0 0 20 20">
                 <circle
                     cx="10" cy="10" :r="String(radius - 1)"
                     fill="transparent"
@@ -70,15 +72,22 @@ const perimeter = 2 * Math.PI * radius
                     : 'N/A'
                 }}
             </span>
+            <span v-if="showEasiness">
+                EZ[<span class="number">{{ (easiness ?? 0).toFixed(1) }}</span>]
+            </span>
         </span>
     </div>
 </template>
 
 <style scoped>
-.number {
+.count {
+    vertical-align: bottom;
+}
+
+.count > .number {
     padding: 0 .4rem;
 }
-.number > span {
+.count > .number > span {
     margin-left: .2em;
 }
 
@@ -90,11 +99,9 @@ const perimeter = 2 * Math.PI * radius
 .ring  {
     display: inline-block;
     height: 20px;
+    margin: -.5em;
+    padding: .5em;
     vertical-align: baseline;
-}
-
-.count {
-    vertical-align: bottom;
 }
 
 .count.hide {

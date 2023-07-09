@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { IWord } from '../types'
+import type { IWord } from '@type'
 
-import WordMemBrief from './WordMemBrief.vue'
+import WordMemBrief from '@comp/WordMemBrief.vue'
 
 defineProps<{
     word: IWord

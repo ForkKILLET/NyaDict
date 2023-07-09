@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Noti, NotiType } from '../../utils/notif'
+import type { Noti, NotiType } from '@util/notif'
 
 defineProps<{
     noti: Noti

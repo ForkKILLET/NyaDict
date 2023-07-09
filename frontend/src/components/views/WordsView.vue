@@ -4,11 +4,12 @@ import {
     emptyMem, getCorrectness, getYomikataIndex,
     getRomaji, getLastTestTime, useWords,
 } from '@store/words'
-import type { IWord } from '../../types'
-import WordEditor from '../WordEditor.vue'
-import WordList from '../WordList.vue'
-import WordDetail from '../WordDetail.vue'
-import { storageRef } from '../../utils/storage'
+import { storageRef } from '@util/storage'
+import type { IWord } from '@type'
+
+import WordEditor from '@comp/WordEditor.vue'
+import WordList from '@comp/WordList.vue'
+import WordDetail from '@comp/WordDetail.vue'
 
 const wordsStore = useWords()
 
@@ -58,7 +59,8 @@ const sortMethodInfo = {
     wrongCount: 'ミス数',
     halfCorrectCount: 'ハーフパス数',
     yomikata: '読み方',
-    testTime: 'テスト時間'
+    testTime: 'テスト時間',
+    easiness: 'EZ'
 }
 type SortMethod = keyof typeof sortMethodInfo
 type SortDirection = 'up' | 'down'
@@ -74,6 +76,7 @@ const sortFunction = computed(() => (a: IWord, b: IWord) => {
         method === 'halfCorrectCount' ? a.mem.halfCorrectCount - b.mem.halfCorrectCount :
         method === 'yomikata' ? getYomikataIndex(b) - getYomikataIndex(a) :
         method === 'testTime' ? getLastTestTime(a) - getLastTestTime(b) :
+        method === 'easiness' ? a.mem.easiness - b.mem.easiness :
         0
     return sortDirection.value === 'up' ? - delta : + delta
 })

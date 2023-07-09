@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import jwtDecode from 'jwt-decode'
-import { storageRef } from '../utils/storage'
-import type { IAuthPayload } from '../types/network'
+import { storageRef } from '@util/storage'
+import type { IAuthPayload } from '@type/network'
 
 export const useAuth = defineStore('auth', () => {
     const jwt = storageRef<string | null>('jwt', null)

@@ -2,10 +2,10 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '@store/auth'
-import { ISignInResp } from '../../types/network'
-import { api } from '../../utils/api'
-import { handleResp } from '../../utils/notif'
-import ActionPanel from '../ActionPanel.vue'
+import type { ISignInResp } from '@type/network'
+import { api } from '@util/api'
+import { handleResp } from '@util/notif'
+import ActionPanel from '@comp/ActionPanel.vue'
 
 const authStore = useAuth()
 const router = useRouter()

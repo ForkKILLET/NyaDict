@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import * as notif from '../../utils/notif'
+import * as notif from '@util/notif'
 
-import Noti from './Noti.vue'
+import Noti from '@comp/notifications/Noti.vue'
 import ListTransitionGroup from '@comp/transitions/ListTransitionGroup.vue'
 </script>
 

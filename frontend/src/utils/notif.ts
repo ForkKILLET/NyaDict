@@ -1,5 +1,5 @@
 import { reactive } from 'vue'
-import { NyaResp } from '../types/network'
+import { NyaResp } from '@type/network'
 
 export type NotiType = 'error' | 'success' | 'info' | 'pending'
 

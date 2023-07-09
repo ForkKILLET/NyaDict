@@ -3,14 +3,14 @@ import { ref, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useWords } from '@store/words'
 import { useTest } from '@store/test'
-import { ITestMode, ITest, ICorrect, IWord } from '../../types'
+import { add } from '@util/notif'
+import type { ITestMode, ITest, ICorrect, IWord } from '@type'
 
-import Word from '../Word.vue'
-import Correctness from '../Correctness.vue'
-import NyaDate from '../NyaDate.vue'
-import WordDetail from '../WordDetail.vue'
-import WordList from '../WordList.vue'
-import { add } from '../../utils/notif'
+import Word from '@comp/Word.vue'
+import Correctness from '@comp/Correctness.vue'
+import NyaDate from '@comp/NyaDate.vue'
+import WordDetail from '@comp/WordDetail.vue'
+import WordList from '@comp/WordList.vue'
 
 const wordsStore = useWords()
 const testStore = useTest()

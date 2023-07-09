@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia' 
-import { useWords } from './words'
 import { ref } from 'vue'
-import { ITest, ITestMode } from '../types'
-import { getStorage, setStorage } from '../utils/storage'
-import { sample } from '../utils'
+import { useWords } from '@store/words'
+import { getStorage, setStorage } from '@util/storage'
+import { sample } from '@util'
+import type { ITest, ITestMode } from '@type'
 
 export const useTest = defineStore('test', () => {
     const wordsStore = useWords()

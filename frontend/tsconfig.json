@@ -29,7 +29,8 @@
       "@type": ["./src/types/index.ts"],
       "@store/*": ["./src/stores/*"],
       "@util/*": ["./src/utils/*"],
-      "@util": ["./src/utils/index.ts"]
+      "@util": ["./src/utils/index.ts"],
+      "@style/*": ["./src/styles/*"]
     }
   },
   "include": [ "src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue" ],

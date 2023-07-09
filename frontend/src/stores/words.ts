@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia' 
 import { ref, watch } from 'vue'
 import { toHiragana, toRomaji, isHiragana} from 'wanakana'
-import { randomItem } from '../utils'
-import { getStorage, setStorage, storageRef, storageReactive } from '../utils/storage'
-import type { IArchiveInfo, IMemory, ITestRec, IWord } from '../types'
+import { randomItem } from '@util'
+import { getStorage, setStorage, storageRef, storageReactive } from '@util/storage'
+import type { IArchiveInfo, IMemory, ITestRec, IWord } from '@type'
 
 export const baseInterval = 5
 

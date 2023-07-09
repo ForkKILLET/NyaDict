@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { range } from '../utils'
+import { range } from '@util'
 
 const props = defineProps<{
     page: number
