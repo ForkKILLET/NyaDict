@@ -30,7 +30,7 @@ const onSubmit = () => {
 </template>
 
 <style scoped>
-.content > .card {
+.content {
     width: 40%;
     min-width: 200px;
     max-width: 400px;
