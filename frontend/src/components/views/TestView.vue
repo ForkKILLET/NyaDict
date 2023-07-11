@@ -307,8 +307,8 @@ const navigateTestedWord = (delta: number) => {
     
 <style scoped>
 .content {
-    text-align: center;
     height: calc(100vh - 3.5em);
+    text-align: center;
 }
 
 .test-area {
@@ -367,6 +367,13 @@ const navigateTestedWord = (delta: number) => {
     white-space: nowrap;
 }
 
+.completed-area {
+    display: flex;
+    flex-flow: column;
+    height: calc(100% - 2em - 10px);
+    overflow: hidden;
+}
+
 .word-detail {
     flex: 1;
     width: 80%;
@@ -376,7 +383,15 @@ const navigateTestedWord = (delta: number) => {
 }
 
 .completed-area > .word-list {
+    flex: 1;
+    width: 100%;
     max-width: 600px;
     margin: 0 auto;
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+.completed-area > .word-list::-webkit-scrollbar {
+    display: none;
 }
 </style>
