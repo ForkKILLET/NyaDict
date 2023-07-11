@@ -56,7 +56,8 @@ const useExistingTest = () => {
 }
 
 const ableToCreateTest = computed(() => (
-    !! testMode.value && 0 < testSize.value && testSize.value < wordsStore.words.length
+    !! testMode.value &&
+    0 < testSize.value && testSize.value <= testStore.testableWords.length
 ))
 
 const createTest = () => {
@@ -65,7 +66,7 @@ const createTest = () => {
             type: 'error',
             content: ! testMode.value
                 ? 'テスト・モードを選んでください'
-                : '単語数を入力してください',
+                : '単語数を正く入力してください',
             duration: 2 * 1000
         })
         return
@@ -166,10 +167,14 @@ const navigateTestedWord = (delta: number) => {
                         {{ info }}
                     </button>
                 </p>
-                <p>いくつの単語にしますか。</p>
+                <p>
+                    いくつの単語にしますか。 <br />
+                    <span class="number">{{ testStore.testableWords.length }}</span>
+                    個の単語が今テストできます。
+                </p>
                 <input
                     v-model="testSize"
-                    type="number" min="0" :max="wordsStore.words.length"
+                    type="number" min="0" :max="testStore.testableWords.length"
                     placeholder="単語数"
                     class="w1 card center"
                 />

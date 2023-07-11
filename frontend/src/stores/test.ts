@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia' 
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useWords } from '@store/words'
 import { getStorage, setStorage } from '@util/storage'
 import { sample } from '@util'
@@ -14,14 +14,16 @@ export const useTest = defineStore('test', () => {
         setStorage('currentTest', currentTest.value)
     }
 
-    const generateTest = (mode: ITestMode, size = 20) => {
+    const testableWords = computed(() => {
         const now = Date.now()
-        const testableWordIds = wordsStore.words
-            .filter(word => {
-                const { testAfter } = word.mem
-                return ! testAfter || testAfter < now
-            })
-            .map(word => word.id)
+        return wordsStore.words.filter(word => {
+            const { testAfter } = word.mem
+            return ! testAfter || testAfter < now
+        })
+    })
+
+    const generateTest = (mode: ITestMode, size = 20) => {
+        const testableWordIds = testableWords.value.map(word => word.id)
         const wordIds = sample(testableWordIds, size)
 
         const test: ITest = {
@@ -42,6 +44,6 @@ export const useTest = defineStore('test', () => {
 
     return {
         currentTest,
-        save, generateTest
+        save, testableWords, generateTest
     }
 })
