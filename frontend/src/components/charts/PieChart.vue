@@ -50,10 +50,13 @@ const dataWithAttr = computed<
             ></circle>
         </svg>
         <div class="pie-chart-legend-area">
-            <div v-for="{ name, value, color } of data" class="pie-chart-legend">
+            <div v-for="{ name, value, color, ratio } of data" class="pie-chart-legend">
                 <div class="pie-chart-legend-box" :style="{ backgroundColor: color }"></div>
                 <span class="pie-chart-legend-name">{{ name }}</span>
-                <span class="pie-chart-legend-value number">{{ value }}</span>
+                <span class="pie-chart-legend-value">
+                    <span class="number">{{ value }}</span>
+                    (<span class="number">{{ (ratio * 100).toFixed(2) + '%' }}</span>)
+                </span>
             </div>
         </div>
     </div>
@@ -62,9 +65,10 @@ const dataWithAttr = computed<
 <style scoped>
 .pie-chart {
     display: flex;
+    flex-flow: wrap;
 }
-.pie-chart-legend-area {
-    margin-left: 1em;
+.pie {
+    margin-right: 1em;
 }
 .pie-chart-legend {
     display: flex;
@@ -77,6 +81,9 @@ const dataWithAttr = computed<
 }
 .pie-chart-legend-name {
     margin-right: .3em;
+}
+.pie-chart-legend-value {
+    white-space: nowrap;
 }
 .pie {
     border-radius: 50%;
