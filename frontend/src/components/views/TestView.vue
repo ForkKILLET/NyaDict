@@ -324,7 +324,7 @@ const navigateTestedWord = (delta: number) => {
     
 <style scoped>
 .content {
-    height: calc(100vh - 3.5em);
+    height: calc(100vh - 3.5rem);
     text-align: center;
 }
 

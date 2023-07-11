@@ -154,13 +154,16 @@ const data = {
 .content {
     display: flex;
     flex-flow: wrap;
-    padding: 0 1em;
+    margin: -1em;
+    padding: 1em 2em;
+	height: calc(100vh - 3.5rem);
+	overflow-y: auto;
 }
 
 .statistics-item {
     flex: 1;
-    margin: 0 .5em 1em .5em;
-    min-width: 320px;
+    margin: 0 1em 1em 0em;
+    min-width: 300px;
     max-width: calc(50% - 1em);
 }
 
