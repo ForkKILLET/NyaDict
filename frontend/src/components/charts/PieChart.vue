@@ -7,7 +7,7 @@ export type PieData = Array<{
 }>
 
 export const getArc = (perimeter: number) => {
-    let start = .25
+    let start = 0.25
     return (ratio: number) => {
         const attrs = {
             'stroke-dasharray': String(perimeter * ratio) + ' ' + String(perimeter * (1 - ratio)),

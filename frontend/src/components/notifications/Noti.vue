@@ -18,7 +18,7 @@ const typeIcons: Record<NotiType, string> = {
 </script>
 
 <template>
-    <div class="inline noti">
+    <div class="inline noti" :style="noti.style">
         <fa-icon
             :icon="typeIcons[noti.type]"
             :class="noti.type"

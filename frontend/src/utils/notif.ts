@@ -1,4 +1,4 @@
-import { reactive } from 'vue'
+import { reactive, type CSSProperties } from 'vue'
 import { NyaResp } from '@type/network'
 
 export type NotiType = 'error' | 'success' | 'info' | 'pending'
@@ -7,6 +7,7 @@ export type Noti = {
     content: string
     type: NotiType
     duration?: number
+    style?: CSSProperties
 }
 
 export const notis = reactive<Array<Noti | undefined>>([])

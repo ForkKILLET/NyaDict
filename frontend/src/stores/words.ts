@@ -95,11 +95,14 @@ export const useWords = defineStore('words', () => {
         else word.mem.halfCorrectCount ++
 
         // Note: SRS algorithm here
-        word.mem.easiness = Math.max(Math.min((word.mem.easiness ?? 0) + (rec.correct - 0.6) * 0.5, 3), 0)
+        const origEasiness = word.mem.easiness ?? 0
+        word.mem.easiness = Math.max(Math.min(origEasiness + (rec.correct - 0.6) * 0.5, 3), 0)
         const interval = baseInterval * word.mem.easiness + 0.25
         word.mem.testAfter = Date.now() + interval * 24 * 3600 * 1000 
 
         save()
+
+        return word.mem.easiness
     }
 
     const popTestRec = (word: IWord): ITestRec | undefined => {

@@ -3,7 +3,7 @@ import { ref, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useWords } from '@store/words'
 import { useTest } from '@store/test'
-import { add } from '@util/notif'
+import { add, remove } from '@util/notif'
 import type { ITestMode, ITest, ICorrect, IWord } from '@type'
 
 import Word from '@comp/Word.vue'
@@ -97,6 +97,8 @@ const disposeTest = () => {
     testMode.value = null
 }
 
+const nid = ref<number>()
+
 const nextWord = (correct: ICorrect) => {
     if (showDetail.value) showDetail.value = false
     showAnswer.value = false
@@ -112,12 +114,22 @@ const nextWord = (correct: ICorrect) => {
         test.maxIndex ++
     }
 
-    wordsStore.pushTestRec(word, {
+    const newEasiness = wordsStore.pushTestRec(word, {
         time: Date.now(),
         correct,
         mode: testMode.value!
     })
     test.correctness[test.currentIndex] = correct
+
+    if (nid.value !== undefined) remove(nid.value)
+    nid.value = add({
+        content: newEasiness.toFixed(2),
+        type: 'info',
+        style: {
+            color: correct === 1 ? '#95e35d' : '#ec4e1e'
+        },
+        duration: 1 * 1000
+    })
 
     if (++ test.currentIndex === testSize.value) {
         test.completed = true

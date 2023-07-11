@@ -7,7 +7,7 @@ import { gradeBy, gradeColors } from '@/utils'
 import NyaDate from '@comp/NyaDate.vue'
 import StatisticsItem from '@comp/StatisticsItem.vue'
 import Calendar from '@comp/charts/Calendar.vue'
-import PieChart, { PieData } from '@comp/charts/PieChart.vue'
+import PieChart, { type PieData } from '@comp/charts/PieChart.vue'
 
 const wordsStore = useWords()
 
