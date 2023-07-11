@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { useWords } from '@/stores/words'
 import dayjs from 'dayjs'
+import { interpolateRgb } from 'd3-interpolate'
 
 import { gradeBy, gradeColors } from '@/utils'
-import Calendar from '@comp/charts/Calendar.vue'
 import NyaDate from '@comp/NyaDate.vue'
 import StatisticsItem from '@comp/StatisticsItem.vue'
+import Calendar from '@comp/charts/Calendar.vue'
+import PieChart, { PieData } from '@comp/charts/PieChart.vue'
 
 const wordsStore = useWords()
 
@@ -49,6 +51,33 @@ const data = {
             firstDate: dayjs(firstDate),
             data
         }
+    },
+    easiness: () => {
+        const { words } = wordsStore
+        const total = words.length
+        const groups: Record<string, number> = {}
+        words.forEach(word => {
+            const easiness = (word.mem.easiness ?? 0).toFixed(2)
+            groups[easiness] ??= 0
+            groups[easiness] ++
+        })
+
+        const interpolate = interpolateRgb('#ec4e1e', '#95e35d')
+        const data: PieData = Object.entries(groups)
+            .map(([ easiness, value ]) => ({
+                ratio: value / total,
+                value,
+                name: easiness,
+                color: ''
+            }))
+            .sort((a, b) => + b.name - + a.name)
+        const maxEasiness = + data[0].name
+        const minEasiness = + data.at(-1)!.name
+        const deltaEasiness = maxEasiness - minEasiness
+        data.forEach(item => {
+            item.color = interpolate(+ item.name / deltaEasiness)
+        })
+        return { data }
     }
 }
 </script>
@@ -59,10 +88,10 @@ const data = {
             title="単語作成"
             :data="data.createWord"
         >
-            <template #default="{ data }">
+            <template #default="{ data: { data, firstDate } }">
                 <Calendar
-                    :start-day="data.firstDate.get('d')"
-                    :data="data.data"
+                    :start-day="firstDate.get('d')"
+                    :data="data"
                     :colors="gradeColors"
                 >
                     <template #current="{ value }">
@@ -76,20 +105,29 @@ const data = {
                 </Calendar>
             </template>
         </StatisticsItem>
+
+        <StatisticsItem
+            title="EZ 分布"
+            :data="data.easiness"
+        >
+            <template #default="{ data: { data } }">
+                <PieChart :data="data" />
+            </template>
+        </StatisticsItem>
     </div>
 </template>
 
 <style scoped>
 .content {
     display: flex;
-    padding: 0 1em;
     flex-flow: wrap;
+    padding: 0 1em;
 }
 
 .statistics-item {
     flex: 1;
-    margin: 0 .5em;
-    min-width: 250px;
+    margin: 0 .5em 1em .5em;
+    min-width: 320px;
     max-width: calc(50% - 1em);
 }
 

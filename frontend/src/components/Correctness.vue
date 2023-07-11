@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import { getArc } from '@comp/charts/PieChart.vue'
 
 const props = defineProps<{
     correct: number
@@ -15,8 +16,7 @@ const props = defineProps<{
 
 const total = computed(() => props.correct + props.halfCorrect + props.wrong)
 
-const radius = 8
-const perimeter = 2 * Math.PI * radius
+const arc = getArc(2 * Math.PI * 8)
 </script>
 
 <template>
@@ -24,31 +24,28 @@ const perimeter = 2 * Math.PI * radius
         <span v-if="showRing" class="ring">
             <svg width="1em" height="1em" viewBox="0 0 20 20">
                 <circle
-                    cx="10" cy="10" :r="String(radius - 1)"
+                    cx="10" cy="10" r="7"
                     fill="transparent"
                 ></circle>
                 <circle
-                    cx="10" cy="10" :r="String(radius)"
+                    cx="10" cy="10" r="8"
                     fill="transparent" stroke="#eee" stroke-width="3"
                 ></circle>
                 <template v-if="total">
                     <circle
-                        cx="10" cy="10" :r="String(radius)"
+                        cx="10" cy="10" r="8"
                         fill="transparent" stroke="#95e35d" stroke-width="3"
-                        :stroke-dasharray="String(perimeter * correct / total) + ' ' + String(perimeter * (1 - correct / total))"
-                        :stroke-dashoffset="String(perimeter * .25)"
+                        v-bind="arc(correct / total)"
                     ></circle>
                     <circle
-                        cx="10" cy="10" :r="String(radius)"
+                        cx="10" cy="10" r="8"
                         fill="transparent" stroke="#db8e30" stroke-width="3"
-                        :stroke-dasharray="String(perimeter * halfCorrect / total) + ' ' + String(perimeter * (1 - halfCorrect / total))"
-                        :stroke-dashoffset="String(perimeter * (.25 - correct / total))"
+                        v-bind="arc(halfCorrect / total)"
                     ></circle>
                     <circle
-                        cx="10" cy="10" :r="String(radius)"
+                        cx="10" cy="10" r="8"
                         fill="transparent" stroke="#ec4e1e" stroke-width="3"
-                        :stroke-dasharray="String(perimeter * wrong / total) + ' ' + String(perimeter * (1 - wrong / total))"
-                        :stroke-dashoffset="String(perimeter * (.25 - (correct + halfCorrect) / total))"
+                        v-bind="arc(wrong / total)"
                     ></circle>
                 </template>
             </svg>
@@ -98,7 +95,6 @@ const perimeter = 2 * Math.PI * radius
 
 .ring  {
     display: inline-block;
-    height: 20px;
     margin: -.5em;
     padding: .5em;
     vertical-align: baseline;

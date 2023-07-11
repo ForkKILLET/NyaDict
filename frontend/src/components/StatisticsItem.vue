@@ -12,7 +12,7 @@ const value = ref(props.data()) as Ref<T>
 <template>
     <div class="statistics-item card">
         <div class="statistics-item-title">
-            {{ title }}
+            <span>{{ title }}</span>
             <fa-icon @click="value = data()" icon="rotate" class="button" />
         </div>
         <slot :data="value"></slot>

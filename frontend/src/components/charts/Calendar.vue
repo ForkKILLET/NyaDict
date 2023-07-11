@@ -55,6 +55,6 @@ const currentValue = ref<T | undefined>()
     outline: 2px solid #db8e3090;
 }
 .current-message {
-    font-size: small;
+    font-size: smaller;
 }
 </style>

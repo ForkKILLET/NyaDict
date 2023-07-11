@@ -224,7 +224,7 @@ const navigateTestedWord = (delta: number) => {
                     :class="{ disabled: currentTest.currentIndex >= currentTest.maxIndex }"
                 />
             </span>
-            <div class="test-progress">
+            <div class="test-progress-bar">
                 <div
                     class="test-progress-inner"
                     :style="{ width: (100 / testSize! * currentTest.currentIndex) + 'vw' }"
@@ -308,7 +308,7 @@ const navigateTestedWord = (delta: number) => {
 <style scoped>
 .content {
     text-align: center;
-    height: calc(100vh - 5.5em);
+    height: calc(100vh - 3.5em);
 }
 
 .test-area {
@@ -332,21 +332,19 @@ const navigateTestedWord = (delta: number) => {
     height: 3em;
 }
 
-.test-progress {
-    position: fixed;
-    top: 3rem;
-    left: 0;
+.test-progress-message {
+    display: inline-block;
+    height: 1.5em;
+    margin-bottom: .5em;
+}
+
+.test-progress-bar {
+    margin-left: -1em;
     width: 100vw;
     height: 10px;
     background-color: #eee;
 }
 
-.test-progress-message {
-    position: fixed;
-    top: calc(3rem + 10px);
-    left: 50vw;
-    transform: translateX(-50%);
-}
 .test-progress-number {
     color: #8358f9;
 }

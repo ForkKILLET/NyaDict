@@ -59,3 +59,5 @@ export const downloadURL = (url: string, filename: string) => {
     anchor.click()
     document.body.removeChild(anchor)
 }
+
+export const randomColor = () => '#' + ('000000' + Math.random().toString(16).replace('.', '')).slice(- 6)
