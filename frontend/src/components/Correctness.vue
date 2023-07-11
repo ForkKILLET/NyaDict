@@ -77,6 +77,12 @@ const arc = getArc(2 * Math.PI * 8)
 </template>
 
 <style scoped>
+.correctness {
+    position: relative;
+    display: inline-block;
+    white-space: nowrap;
+}
+
 .count {
     vertical-align: bottom;
 }
@@ -86,11 +92,6 @@ const arc = getArc(2 * Math.PI * 8)
 }
 .count > .number > span {
     margin-left: .2em;
-}
-
-.correctness {
-    position: relative;
-    display: inline-block;
 }
 
 .ring  {

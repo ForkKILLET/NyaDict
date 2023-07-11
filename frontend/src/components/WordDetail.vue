@@ -63,7 +63,7 @@ defineProps<{
 }
 
 .calendar {
-    width: 80%;
+    min-width: 80%;
     margin-top: 1em;
 }
 

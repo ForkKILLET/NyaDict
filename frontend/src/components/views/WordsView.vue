@@ -177,6 +177,7 @@ const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
     display: flex;
     flex-flow: column;
     flex-basis: 50%;
+    min-width: 400px;
     padding: 1.2em 1.5em 0 1em;
 }
 
