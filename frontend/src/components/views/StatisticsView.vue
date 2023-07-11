@@ -8,6 +8,7 @@ import NyaDate from '@comp/NyaDate.vue'
 import StatisticsItem from '@comp/StatisticsItem.vue'
 import Calendar from '@comp/charts/Calendar.vue'
 import PieChart, { type PieData } from '@comp/charts/PieChart.vue'
+import { RelativeTestTime, getRelativeTestTime, relativeTestTimeColors } from '@/stores/test'
 
 const wordsStore = useWords()
 
@@ -78,6 +79,29 @@ const data = {
             item.color = interpolate(+ item.name / deltaEasiness)
         })
         return { data }
+    },
+    testAfter: () => {
+        const { words } = wordsStore
+        const now = Date.now()
+        const total = words.length
+        const groups: Record<RelativeTestTime, number> = {
+            '今': 0, '一日後': 0, '二日後': 0, '三日後': 0
+        }
+        words.forEach(word => {
+            const { testAfter } = word.mem
+            const relative = getRelativeTestTime(testAfter, now)
+            groups[relative] ++
+        })
+
+        const data: PieData = Object.entries(groups)
+            .map(([ relative, value ]) => ({
+                ratio: value / total,
+                value,
+                name: relative,
+                color: relativeTestTimeColors[relative as RelativeTestTime]
+            }))
+            .sort((a, b) => + b.name - + a.name)
+        return { data }
     }
 }
 </script>
@@ -109,6 +133,15 @@ const data = {
         <StatisticsItem
             title="EZ 分布"
             :data="data.easiness"
+        >
+            <template #default="{ data: { data } }">
+                <PieChart :data="data" />
+            </template>
+        </StatisticsItem>
+
+        <StatisticsItem
+            title="次のテストの時間"
+            :data="data.testAfter"
         >
             <template #default="{ data: { data } }">
                 <PieChart :data="data" />

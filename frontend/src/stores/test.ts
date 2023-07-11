@@ -47,3 +47,23 @@ export const useTest = defineStore('test', () => {
         save, testableWords, generateTest
     }
 })
+
+export type RelativeTestTime = '今' | '一日後' | '二日後' | '三日後'
+
+export const getRelativeTestTime = (time: number, now: number) => {
+    if (time === 0) return '今'
+    const delta = time - now
+    if (delta <= 0) return '今'
+    if (delta < 24 * 3600_000) return '一日後'
+    if (delta < 2 * 24 * 3600_000) return '二日後'
+    return '三日後'
+}
+
+export const relativeTestTimeColors: Record<
+    ReturnType<typeof getRelativeTestTime>, string
+> = {
+    '今': '#39d353',
+    '一日後': '#61dc75',
+    '二日後': '#88e598',
+    '三日後': '#b0edba'
+}
