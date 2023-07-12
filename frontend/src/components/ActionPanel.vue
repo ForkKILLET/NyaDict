@@ -32,8 +32,8 @@ const onSubmit = () => {
 <style scoped>
 .content {
     width: 40%;
-    min-width: 200px;
-    max-width: 400px;
+    min-width: 20em;
+    max-width: 40em;
     margin-left: auto;
     margin-right: auto;
     text-align: center;

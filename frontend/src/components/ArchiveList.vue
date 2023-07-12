@@ -268,7 +268,7 @@ if (jwtPayload.value) {
 
 .archive-info {
     flex: 1;
-    min-width: 250px;
+    min-width: 12.5em;
     max-width: calc(50% - 3.2em);
     margin: 0 .8em 1.5em .8em;
 }

@@ -171,14 +171,25 @@ const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
 .content {
     display: flex;
     height: calc(100vh - 3.5rem);
+    box-sizing: border-box;
 }
 
 .left {
     display: flex;
     flex-flow: column;
     flex-basis: 50%;
-    min-width: 400px;
-    padding: 1.2em 1.5em 0 1em;
+    min-width: 20em;
+    padding: 1.2em 0 0 1em;
+    margin-right: 1.5em;
+}
+
+@media screen and (orientation: portrait) and (max-device-width: 600px) {
+	.left {
+        width: calc(100vw - 2em);
+        flex-basis: unset;
+        flex-shrink: 0;
+        padding-left: 0;
+	}
 }
 
 .word-list::-webkit-scrollbar {

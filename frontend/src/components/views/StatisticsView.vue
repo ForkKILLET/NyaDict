@@ -108,65 +108,73 @@ const data = {
 
 <template>
     <div class="content">
-        <StatisticsItem
-            title="単語作成"
-            :data="data.createWord"
-        >
-            <template #default="{ data: { data, firstDate } }">
-                <Calendar
-                    :start-day="firstDate.get('d')"
-                    :data="data"
-                    :colors="gradeColors"
-                >
-                    <template #current="{ value }">
-                        <div v-if="value">
-                            <NyaDate :date="value.date" />
-                            に単語を
-                            <span class="number">{{ value.num ?? 0 }}</span>
-                            個作成しました
-                        </div>
-                    </template>
-                </Calendar>
-            </template>
-        </StatisticsItem>
+        <div class="list">
+            <StatisticsItem
+                title="単語作成"
+                :data="data.createWord"
+            >
+                <template #default="{ data: { data, firstDate } }">
+                    <Calendar
+                        :start-day="firstDate.get('d')"
+                        :data="data"
+                        :colors="gradeColors"
+                    >
+                        <template #current="{ value }">
+                            <div v-if="value">
+                                <NyaDate :date="value.date" />
+                                に単語を
+                                <span class="number">{{ value.num ?? 0 }}</span>
+                                個作成しました
+                            </div>
+                        </template>
+                    </Calendar>
+                </template>
+            </StatisticsItem>
 
-        <StatisticsItem
-            title="EZ 分布"
-            :data="data.easiness"
-        >
-            <template #default="{ data: { data } }">
-                <PieChart :data="data" />
-            </template>
-        </StatisticsItem>
+            <StatisticsItem
+                title="EZ 分布"
+                :data="data.easiness"
+            >
+                <template #default="{ data: { data } }">
+                    <PieChart :data="data" />
+                </template>
+            </StatisticsItem>
 
-        <StatisticsItem
-            title="次のテストの時間"
-            :data="data.testAfter"
-        >
-            <template #default="{ data: { data } }">
-                <PieChart :data="data" />
-            </template>
-        </StatisticsItem>
+            <StatisticsItem
+                title="次のテストの時間"
+                :data="data.testAfter"
+            >
+                <template #default="{ data: { data } }">
+                    <PieChart :data="data" />
+                </template>
+            </StatisticsItem>
+        </div>
     </div>
 </template>
 
 <style scoped>
 .content {
-    display: flex;
-    flex-flow: wrap;
-    margin: -1em;
-    padding: 1em 2em;
+    padding: 0 1em;
 	height: calc(100vh - 3.5rem);
+    box-sizing: border-box;
 	overflow-y: auto;
+    scrollbar-width: none;
+}
+.content::-webkit-scrollbar {
+    display: none;
 }
 
+.list {
+    padding: 1em;
+    display: flex;
+    flex-flow: wrap;
+}
 .statistics-item {
     flex: 1;
     margin: 0 1em 1em 0em;
-    min-width: 300px;
+    min-width: 15em;
     max-width: calc(50% - 1em);
 }
-
 
 .calendar:deep(> .calendar-inner) {
     max-width: 50em;

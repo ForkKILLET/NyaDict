@@ -324,8 +324,12 @@ const navigateTestedWord = (delta: number) => {
     
 <style scoped>
 .content {
+    display: flex;
+    flex-flow: column;
     height: calc(100vh - 3.5rem);
+    box-sizing: border-box;
     text-align: center;
+    align-items: center;
 }
 
 .test-area {
@@ -356,7 +360,6 @@ const navigateTestedWord = (delta: number) => {
 }
 
 .test-progress-bar {
-    margin-left: -1em;
     width: 100vw;
     height: 10px;
     background-color: #eee;
@@ -392,10 +395,9 @@ const navigateTestedWord = (delta: number) => {
 }
 
 .word-detail {
-    flex: 1;
     width: 80%;
-    min-width: 600px;
-    margin: 2em auto;
+    min-width: min(calc(100vw - 3em), 30em);
+    margin: 1em 0;
     text-align: left;
 }
 
