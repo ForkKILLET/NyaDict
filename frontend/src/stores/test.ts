@@ -51,7 +51,7 @@ export const useTest = defineStore('test', () => {
 export type RelativeTestTime = '今' | '一日後' | '二日後' | '三日後'
 
 export const getRelativeTestTime = (time: number, now: number) => {
-    if (time === 0) return '今'
+    if (! time) return '今'
     const delta = time - now
     if (delta <= 0) return '今'
     if (delta < 24 * 3600_000) return '一日後'
