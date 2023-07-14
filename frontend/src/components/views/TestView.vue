@@ -288,7 +288,7 @@ const navigateTestedWord = (delta: number) => {
             </div>
             <div v-else class="test-area">
                 <div>
-                    <Word class="inline" :word="currentWord!">
+                    <Word class="answer inline" :word="currentWord!">
                         <fa-icon
                             @click="showDetail = ! showDetail"
                             class="button"
@@ -374,7 +374,7 @@ const navigateTestedWord = (delta: number) => {
     background-color: #8358f9;
 }
 
-:deep(.word-disp), :deep(.word-sub) {
+.answer :deep(.word-disp), .answer :deep(.word-sub) {
     font-size: 1.3em;
 }
 
@@ -390,6 +390,7 @@ const navigateTestedWord = (delta: number) => {
 .completed-area {
     display: flex;
     flex-flow: column;
+    align-items: center;
     height: calc(100% - 2em - 10px);
     overflow: hidden;
 }
@@ -403,7 +404,7 @@ const navigateTestedWord = (delta: number) => {
 
 .completed-area > .word-list {
     flex: 1;
-    width: 100%;
+    width: calc(100vw - 2em);
     max-width: 600px;
     margin: 0 auto;
     overflow-y: auto;
