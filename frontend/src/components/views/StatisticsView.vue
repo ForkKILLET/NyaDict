@@ -85,7 +85,7 @@ const data = {
         const now = Date.now()
         const total = words.length
         const groups: Record<RelativeTestTime, number> = {
-            '今': 0, '一日後': 0, '二日後': 0, '三日後': 0
+            '未テスト': 0, '今': 0, '一日後': 0, '二日後': 0, '三日後': 0
         }
         words.forEach(word => {
             const { testAfter } = word.mem
