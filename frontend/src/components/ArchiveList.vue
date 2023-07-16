@@ -13,6 +13,7 @@ import type {
 
 import ArchiveInfo from '@comp/ArchiveInfo.vue'
 import LongPressButton from '@comp/LongPressButton.vue'
+import { setStorage } from '@/utils/storage'
 
 const wordsStore = useWords()
 const { jwtPayload, axiosHeader } = storeToRefs(useAuth())
@@ -45,8 +46,8 @@ const makeArchiveBlob = (id: string) => {
 }
 const withdrawArchive = (id: string) => {
     delete archiveInfo.value[id]
-    localStorage.removeItem('words:' + id)
-    if (archiveId.value === id) wordsStore.load()
+    setStorage(`words:${id}#length`, 0)
+    if (archiveId.value === id) wordsStore.words.length = 0
 }
 const exportArchive = (id: string) => {
     const url = URL.createObjectURL(archiveBlobs[id])
@@ -148,7 +149,7 @@ const downloadArchive = async (id: string) => {
 
     makeArchiveBlob(id)
 
-    if (archiveId.value === resp.idPerUser) wordsStore.load()
+    if (archiveId.value === resp.idPerUser) wordsStore.words.reload()
 }
 
 if (jwtPayload.value) {

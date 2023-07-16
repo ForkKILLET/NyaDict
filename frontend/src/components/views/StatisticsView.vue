@@ -14,6 +14,7 @@ const wordsStore = useWords()
 
 const data = {
     createWord: () => {
+        const words = wordsStore.words
         const today = dayjs()
 
         const dates = []
@@ -21,7 +22,7 @@ const data = {
         let firstDate: number = Infinity
         let maxCreateNum = 0
 
-        wordsStore.words.forEach((word) => {
+        words.forEach((word) => {
             const date = + dayjs(word.mem.createTime).startOf('d')
             if (date < firstDate) firstDate = date
             nums[date] ??= 0
@@ -54,7 +55,7 @@ const data = {
         }
     },
     easiness: () => {
-        const { words } = wordsStore
+        const words = wordsStore.words
         const total = words.length
         const groups: Record<string, number> = {}
         words.forEach(word => {
@@ -81,7 +82,7 @@ const data = {
         return { data }
     },
     testAfter: () => {
-        const { words } = wordsStore
+        const words = wordsStore.words
         const now = Date.now()
         const total = words.length
         const groups: Record<RelativeTestTime, number> = {

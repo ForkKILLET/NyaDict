@@ -3,7 +3,7 @@ import { computed, ref } from 'vue'
 import { useWords } from '@store/words'
 import { getStorage, setStorage } from '@util/storage'
 import { sample } from '@util'
-import type { ITest, ITestMode } from '@type'
+import type { ITest, ITestMode, IWord } from '@type'
 
 export const useTest = defineStore('test', () => {
     const wordsStore = useWords()
@@ -23,7 +23,7 @@ export const useTest = defineStore('test', () => {
     })
 
     const generateTest = (mode: ITestMode, size = 20) => {
-        const testableWordIds = testableWords.value.map(word => word.id)
+        const testableWordIds = testableWords.value.map((word: IWord) => word.id)
         const wordIds = sample(testableWordIds, size)
 
         const test: ITest = {

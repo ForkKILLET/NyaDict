@@ -2,82 +2,60 @@ import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
 import { toHiragana, toRomaji, isHiragana} from 'wanakana'
 import { randomItem } from '@util'
-import { getStorage, setStorage, storageRef, storageReactive } from '@util/storage'
+import { storeRef, storeReactive, storeArray, type ArrayStore } from '@util/storage'
 import type { IArchiveInfo, IMemory, ITestRec, IWord } from '@type'
 
 export const baseInterval = 5
 
 export const useWords = defineStore('words', () => {
-    const archiveId = storageRef('archiveId', '0')
-    const archiveInfo = storageReactive<Record<string, IArchiveInfo>>('archiveInfo', {})
-    const words = ref<IWord[]>([])
-
-    watch(archiveId, newId => {
-        words.value = getStorage('words:' + newId) ?? []
-    })
+    const archiveId = storeRef('archiveId', '0')
+    const archiveInfo = storeReactive<Record<string, IArchiveInfo>>('archiveInfo', {})
+    const words = ref(undefined as unknown as ArrayStore<IWord>)
 
     const maxId = ref(0)
     const updateMaxId = () => {
         maxId.value = words.value.length ? Math.max(...words.value.map(word => word.id)) : -1
     }
-    updateMaxId()
 
-    const save = () => {
-        const id = archiveId.value
-        setStorage('words:' + id, words.value)
-        archiveInfo[id].accessTime = Date.now()
-        archiveInfo[id].wordCount = words.value.length
-    }
+    Object.assign(window, {words})
 
-    const load = () => {
-        const wordsActive = getStorage<IWord[]>('words:' + archiveId.value)
-        if (wordsActive) {
-            words.value = wordsActive
-            updateMaxId()
-        }
-        else {
-            archiveInfo[archiveId.value] = {
-                title: '黙認',
-                accessTime: Date.now(),
-                size: 0,
-                wordCount: 1
-            }
-            words.value = [
-                {
+    watch(archiveId, newId => {
+        words.value = storeArray('words:' + newId, {
+            onInit: words => {
+                words.push({
                     id: 0,
                     disp: 'ニャディクト',
                     sub: 'Nya Dict',
                     desc: '',
                     mem: emptyMem()
+                })
+                archiveInfo[archiveId.value] = {
+                    title: '黙認',
+                    accessTime: Date.now(),
+                    size: 0,
+                    wordCount: 1
                 }
-            ]
-        }
-    }
-    watch(archiveId, load, { immediate: true })
+            }
+        })
+        updateMaxId()
+    }, { immediate: true })
 
     const add = (word: Omit<IWord, 'id'>) => {
         const id = ++ maxId.value
         words.value.push({ ...word, id })
-        save()
         return id
     }
 
     const modify = (word: IWord) => {
         const oldIndex = words.value.findIndex(i => i.id === word.id)
-        if (oldIndex >= 0) words.value[oldIndex] = word
+        if (oldIndex >= 0) words.value.set(oldIndex, word)
         else words.value.push(word)
-        save()
     }
 
     const withdraw = (id: number) => {
         const index = words.value.findIndex(word => word.id === id)
-        if (index >= 0) words.value.splice(index, 1)
+        if (index >= 0) words.value.swapRemove(index)
         updateMaxId()
-        save()
-    }
-
-    const merge = (words: IWord[]) => {
-        words.forEach(word => modify(word))
     }
 
     const getById = (id: number | undefined): IWord | undefined => {
@@ -98,17 +76,13 @@ export const useWords = defineStore('words', () => {
         const origEasiness = word.mem.easiness ?? 0
         word.mem.easiness = Math.max(Math.min(origEasiness + (rec.correct - 0.6) * 0.5, 3), 0)
         const interval = baseInterval * word.mem.easiness + 0.25
-        word.mem.testAfter = Date.now() + interval * 24 * 3600 * 1000 
-
-        save()
+        word.mem.testAfter = Date.now() + interval * 24 * 3600 * 1000
 
         return word.mem.easiness
     }
 
     const popTestRec = (word: IWord): ITestRec | undefined => {
         const rec = word.mem.testRec.pop()
-
-        save()
         return rec
     }
 
@@ -116,8 +90,8 @@ export const useWords = defineStore('words', () => {
 
     return {
         words, archiveId, archiveInfo,
-        updateMaxId, save, load,
-        add, modify, withdraw, merge,
+        updateMaxId,
+        add, modify, withdraw,
         getById, pushTestRec, popTestRec, randomWord
     }
 })

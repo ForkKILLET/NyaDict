@@ -4,7 +4,7 @@ import {
     emptyMem, getCorrectness, getYomikataIndex,
     getRomaji, getLastTestTime, useWords,
 } from '@store/words'
-import { storageRef } from '@util/storage'
+import { storeRef } from '@util/storage'
 import type { IWord } from '@type'
 
 import WordEditor from '@comp/WordEditor.vue'
@@ -64,8 +64,8 @@ const sortMethodInfo = {
 }
 type SortMethod = keyof typeof sortMethodInfo
 type SortDirection = 'up' | 'down'
-const sortMethod = storageRef<SortMethod>('wordsSortMethod', 'createTime')
-const sortDirection = storageRef<SortDirection>('wordsSortDirection', 'up')
+const sortMethod = storeRef<SortMethod>('wordsSortMethod', 'createTime')
+const sortDirection = storeRef<SortDirection>('wordsSortDirection', 'up')
 const sortFunction = computed(() => (a: IWord, b: IWord) => {
     const { value: method } = sortMethod
     const delta =
