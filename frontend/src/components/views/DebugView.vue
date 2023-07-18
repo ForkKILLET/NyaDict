@@ -1,26 +1,24 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useWords } from '@store/words'
-// import { tryJSON } from '@util'
+import { useArchives } from '@/stores/archive'
 
-const wordsStore = useWords()
-const json = ref<string>(JSON.stringify(wordsStore.words, null, 2))
-
-const saveWords = () => {
-    // const words = tryJSON(json.value)
-    // if (words) {
-    //     wordsStore.words = words
-    //     wordsStore.updateMaxId()
-    // }
-}
+const archivesStore = useArchives()
+const json = ref('')
 </script>
 
 <template>
     <div>
-        <textarea v-model="json" spellcheck="false"></textarea>
+        <textarea readonly :value="json" spellcheck="false"></textarea>
         <br />
         <br />
-        <button class="inline card" @click="saveWords">保存</button>
+        <button
+            class="inline card"
+            @click="json = JSON.stringify(archivesStore.exportArchive())"
+        >load</button>
+        <button
+            class="inline card"
+            @click="archivesStore.importArchive(archivesStore.currentId, JSON.parse(json))"
+        >save</button>
     </div>
 </template>
 

@@ -41,9 +41,16 @@ export type ITest = {
 export type IMemMode = 'disp' | 'sub' | 'both'
 
 export type IArchiveInfo = {
+    version: '2' | string
     remoteId?: string
     title: string
     accessTime: number
     size: number
     wordCount?: number
+}
+
+export interface IArchiveData {}
+
+export type IPortableArchive = Record<string, string> & {
+    _info?: IArchiveInfo
 }

@@ -2,55 +2,54 @@
 import { storeToRefs } from 'pinia'
 import { computed, ref } from 'vue'
 import { useAuth } from '@store/auth'
-import { useWords } from '@store/words'
 import { downloadURL, tryJSON } from '@util'
 import { api } from '@util/api'
 import { handleResp } from '@util/notif'
-import type { IArchiveInfo, IWord } from '@type'
-import type {
-        IRemoteArchiveInfo, IArchiveGetMineResp, IArchiveUploadResp, IArchiveDownloadResp
-} from '@type/network'
-
 import ArchiveInfo from '@comp/ArchiveInfo.vue'
 import LongPressButton from '@comp/LongPressButton.vue'
-import { setStorage } from '@/utils/storage'
+import { useArchives } from '@/stores/archive'
+import type { IArchiveInfo } from '@type'
+import type {
+    IRemoteArchiveInfo, IArchiveGetMineResp, IArchiveUploadResp, IArchiveDownloadResp
+} from '@type/network'
+import { IPortableArchive } from '@type'
 
-const wordsStore = useWords()
+const archivesStore = useArchives()
 const { jwtPayload, axiosHeader } = storeToRefs(useAuth())
-const { archiveId, archiveInfo } = storeToRefs(wordsStore)
+const { currentId, archiveInfo } = storeToRefs(archivesStore)
 
 type RemoteArchives = Record<string, IRemoteArchiveInfo>
-const remoteArchiveInfo = ref<RemoteArchives | null>(null)
+const remoteInfo = ref<RemoteArchives | null>(null)
 
-type ArchiveInfoWithRemotes = Record<string, [ IArchiveInfo?, IRemoteArchiveInfo? ]>
-const archiveInfoWithRemotes = computed<ArchiveInfoWithRemotes>(() => {
-    const base: ArchiveInfoWithRemotes = {}
-    const localInfo = archiveInfo.value
-    for (const id in localInfo) {
-        base[id] = [ localInfo[id] ]
+type ArchiveInfoWithRemote = Record<string, [ IArchiveInfo?, IRemoteArchiveInfo? ]>
+const infoWithRemote = computed<ArchiveInfoWithRemote>(() => {
+    const base: ArchiveInfoWithRemote = {}
+    const local = archiveInfo.value
+    for (const id in local) {
+        base[id] = [ local[id] ]
     }
-    const remoteInfo = remoteArchiveInfo.value
-    if (remoteInfo) for (const id in remoteInfo) {
+    const remote = remoteInfo.value
+    if (remote) for (const id in remote) {
         base[id] ??= []
-        base[id][1] = remoteInfo[id]
+        base[id][1] = remote[id]
     }
     return base
 })
 
-const archiveBlobs: Record<string, Blob> = {}
+const jsons: Record<string, string> = {}
+const blobs: Record<string, Blob> = {}
  
-const makeArchiveBlob = (id: string) => {
-    archiveBlobs[id] = new Blob([
-        localStorage.getItem('words:' + id)!
+const makeBlob = (id: string) => {
+    blobs[id] = new Blob([
+        jsons[id] = JSON.stringify(archivesStore.exportArchive(id))
     ])
 }
-const withdrawArchive = (id: string) => {
+const withdraw = (id: string) => {
     delete archiveInfo.value[id]
-    setStorage(`words:${id}#length`, 0)
-    if (archiveId.value === id) wordsStore.words.length = 0
+    archivesStore.withdrawArchive(id)
 }
-const exportArchive = (id: string) => {
-    const url = URL.createObjectURL(archiveBlobs[id])
+const exports = (id: string) => {
+    const url = URL.createObjectURL(blobs[id])
     downloadURL(url, `nyadict-${archiveInfo.value[id].title}-${Date.now()}.json`)
     URL.revokeObjectURL(url)
 }
@@ -66,32 +65,25 @@ const selectedTitle = computed(() => {
 const onSelectFile = (event: Event) => {
     selectedFile.value = (event.currentTarget as HTMLInputElement).files?.[0]
 }
-const importArchive = async () => {
+const imports = async () => {
     const file = selectedFile.value!
     const newJSON = await file.text()
-    const newWords: IWord[] = tryJSON(newJSON)
-    if (! newWords) {
-        return
-    }
+    const newData: IPortableArchive = tryJSON(newJSON)
+    if (newData?._info?.version !== '2') return
 
     let newId = 0
-    while (newId in archiveInfo.value) newId ++
-    archiveInfo.value[newId] = {
-        title: selectedTitle.value!,
-        accessTime: Date.now(),
-        wordCount: newWords.length,
-        size: file.size
-    }
+    for (const id in archiveInfo.value) newId = Math.max(+ id, newId)
+    newId ++
 
-    localStorage.setItem('words:' + newId, newJSON)
+    archivesStore.importArchive(String(newId), newData)
 }
 
 for (const id in archiveInfo.value) {
-    makeArchiveBlob(id)
-    archiveInfo.value[id].size = archiveBlobs[id].size
+    makeBlob(id)
+    archiveInfo.value[id].size = blobs[id].size
 }
 
-const getRemoteArchives = async () => {
+const getRemoteInfo = async () => {
     const resp = await handleResp({
         name: 'アーカイブ・リストを取得',
         silentSuccess: true,
@@ -108,17 +100,17 @@ const getRemoteArchives = async () => {
             accessTime: + new Date(info.accessTime)
         }
     })
-    remoteArchiveInfo.value = archives
+    remoteInfo.value = archives
 }
-const uploadArchive = async (id: string) => {
+const upload = async (id: string) => {
     const info = archiveInfo.value[id]
 
     const resp = await handleResp({
         name: 'アップロード',
         action: async () => await api.post('/archive/upload', {
+            ...info,
             idPerUser: id,
-            title: info.title,
-            content: localStorage.getItem('words:' + id),
+            content: jsons[id],
             public: false
         }, {
             headers: axiosHeader.value
@@ -126,10 +118,10 @@ const uploadArchive = async (id: string) => {
     })
     if (! resp) return
 
-    await getRemoteArchives()
+    await getRemoteInfo()
 }
 
-const downloadArchive = async (id: string) => {
+const download = async (id: string) => {
     const resp = await handleResp({
         name: 'ダウンロード',
         action: async () => await api.get(`/archive/mine/${id}`, {
@@ -139,21 +131,26 @@ const downloadArchive = async (id: string) => {
     if (! resp) return
 
     archiveInfo.value[resp.idPerUser] = {
+        version: '2',
         title: resp.title,
         size: resp.size,
         wordCount: resp.wordCount,
         accessTime: + new Date(resp.accessTime)
     }
 
-    localStorage.setItem('words:' + resp.idPerUser, resp.content)
+    const newData = tryJSON(resp.content) as IPortableArchive
+    if (! newData) return
+    archivesStore.importArchive(id, newData)
 
-    makeArchiveBlob(id)
+    makeBlob(id)
 
-    if (archiveId.value === resp.idPerUser) wordsStore.words.reload()
+    if (currentId.value === resp.idPerUser) {
+        archivesStore.reloadArchive()
+    }
 }
 
 if (jwtPayload.value) {
-    getRemoteArchives()
+    getRemoteInfo()
 }
 </script>
 
@@ -175,46 +172,47 @@ if (jwtPayload.value) {
                 :info="{
                     title: selectedTitle!,
                     accessTime: selectedFile.lastModified,
-                    size: selectedFile.size
+                    size: selectedFile.size,
+                    version: 'N/A'
                 }"
             >
                 <fa-icon
-                    @click="importArchive"
+                    @click="imports"
                     class="button"
                     icon="file-import"
                 />
             </ArchiveInfo>
 
             <div
-                v-for="[ local, remote ], id in archiveInfoWithRemotes"
+                v-for="[ local, remote ], id in infoWithRemote"
                 class="archive-list-entry"
             >
                 <ArchiveInfo
-                    :active="id === archiveId"
+                    :active="id === currentId"
                     :id="id"
                     :info="local"
                     :no-info-reason="'noLocal'"
                 >
                     <fa-icon
-                        @click="archiveId !== id && (archiveId = id)"
+                        @click="currentId !== id && (currentId = id)"
                         class="button"
-                        :icon="archiveId === id ? 'flag-checkered' : 'flag'"
+                        :icon="currentId === id ? 'flag-checkered' : 'flag'"
                         :fixed-width="true"
                     />
                     <fa-icon
-                        @click="exportArchive(id)"
+                        @click="exports(id)"
                         class="button"
                         icon="file-arrow-down"
                         :fixed-width="true"
                     />
                     <LongPressButton
-                        @long-press="uploadArchive(id)"
+                        @long-press="upload(id)"
                         icon="cloud-arrow-up"
                         color="#000"
                         :duration=".5"
                     />
                     <LongPressButton
-                        @long-press="withdrawArchive(id)"
+                        @long-press="withdraw(id)"
                         icon="trash"
                         color="#ec4e1e"
                         :duration="1.5"
@@ -229,7 +227,7 @@ if (jwtPayload.value) {
                     :no-info-reason="jwtPayload ? 'noRemote' : 'noAccount'"
                 >
                     <LongPressButton #default
-                        @long-press="downloadArchive(id)"
+                        @long-press="download(id)"
                         icon="cloud-arrow-down"
                         color="#000"
                         :duration=".5"

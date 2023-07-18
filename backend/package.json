@@ -1,6 +1,6 @@
 {
   "name": "nyadict-backend",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "",
   "author": "",
   "private": true,
@@ -21,10 +21,10 @@
     "@nestjs/jwt": "^10.0.3",
     "@nestjs/mapped-types": "^1.2.2",
     "@nestjs/platform-fastify": "^9.4.2",
-    "@prisma/client": "^4.15.0",
+    "@prisma/client": "^5.0.0",
     "bcrypt": "^5.1.0",
     "fastify": "^4.18.0",
-    "prisma": "^4.15.0",
+    "prisma": "^5.0.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1"
   },

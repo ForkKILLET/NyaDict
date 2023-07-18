@@ -68,16 +68,20 @@ const endEditing = () => {
                     </div>
                 </div>
                 <div>
-                    <fa-icon icon="fa-solid fa-calendar" :fixed-width="true" />
+                    <fa-icon icon="calendar" :fixed-width="true" />
                     <NyaDate :date="info.accessTime" :long="true" />
                 </div>
                 <div>
-                    <fa-icon icon="fa-solid fa-folder" :fixed-width="true" />
+                    <fa-icon icon="folder" :fixed-width="true" />
                     <span><span class="number">{{ info.wordCount ?? 'N/A' }}</span> 単語</span>
                 </div>
                 <div>
-                    <fa-icon icon="fa-solid fa-box" :fixed-width="true" />
+                    <fa-icon icon="box" :fixed-width="true" />
                     <span><span class="number">{{ (info.size / 1024).toFixed(2) }}</span> KiB</span>
+                </div>
+                <div>
+                    <fa-icon icon="code" :fixed-width="true" />
+                    <span>v<span class="number">{{ info.version }}</span></span>
                 </div>
             </div>
             <div class="archive-info-action">

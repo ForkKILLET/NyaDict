@@ -1,5 +1,6 @@
-import { reactive, ref, watch, type WatchStopHandle } from 'vue'
+import { reactive, ref, watch, type Ref, type WatchStopHandle } from 'vue'
 import { tryJSON } from '@util'
+import { kDispose, type Disposable } from './disposable'
 
 export const getStorage = <T>(key: string): T | undefined => {
     return tryJSON(localStorage.getItem(key))
@@ -18,20 +19,23 @@ export const initStorage = <T>(key: string, defaultValue: T): T => {
     return initValue
 }
 
-export const storeRef = <T>(key: string, value: T) => {
+export const storeRef = <T>(key: string, value: T): Ref<T> & Disposable => {
     const r = ref(initStorage(key, value))
-    watch(r, newValue => setStorage(key, newValue))
-    return r
+    const stop = watch(r, newValue => setStorage(key, newValue))
+    return Object.assign(r as Ref<T>, { [kDispose]: stop })
 }
 
-export const storeReactive = <T extends object>(key: string, value: T): T => {
+export const storeReactive = <T extends object>(key: string, value: T): T & Disposable => {
     const r = reactive(initStorage(key, value)) as T
-    watch(r, (newValue) => setStorage(key, newValue))
-    return r
+    const stop = watch(r, (newValue) => setStorage(key, newValue))
+    return Object.assign(r, {
+        [kDispose]: stop
+    })
 }
 
 export type ArrayStore<T> = T[] & {
     set: (index: number, value: T) => T
+    remove: (index: number) => boolean
     swapRemove: (index: number) => number
     reload: () => void
 }
@@ -42,7 +46,7 @@ export const storeArray = <T extends object>(key: string, options: {
         serialize: (value: T) => string
         deserialize: (str: string) => T
     }
-} = {}): ArrayStore<T> => {
+} = {}): Ref<ArrayStore<T>> & Disposable => {
     const lengthKey = `${key}#length`
     const { serialize, deserialize } = options.map ?? {
         serialize: (value: T) => JSON.stringify(value),
@@ -83,10 +87,11 @@ export const storeArray = <T extends object>(key: string, options: {
             
             return removed
         },
+        remove: (index: number) => remove(index),
         swapRemove: (index: number): number => {
-            update(index, arr[arr.length - 1])
-            arr.length --
-            
+            if (index !== arr.length - 1) update(index, arr[arr.length - 1])
+            remove(arr.length - 1)
+            reactiveArr.length --
             return updateLength()
         },
         reload: () => {
@@ -95,7 +100,6 @@ export const storeArray = <T extends object>(key: string, options: {
             load()
         }
     })
-    const reactiveArr = reactive(arr) as ArrayStore<T>
     
     let isInit = false
     const load = () => {
@@ -111,15 +115,20 @@ export const storeArray = <T extends object>(key: string, options: {
     }
     load()
 
+    const reactiveArr = reactive(arr) as ArrayStore<T>
+
     const updateLength = () => {
         setStorage(lengthKey, arr.length)
         return arr.length
     }
-    const update = (index: string | number, value: T) => {
-        reactiveArr[+ index] = value
+    const update = (index: number, value: T) => {
         localStorage.setItem(`${key}#${index}`, serialize(value))
-        console.trace(`[Array Store] ${key}#${index} = %o`, value)
-        return value
+        return reactiveArr[+ index] = value
+    }
+    const remove = (index: number) => {
+        unwatchIndex(index)
+        localStorage.removeItem(`${key}#${index}`)
+        return delete reactiveArr[+ index]
     }
 
     const watchStopHandles: WatchStopHandle[] = []
@@ -137,7 +146,9 @@ export const storeArray = <T extends object>(key: string, options: {
     }
 
     if (isInit) options.onInit?.(reactiveArr)
-    return reactiveArr
+    return Object.assign(ref(reactiveArr) as Ref<ArrayStore<T>>, {
+        [kDispose]: () => {
+            watchStopHandles.forEach(stop => stop())
+        }
+    })
 }
-
-Object.assign(window, { storeArray })

@@ -29,6 +29,7 @@ export type ISignUpResp = NyaResp<{
 
 export type IRemoteArchiveInfo = {
     id: string
+    version: '2' | string
     owner: string
     idPerUser: string
     title: string

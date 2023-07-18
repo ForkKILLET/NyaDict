@@ -33,7 +33,7 @@ export class AuthService {
       data: {
         name: signUpDto.name,
         password: hashedPassword,
-      }
+      },
     });
   }
 

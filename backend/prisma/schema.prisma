@@ -10,6 +10,7 @@ datasource db {
 model Archive {
     id         String   @id @default(auto()) @map("_id") @db.ObjectId
     idPerUser  String
+    version    String
     owner      String
     title      String
     wordCount  Int

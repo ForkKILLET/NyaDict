@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import type { IWord } from '@type'
-
+import { computed } from 'vue'
 import { useOffsetPagination } from '@vueuse/core'
 import WordListEntry from '@comp/WordListEntry.vue'
-import Pager from '@comp/Pager.vue';
-import { computed } from 'vue';
+import Pager from '@comp/Pager.vue'
+import type { IWord } from '@type'
 
 const props = defineProps<{
     words: IWord[]

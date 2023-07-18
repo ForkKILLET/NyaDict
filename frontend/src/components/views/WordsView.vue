@@ -45,7 +45,7 @@ const toolbarConfig = reactive<ToolbarConfigItem[]>([
 const searchText = ref('')
 const filteredWords = computed<IWord[]>(() => {
     const pat = searchText.value
-    if (! pat) return wordsStore.words
+    if (! pat) return [...wordsStore.words]
     return wordsStore.words.filter(word => (
         word.disp.includes(pat) || word.sub.includes(pat) ||
         getRomaji(word).includes(pat)
@@ -66,21 +66,23 @@ type SortMethod = keyof typeof sortMethodInfo
 type SortDirection = 'up' | 'down'
 const sortMethod = storeRef<SortMethod>('wordsSortMethod', 'createTime')
 const sortDirection = storeRef<SortDirection>('wordsSortDirection', 'up')
-const sortFunction = computed(() => (a: IWord, b: IWord) => {
+const sortFunction = computed(() => {
     const { value: method } = sortMethod
-    const delta =
-        method === 'createTime' ? a.mem.createTime - b.mem.createTime :
-        method === 'acc' ? getCorrectness(a.mem) - getCorrectness(b.mem) :
-        method === 'correctCount' ? a.mem.correctCount - b.mem.correctCount :
-        method === 'wrongCount' ? a.mem.wrongCount - b.mem.wrongCount :
-        method === 'halfCorrectCount' ? a.mem.halfCorrectCount - b.mem.halfCorrectCount :
-        method === 'yomikata' ? getYomikataIndex(b) - getYomikataIndex(a) :
-        method === 'testTime' ? getLastTestTime(a) - getLastTestTime(b) :
-        method === 'easiness' ? a.mem.easiness - b.mem.easiness :
-        0
-    return sortDirection.value === 'up' ? - delta : + delta
+    return (a: IWord, b: IWord) => {
+        const delta =
+            method === 'createTime' ? a.mem.createTime - b.mem.createTime :
+            method === 'acc' ? getCorrectness(a.mem) - getCorrectness(b.mem) :
+            method === 'correctCount' ? a.mem.correctCount - b.mem.correctCount :
+            method === 'wrongCount' ? a.mem.wrongCount - b.mem.wrongCount :
+            method === 'halfCorrectCount' ? a.mem.halfCorrectCount - b.mem.halfCorrectCount :
+            method === 'yomikata' ? getYomikataIndex(b) - getYomikataIndex(a) :
+            method === 'testTime' ? getLastTestTime(a) - getLastTestTime(b) :
+            method === 'easiness' ? a.mem.easiness - b.mem.easiness :
+            0
+        return sortDirection.value === 'up' ? - delta : + delta
+    }
 })
-const sortedWords = computed(() => filteredWords.value.sort(sortFunction.value))
+const sortedWords = computed(() => [...filteredWords.value].sort(sortFunction.value))
 const onSortMethodClick = (method: SortMethod) => {
     if (method === sortMethod.value)
         sortDirection.value = sortDirection.value === 'up' ? 'down' : 'up'

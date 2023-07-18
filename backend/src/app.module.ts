@@ -6,14 +6,8 @@ import { ArchiveModule } from './archive/archive.module';
 import { PrismaService } from './prisma/prisma.service';
 
 @Module({
-  imports: [
-    AuthModule,
-    ArchiveModule,
-  ],
+  imports: [AuthModule, ArchiveModule],
   controllers: [AppController],
-  providers: [
-    AppService,
-    PrismaService,
-  ],
+  providers: [AppService, PrismaService],
 })
 export class AppModule {}

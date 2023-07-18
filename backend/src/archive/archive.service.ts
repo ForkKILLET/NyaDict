@@ -1,30 +1,25 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Prisma } from '@prisma/client';
 import { UpsertArchiveDto } from './dto/upsert-archive.dto';
 
 @Injectable()
 export class ArchiveService {
-  constructor(
-    private prisma: PrismaService
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   async upsert(owner: string, data: UpsertArchiveDto) {
     try {
-      const content: [] = JSON.parse(data.content);
       const size = Buffer.byteLength(data.content, 'utf-8');
-      const wordCount = content.length;
       return this.prisma.archive.upsert({
         create: {
           ...data,
           owner,
           size,
-          wordCount
+          accessTime: new Date(),
         },
         update: {
           content: data.content,
           size,
-          wordCount,
+          accessTime: new Date(),
         },
         where: {
           owner_idPerUser: {
@@ -32,7 +27,7 @@ export class ArchiveService {
             idPerUser: data.idPerUser,
           },
         },
-      })
+      });
     } catch (error) {
       throw new BadRequestException('アーカイブ・データは破損しました');
     }
@@ -49,6 +44,7 @@ export class ArchiveService {
         public: true,
         size: true,
         accessTime: true,
+        version: true,
       },
       where: {
         owner,

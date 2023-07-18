@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Post, Req } from '@nestjs/common';
 import { FastifyRequest } from 'fastify';
 import { ArchiveService } from './archive.service';
-import { UpsertArchiveDto } from './dto/upsert-archive.dto'
+import { UpsertArchiveDto } from './dto/upsert-archive.dto';
 
 @Controller('archive')
 export class ArchiveController {

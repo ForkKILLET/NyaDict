@@ -5,9 +5,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Module({
   controllers: [ArchiveController],
-  providers: [
-    PrismaService,
-    ArchiveService,
-  ],
+  providers: [PrismaService, ArchiveService],
 })
 export class ArchiveModule {}

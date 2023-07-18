@@ -21,7 +21,7 @@ defineProps<{
         <p class="word-sub">{{ word.sub }}</p>
         <p>
             <LongPressButton
-                v-if="wordsStore.getById(word.id)"
+                v-if="word.id > 0"
                 @long-press="wordsStore.withdraw(word.id); word.id = -1"
                 icon="trash"
                 color="#ec4e1e"

@@ -1,48 +1,71 @@
-import { defineStore } from 'pinia' 
-import { ref, watch } from 'vue'
+import { toRefs, type Ref } from 'vue'
+import { defineStore, storeToRefs } from 'pinia' 
 import { toHiragana, toRomaji, isHiragana} from 'wanakana'
 import { randomItem } from '@util'
-import { storeRef, storeReactive, storeArray, type ArrayStore } from '@util/storage'
-import type { IArchiveInfo, IMemory, ITestRec, IWord } from '@type'
+import { useArchives } from '@store/archive'
+import type { IMemory, ITestRec, IWord } from '@type'
+import { storeRef, type ArrayStore, storeArray } from '@/utils/storage'
+import type { Disposable } from '@/utils/disposable'
 
 export const baseInterval = 5
 
-export const useWords = defineStore('words', () => {
-    const archiveId = storeRef('archiveId', '0')
-    const archiveInfo = storeReactive<Record<string, IArchiveInfo>>('archiveInfo', {})
-    const words = ref(undefined as unknown as ArrayStore<IWord>)
-
-    const maxId = ref(0)
-    const updateMaxId = () => {
-        maxId.value = words.value.length ? Math.max(...words.value.map(word => word.id)) : -1
+declare module '@type' {
+    interface IArchiveData {
+        words: Ref<ArrayStore<IWord>> & Disposable
+        wordMaxId: Ref<number> & Disposable
     }
+}
 
-    Object.assign(window, {words})
+export const useWords = defineStore('words', () => {
+    const archiveStore = useArchives()
+    const { archiveData } = storeToRefs(archiveStore)
 
-    watch(archiveId, newId => {
-        words.value = storeArray('words:' + newId, {
-            onInit: words => {
-                words.push({
-                    id: 0,
-                    disp: 'ニャディクト',
-                    sub: 'Nya Dict',
-                    desc: '',
-                    mem: emptyMem()
-                })
-                archiveInfo[archiveId.value] = {
-                    title: '黙認',
-                    accessTime: Date.now(),
-                    size: 0,
-                    wordCount: 1
+    archiveStore.defineArchiveItem('wordMaxId', (key) => storeRef(key, 0))
+    archiveStore.defineArchiveItem('words', (key) => storeArray(key, {
+        onInit: (store) => {
+            store.push({
+                id: 0,
+                disp: 'ニャディクト',
+                sub: 'Nya Dict',
+                desc: '',
+                mem: emptyMem()
+            })
+            archiveStore.archiveInfo['0'] = {
+                title: '黙認',
+                accessTime: Date.now(),
+                size: 0,
+                wordCount: 1,
+                version: '2'
+            }
+        },
+        map: {
+            serialize: ({
+                id: I, disp: D, sub: S,
+                mem: { easiness: E, testAfter: TT, correctCount: C, halfCorrectCount: H, wrongCount: W, createTime: TC, testRec: R }
+            }) => JSON.stringify({
+                I, D, S,
+                M: { E, TT, C, H, W, TC, R: R.map(({ time: T, correct: C, mode: M, oldEasiness: E }) => ({ T, C, M, E })) }
+            }),
+            deserialize: (str) => {
+                const { I, D, S, M: { E, TT, C, H, W, TC, R } } = JSON.parse(str)
+                return {
+                    id: I, disp: D, sub: S,
+                    mem: {
+                        easiness: E, testAfter: TT, correctCount: C, halfCorrectCount: H, wrongCount: W, createTime: TC,
+                        // @ts-ignore
+                        testRec: R.map(({ T, C, M, E }) => ({ time: T, correct: C, mode: M, oldEasiness: E }))
+                    }
                 }
             }
-        })
-        updateMaxId()
-    }, { immediate: true })
+        }
+    }))
+
+    const { words, wordMaxId: maxId } = toRefs(archiveData.value)
 
     const add = (word: Omit<IWord, 'id'>) => {
         const id = ++ maxId.value
         words.value.push({ ...word, id })
+        archiveStore.archiveInfo[archiveStore.currentId].wordCount! ++
         return id
     }
 
@@ -55,7 +78,7 @@ export const useWords = defineStore('words', () => {
     const withdraw = (id: number) => {
         const index = words.value.findIndex(word => word.id === id)
         if (index >= 0) words.value.swapRemove(index)
-        updateMaxId()
+        archiveStore.archiveInfo[archiveStore.currentId].wordCount! --
     }
 
     const getById = (id: number | undefined): IWord | undefined => {
@@ -89,8 +112,7 @@ export const useWords = defineStore('words', () => {
     const randomWord = () => randomItem(words.value)
 
     return {
-        words, archiveId, archiveInfo,
-        updateMaxId,
+        words,
         add, modify, withdraw,
         getById, pushTestRec, popTestRec, randomWord
     }
