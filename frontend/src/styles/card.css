@@ -13,31 +13,34 @@ input.card {
     padding: .5em .8em;
 }
 
-button.card {
+button.card, .checkbox.card {
     user-select: none;
     cursor: pointer;
     color: #db8e30;
     transition: .5s color, .5s background-color, .5s box-shadow;
 }
-button.card:not(.disabled):hover, button.card:not(.disabled):active {
+button.card:enabled:hover, button.card:enabled:active,
+.card.checkbox:hover {
     color: #f7b96e;
-    background-color: #ffffff;
+    background-color: #fff;
     box-shadow: 0 0 .4em #faae70ef;
 }
+button.card:disabled {
+    cursor: not-allowed;
+}
+button.card:disabled > * {
+    color: #aaa;
+}
 
-.card.active {
+.card.active,
+.checkbox-label > input:enabled:checked + .card.checkbox {
     color: #fff;
     background-color: #db8e30;
 }
-.card.active:hover {
-    color: #f7b96e;
-    background-color: #db8e30;
-}
-
-.card.disabled, .card.disabled:deep( *) {
-    color: #aaa;
-    text-decoration: line-through;
-    cursor: not-allowed;
+button.card.active:hover,
+.checkbox-label > input:enabled:checked + .card.checkbox:hover {
+    background-color: #f7b96e;
+    color: #fff;
 }
 
 .inline.card {

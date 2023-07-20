@@ -11,6 +11,7 @@ import Correctness from '@comp/Correctness.vue'
 import NyaDate from '@comp/NyaDate.vue'
 import WordDetail from '@comp/WordDetail.vue'
 import WordList from '@comp/WordList.vue'
+import NyaCheckbox from '../NyaCheckbox.vue'
 
 const wordsStore = useWords()
 const testStore = useTest()
@@ -22,6 +23,15 @@ const testModeInfo: Record<ITestMode, string> = {
 }
 const testMode = ref<ITestMode | null>(null)
 const testSize = ref(20)
+const untestedOnly = ref(false)
+
+const testableWords = computed(() => {
+    const now = Date.now()
+    return wordsStore.words.filter(word => {
+        const { testAfter } = word.mem
+        return ! testAfter || (! untestedOnly.value && testAfter < now)
+    })
+})
 
 const currentTest = ref<ITest>()
 const testConfirmed = ref(false)
@@ -57,7 +67,7 @@ const useExistingTest = () => {
 
 const ableToCreateTest = computed(() => (
     !! testMode.value &&
-    0 < testSize.value && testSize.value <= testStore.testableWords.length
+    0 < testSize.value && testSize.value <= testableWords.value.length
 ))
 
 const createTest = () => {
@@ -71,7 +81,7 @@ const createTest = () => {
         })
         return
     }
-    currentTest.value = testStore.generateTest(testMode.value!, testSize.value)
+    currentTest.value = testStore.generateTest(testableWords.value, testMode.value!, testSize.value)
 }
 
 const dropLastTest = () => {
@@ -155,38 +165,42 @@ const navigateTestedWord = (delta: number) => {
 <template>
     <div class="content">
         <template v-if="! currentTest">
-            <div v-if="! existingTest">
+            <div v-if="! existingTest" class="create-test-area">
                 <h2>テスト設定</h2>
-                <p>どのテスト・モードにしますか。</p>
-                <p v-for="info, mode in testModeInfo">
-                    <button
-                        class="inline card test-mode"
+                <div>
+                    <p>テスト・モード</p>
+                    <button v-for="info, mode in testModeInfo"
+                        class="inline w1 card test-mode"
                         :class="{ active: testMode === mode }"
                         @click="testMode = mode"
                     >
                         {{ info }}
                     </button>
-                </p>
-                <p>
-                    いくつの単語にしますか。 <br />
-                    <span class="number">{{ testStore.testableWords.length }}</span>
-                    個の単語が今テストできます。
-                </p>
-                <input
-                    v-model="testSize"
-                    type="number" min="0" :max="testStore.testableWords.length"
-                    placeholder="単語数"
-                    class="w1 card center"
-                />
-                <p>
+                </div>
+                <div>
+                    <p>フィルタ</p>
+                    <NyaCheckbox v-model="untestedOnly">未テストだけ</NyaCheckbox>
+                </div>
+                <div>
+                    <p>単語数</p>
+                    <p>（今 <span class="number">{{ testableWords.length }}</span>
+                    個の単語がテストできます。）</p>
+                    <input
+                        v-model="testSize"
+                        type="number" min="0" :max="testableWords.length"
+                        placeholder="単語数"
+                        class="w1 card center"
+                    />
+                </div>
+                <div>
                     <button
                         class="inline card"
-                        :class="{ disabled: ! ableToCreateTest }"
+                        :disabled="! ableToCreateTest"
                         @click="createTest"
                     >
                         <fa-icon icon="arrow-right" class="button no-animation" />
                     </button>
-                </p>
+                </div>
             </div>
             <div v-else>
                 <h2>終わらないテストがあります</h2>
@@ -330,6 +344,14 @@ const navigateTestedWord = (delta: number) => {
     box-sizing: border-box;
     text-align: center;
     align-items: center;
+}
+
+.create-test-area > div {
+    margin: 1em 0;
+}
+
+.create-test-area > div > p:first-child {
+    font-size: 1.2em;
 }
 
 .test-area {

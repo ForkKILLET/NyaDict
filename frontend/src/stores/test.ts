@@ -1,29 +1,18 @@
 import { defineStore } from 'pinia' 
-import { computed, ref } from 'vue'
-import { useWords } from '@store/words'
+import { ref } from 'vue'
 import { getStorage, setStorage } from '@util/storage'
 import { sample } from '@util'
 import type { ITest, ITestMode, IWord } from '@type'
 
 export const useTest = defineStore('test', () => {
-    const wordsStore = useWords()
-
     const currentTest = ref<ITest | undefined>(getStorage('currentTest'))
 
     const save = () => {
         setStorage('currentTest', currentTest.value)
     }
 
-    const testableWords = computed(() => {
-        const now = Date.now()
-        return wordsStore.words.filter(word => {
-            const { testAfter } = word.mem
-            return ! testAfter || testAfter < now
-        })
-    })
-
-    const generateTest = (mode: ITestMode, size = 20) => {
-        const testableWordIds = testableWords.value.map((word: IWord) => word.id)
+    const generateTest = (testableWords: IWord[], mode: ITestMode, size = 20) => {
+        const testableWordIds = testableWords.map((word: IWord) => word.id)
         const wordIds = sample(testableWordIds, size)
 
         const test: ITest = {
@@ -44,7 +33,7 @@ export const useTest = defineStore('test', () => {
 
     return {
         currentTest,
-        save, testableWords, generateTest
+        save, generateTest
     }
 })
 

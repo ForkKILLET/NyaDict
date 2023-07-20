@@ -77,17 +77,20 @@ h2:first-child {
 input {
     border: none;
 }
+.checkbox-label > input {
+    display: none;
+}
 
 svg.button {
     color: #db8e30;
     padding: 0 .4rem;
-    cursor: pointer;
     transition: .3s color;
 }
 svg.button:not(.no-animation, .disabled) {
+    cursor: pointer;
     animation: .3s hop;
 }
-svg.button:not(.disabled):hover {
+svg.button:not(.no-animation, .disabled):hover {
     color: #f4a23e;
 }
 svg.button:active {
@@ -95,7 +98,7 @@ svg.button:active {
 }
 svg.button.disabled {
     color: #aaa;
-    cursor: unset;
+    cursor: not-allowed;
 }
 
 input.card[type=number]::-webkit-inner-spin-button, 
