@@ -71,6 +71,8 @@ const imports = async () => {
     const newData: IPortableArchive = tryJSON(newJSON)
     if (newData?._info?.version !== '2') return
 
+    selectedFile.value = undefined
+
     let newId = 0
     for (const id in archiveInfo.value) newId = Math.max(+ id, newId)
     newId ++
