@@ -57,6 +57,7 @@ const onCompositionEnd = (event: CompositionEvent) => {
                 v-model="disp"
                 @compositionupdate="onCompositionUpdate"
                 @compositionend="onCompositionEnd"
+                @keydown.enter="onChange"
             />
         </span>
         <span class="word-sub">
