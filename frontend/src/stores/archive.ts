@@ -1,4 +1,4 @@
-import { watch, shallowReactive, toValue } from 'vue'
+import { watch, toValue, shallowReactive, computed, type WritableComputedRef, UnwrapRef } from 'vue'
 import { defineStore } from 'pinia'
 import { storeRef, storeReactive } from '@/utils/storage'
 import type { IArchiveInfo, IArchiveData, IPortableArchive } from '@/types'
@@ -8,7 +8,7 @@ export const useArchives = defineStore('archives', () => {
     const currentId = storeRef('archiveId', '0')
     const archiveInfo = storeReactive<Record<string, IArchiveInfo>>('archiveInfo', {})
 
-    const archiveData = shallowReactive({}) as IArchiveData
+    const archiveData = shallowReactive({} as IArchiveData)
 
     const archiveItemHooks: Array<{
         load: (data: IArchiveData) => (newId: string) => void
@@ -28,6 +28,7 @@ export const useArchives = defineStore('archives', () => {
     }
 
     const reloadArchive = () => {
+        debugger
         const newId = currentId.value
         archiveItemHooks.forEach(({ load }) => load(archiveData)(newId))
     }
@@ -68,10 +69,23 @@ export const useArchives = defineStore('archives', () => {
         }
     }
 
-    Object.assign(window, { archiveData })
+    type IExtractArchiveData<K extends Array<keyof IArchiveData>> = {
+        [key in K[number]]: WritableComputedRef<UnwrapRef<IArchiveData[key]>>
+    }
+
+    const extractData = <K extends Array<keyof IArchiveData>>(keys: K): IExtractArchiveData<K> => {
+        const values: any = {}
+        keys.forEach(key => {
+            values[key] = computed({
+                get: () => archiveData[key].value,
+                set: (v) => archiveData[key].value = v
+            })
+        })
+        return values as IExtractArchiveData<K>
+    }
 
     return {
-        currentId, archiveInfo, archiveData,
+        currentId, archiveInfo, archiveData, extractData,
         defineArchiveItem, disposeArchive, reloadArchive, exportArchive, withdrawArchive, importArchive
     }
 })

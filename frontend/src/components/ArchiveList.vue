@@ -158,7 +158,7 @@ if (jwtPayload.value) {
     <div class="archive-list">
         <p class="archive-list-title">
             <span class="number">{{
-                Object.keys(archiveInfo).length
+                Object.keys(infoWithRemote).length
             }}</span> アーカイブ 
             <label for="file">
                 <fa-icon icon="file-arrow-up" class="button" />

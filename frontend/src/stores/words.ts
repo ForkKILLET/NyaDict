@@ -1,5 +1,5 @@
-import { toRefs, type Ref } from 'vue'
-import { defineStore, storeToRefs } from 'pinia' 
+import { type Ref } from 'vue'
+import { defineStore } from 'pinia' 
 import { toHiragana, toRomaji, isHiragana} from 'wanakana'
 import { randomItem } from '@util'
 import { useArchives } from '@store/archive'
@@ -18,7 +18,6 @@ declare module '@type' {
 
 export const useWords = defineStore('words', () => {
     const archiveStore = useArchives()
-    const { archiveData } = storeToRefs(archiveStore)
 
     archiveStore.defineArchiveItem('wordMaxId', (key) => storeRef(key, 0))
     archiveStore.defineArchiveItem('words', (key) => storeArray(key, {
@@ -60,7 +59,7 @@ export const useWords = defineStore('words', () => {
         }
     }))
 
-    const { words, wordMaxId: maxId } = toRefs(archiveData.value)
+    const { words, wordMaxId: maxId } = archiveStore.extractData([ 'words', 'wordMaxId' ])
 
     const add = (word: Omit<IWord, 'id'>) => {
         const id = ++ maxId.value
