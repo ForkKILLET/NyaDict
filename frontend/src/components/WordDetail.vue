@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useWords } from '@store/words'
 import type { IWord } from '@type'
 import NyaDate from '@comp/NyaDate.vue'
@@ -10,6 +11,8 @@ const wordsStore = useWords()
 defineProps<{
     word: IWord
 }>()
+
+const withdrawed = ref(false)
 </script>
 
 <template>
@@ -21,15 +24,15 @@ defineProps<{
         <p class="word-sub">{{ word.sub }}</p>
         <p>
             <LongPressButton
-                v-if="word.id > 0"
-                @long-press="wordsStore.withdraw(word.id); word.id = -1"
+                v-if="! withdrawed"
+                @long-press="wordsStore.withdraw(word.id); withdrawed = true"
                 icon="trash"
                 color="#ec4e1e"
                 :duration="1.5"
             />
             <LongPressButton
                 v-else
-                @long-press="word.id = wordsStore.add(word)"
+                @long-press="word.id = wordsStore.add(word); withdrawed = false"
                 icon="trash-restore"
                 color="#db8e30"
                 :duration=".5"
