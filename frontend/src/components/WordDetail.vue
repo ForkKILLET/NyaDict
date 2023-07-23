@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed } from 'vue'
 import { useWords } from '@store/words'
 import type { IWord } from '@type'
 import NyaDate from '@comp/NyaDate.vue'
@@ -8,11 +8,11 @@ import WordMemCalendar from '@comp/WordMemCalendar.vue'
 
 const wordsStore = useWords()
 
-defineProps<{
+const props = defineProps<{
     word: IWord
 }>()
 
-const withdrawed = ref(false)
+const withdrawed = computed(() => ! wordsStore.getById(props.word.id))
 </script>
 
 <template>
@@ -25,14 +25,14 @@ const withdrawed = ref(false)
         <p>
             <LongPressButton
                 v-if="! withdrawed"
-                @long-press="wordsStore.withdraw(word.id); withdrawed = true"
+                @long-press="wordsStore.withdraw(word.id)"
                 icon="trash"
                 color="#ec4e1e"
                 :duration="1.5"
             />
             <LongPressButton
                 v-else
-                @long-press="word.id = wordsStore.add(word); withdrawed = false"
+                @long-press="word.id = wordsStore.add(word)"
                 icon="trash-restore"
                 color="#db8e30"
                 :duration=".5"
