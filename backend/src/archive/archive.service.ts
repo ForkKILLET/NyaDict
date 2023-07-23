@@ -17,7 +17,11 @@ export class ArchiveService {
           accessTime: new Date(),
         },
         update: {
+          title: data.title,
+          wordCount: data.wordCount,
+          public: data.public,
           content: data.content,
+
           size,
           accessTime: new Date(),
         },
