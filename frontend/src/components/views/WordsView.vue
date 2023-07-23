@@ -152,6 +152,7 @@ const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
 
 <style scoped>
 .toolbar {
+    margin: -.8em;
     margin-bottom: .5em;
 }
 
@@ -179,27 +180,33 @@ const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
 .left {
     display: flex;
     flex-flow: column;
+    box-sizing: border-box;
     flex-basis: 50%;
     min-width: 20em;
-    padding: 1.2em 0 0 1em;
-    margin-right: 1.5em;
+    padding: 1.2em 1em 0 1em;
+}
+
+.right {
+    box-sizing: border-box;
 }
 
 @media screen and (orientation: portrait) and (max-device-width: 600px) {
 	.left {
-        width: calc(100vw - 2em);
-        flex-basis: unset;
+        flex-basis: calc(100vw - 1em);
+        flex-grow: 0;
         flex-shrink: 0;
         padding-left: 0;
 	}
+    .right {
+        flex-basis: calc(100vw - .5em);
+        flex-grow: 0;
+        flex-shrink: 0;
+        padding-left: 1em;
+    }
 }
 
 .word-list::-webkit-scrollbar {
     display: none;
-}
-
-.word-detail {
-    flex: 1;
 }
 
 input.search {
