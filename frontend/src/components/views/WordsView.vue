@@ -10,6 +10,7 @@ import type { IWord } from '@type'
 import WordEditor from '@comp/WordEditor.vue'
 import WordList from '@comp/WordList.vue'
 import WordDetail from '@comp/WordDetail.vue'
+import { add as addNoti } from '@/utils/notif'
 
 const wordsStore = useWords()
 
@@ -91,6 +92,15 @@ const onSortMethodClick = (method: SortMethod) => {
 }
 
 const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
+    if (! word.disp || ! word.sub) {
+        addNoti({
+            type: 'error',
+            content: '単語の書き方と読み方を入力ください',
+            duration: 2 * 1000
+        })
+        return
+    }
+
     const id = wordsStore.add({ ...word, mem: emptyMem() })
     currentWord.value = wordsStore.getById(id)
 }
