@@ -45,7 +45,11 @@ const onCompositionUpdate = (event: CompositionEvent) => {
 }
 
 const onCompositionEnd = (event: CompositionEvent) => {
-    if (event.data === disp.value && composition.value) sub.value = composition.value
+    if (
+        disp.value &&                   // Exclude situation like 'あ' -> ''
+        event.data === disp.value &&    // Not to bother user when editing
+        composition.value               // Valid hiragana composition exist
+    ) sub.value = composition.value
     composition.value = ''
 }
 </script>
