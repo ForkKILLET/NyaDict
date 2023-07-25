@@ -10,7 +10,7 @@ const route = useRoute()
         <a href="javascript:void 0;" @click="router.back()">
             <fa-icon icon="arrow-left" /> 戻る
         </a> /
-        <RouterLink :to="route.path.replace(/\/.*?$/, '/')">
+        <RouterLink :to="route.path.replace(/\/[^/]*?$/, '') || '/'">
             <fa-icon icon="arrow-up" /> アップ
         </RouterLink>
     </div>
