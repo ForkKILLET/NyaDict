@@ -10,11 +10,11 @@ import { version } from '@/../package.json'
                 <span class="version">{{ version }}</span>
             </a>
         </h1>
-        <p>
-            <fa-icon icon="book" /> <RouterLink to="/words">単語</RouterLink> &middot;
-            <fa-icon icon="vial" /> <RouterLink to="/test">テスト</RouterLink> &middot;
-            <fa-icon icon="chart-line" /> <RouterLink to="/statistics">統計</RouterLink> &middot;
-            <fa-icon icon="rotate" /> <RouterLink to="/sync">同期</RouterLink>
+        <p class="links">
+            <span><fa-icon icon="book" /> <RouterLink to="/words">単語</RouterLink></span> &middot;
+            <span><fa-icon icon="vial" /> <RouterLink to="/test">テスト</RouterLink></span> &middot;
+            <span><fa-icon icon="chart-line" /> <RouterLink to="/statistics">統計</RouterLink></span> &middot;
+            <span><fa-icon icon="rotate" /> <RouterLink to="/sync">同期</RouterLink></span>
         </p>
     </div>
 </template>
@@ -26,6 +26,10 @@ import { version } from '@/../package.json'
     height: 100vh;
     align-items: center;
     justify-content: center;
+}
+
+.links > * {
+    margin: 0 .3em;
 }
 
 h1 {

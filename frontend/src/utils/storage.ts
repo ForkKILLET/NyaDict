@@ -40,18 +40,14 @@ export type ArrayStore<T> = T[] & {
     reload: () => void
 }
 
-export const storeArray = <T extends object>(key: string, options: {
+export const storeArray = <T extends object, U>(key: string, options: {
     onInit?: (store: T[]) => void
     map?: {
-        serialize: (value: T) => string
-        deserialize: (str: string) => T
+        serialize: (value: T) => U
+        deserialize: (mappedValue: U) => T
     }
 } = {}): Ref<ArrayStore<T>> & Disposable => {
     const lengthKey = `${key}#length`
-    const { serialize, deserialize } = options.map ?? {
-        serialize: (value: T) => JSON.stringify(value),
-        deserialize: (str: string) => JSON.parse(str) as T
-    }
 
     const arr: ArrayStore<T> = Object.assign(Array<T>(length), {
         set: (index: number, value: T) => update(index, value),
@@ -110,7 +106,8 @@ export const storeArray = <T extends object>(key: string, options: {
         for (let i = 0; i < length; i ++) {
             const str = localStorage.getItem(`${key}#${i}`)
             if (str === null) continue
-            arr[i] = deserialize(str)
+            const value = JSON.parse(str)
+            arr[i] = options.map ? options.map.deserialize(value) : value
         }
     }
     load()
@@ -122,7 +119,9 @@ export const storeArray = <T extends object>(key: string, options: {
         return arr.length
     }
     const update = (index: number, value: T) => {
-        localStorage.setItem(`${key}#${index}`, serialize(value))
+        localStorage.setItem(`${key}#${index}`, JSON.stringify(
+            options.map ? options.map.serialize(value) : value
+        ))
         return reactiveArr[+ index] = value
     }
     const remove = (index: number) => {

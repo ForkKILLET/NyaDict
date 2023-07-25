@@ -2,7 +2,8 @@ import { type Ref } from 'vue'
 import { defineStore } from 'pinia' 
 import { toHiragana, toRomaji, isHiragana} from 'wanakana'
 import { randomItem } from '@util'
-import { useArchives } from '@store/archive'
+import { useArchive } from '@store/archive'
+import { compress_IWord } from '@/utils/compress'
 import type { IMemory, ITestRec, IWord } from '@type'
 import { storeRef, type ArrayStore, storeArray } from '@/utils/storage'
 import type { Disposable } from '@/utils/disposable'
@@ -13,12 +14,12 @@ declare module '@type' {
     interface IArchiveData {
         words: Ref<ArrayStore<IWord>> & Disposable
         wordMaxId: Ref<number> & Disposable
+        wordFilter: Ref<IWordFilter> & Disposable
     }
 }
 
-export const useWords = defineStore('words', () => {
-    const archiveStore = useArchives()
-
+export const useWord = defineStore('words', () => {
+    const archiveStore = useArchive()
     archiveStore.defineArchiveItem('wordMaxId', (key) => storeRef(key, 0))
     archiveStore.defineArchiveItem('words', (key) => storeArray(key, {
         onInit: (store) => {
@@ -26,7 +27,6 @@ export const useWords = defineStore('words', () => {
                 id: 0,
                 disp: 'ニャディクト',
                 sub: 'Nya Dict',
-                desc: '',
                 mem: emptyMem()
             })
             archiveStore.archiveInfo['0'] = {
@@ -37,29 +37,13 @@ export const useWords = defineStore('words', () => {
                 version: '2'
             }
         },
-        map: {
-            serialize: ({
-                id: I, disp: D, sub: S,
-                mem: { easiness: E, testAfter: TT, correctCount: C, halfCorrectCount: H, wrongCount: W, createTime: TC, testRec: R }
-            }) => JSON.stringify({
-                I, D, S,
-                M: { E, TT, C, H, W, TC, R: R.map(({ time: T, correct: C, mode: M, oldEasiness: E }) => ({ T, C, M, E })) }
-            }),
-            deserialize: (str) => {
-                const { I, D, S, M: { E, TT, C, H, W, TC, R } } = JSON.parse(str)
-                return {
-                    id: I, disp: D, sub: S,
-                    mem: {
-                        easiness: E, testAfter: TT, correctCount: C, halfCorrectCount: H, wrongCount: W, createTime: TC,
-                        // @ts-ignore
-                        testRec: R.map(({ T, C, M, E }) => ({ time: T, correct: C, mode: M, oldEasiness: E }))
-                    }
-                }
-            }
-        }
+        map: compress_IWord
     }))
-
-    const { words, wordMaxId: maxId } = archiveStore.extractData([ 'words', 'wordMaxId' ])
+    archiveStore.defineArchiveItem('wordFilter', (key) => storeRef(key, {
+        search: undefined,
+        testId: undefined
+    }))
+    const { words, wordMaxId: maxId, wordFilter: filter } = archiveStore.extractData([ 'words', 'wordMaxId', 'wordFilter' ])
 
     const add = (word: Omit<IWord, 'id'>) => {
         const id = ++ maxId.value
@@ -111,7 +95,7 @@ export const useWords = defineStore('words', () => {
     const randomWord = () => randomItem(words.value)
 
     return {
-        words,
+        words, filter,
         add, modify, withdraw,
         getById, pushTestRec, popTestRec, randomWord
     }

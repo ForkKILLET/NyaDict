@@ -7,7 +7,7 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import {
     faCirclePlus, faArrowCircleLeft, faArrowCircleRight, faCheckCircle,
-    faTimesCircle, faArrowLeft, faArrowRight, faFilter, faPenToSquare,
+    faTimesCircle, faArrowLeft, faArrowRight, faArrowUp, faFilter, faPenToSquare,
     faBook, faVial, faSort, faSortUp, faSortDown, faRotate, faCalendar,
     faFolder, faBox, faFileImport, faFileArrowDown, faFileArrowUp,
     faFlag, faFlagCheckered, faUserCircle, faUserPlus, faRightToBracket,
@@ -25,7 +25,7 @@ import '@style/card.css'
 
 library.add(...[
     faCirclePlus, faArrowCircleLeft, faArrowCircleRight, faCheckCircle,
-    faTimesCircle, faArrowLeft, faArrowRight, faFilter, faPenToSquare,
+    faTimesCircle, faArrowLeft, faArrowRight, faArrowUp, faFilter, faPenToSquare,
     faBook, faVial, faSort, faSortUp, faSortDown, faRotate, faCalendar,
     faFolder, faBox, faFileArrowDown, faFileArrowUp, faFileImport,
     faFlag, faFlagCheckered, faUserCircle, faUserPlus, faRightToBracket,

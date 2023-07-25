@@ -1,18 +1,19 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useWords } from '@store/words'
+import { useWord } from '@store/words'
 import type { IWord } from '@type'
 import NyaDate from '@comp/NyaDate.vue'
 import LongPressButton from '@comp/LongPressButton.vue'
 import WordMemCalendar from '@comp/WordMemCalendar.vue'
+import NyaTab from './NyaTab.vue'
 
-const wordsStore = useWords()
+const wordStore = useWord()
 
 const props = defineProps<{
     word: IWord
 }>()
 
-const withdrawed = computed(() => ! wordsStore.getById(props.word.id))
+const withdrawed = computed(() => ! wordStore.getById(props.word.id))
 </script>
 
 <template>
@@ -25,31 +26,42 @@ const withdrawed = computed(() => ! wordsStore.getById(props.word.id))
         <p>
             <LongPressButton
                 v-if="! withdrawed"
-                @long-press="wordsStore.withdraw(word.id)"
+                @long-press="wordStore.withdraw(word.id)"
                 icon="trash"
                 color="#ec4e1e"
                 :duration="1.5"
             />
             <LongPressButton
                 v-else
-                @long-press="word.id = wordsStore.add(word)"
+                @long-press="word.id = wordStore.add(word)"
                 icon="trash-restore"
                 color="#db8e30"
                 :duration=".5"
             />
         </p>
         <div class="mem-detail">
-            <h2>メモリー</h2>
-            <div>
-                <fa-icon icon="plus" :fixed-width="true" />
-                <NyaDate :date="word.mem.createTime" />
-            </div>
-            <div>
-                <fa-icon icon="forward" :fixed-width="true" /> 
-                <NyaDate v-if="word.mem.testAfter" :date="word.mem.testAfter" />
-                <span v-else class="number">今</span>
-            </div>
-            <WordMemCalendar :mem="word.mem" />
+            <NyaTab :tabs="[
+                // { name: 'dict', title: '辞書' },
+                { name: 'mem', title: 'メモリー' },
+            ]">
+                <template #mem>
+                    <div>
+                        <fa-icon icon="plus" :fixed-width="true" />
+                        <NyaDate :date="word.mem.createTime" />
+                    </div>
+                    <div>
+                        <fa-icon icon="forward" :fixed-width="true" /> 
+                        <NyaDate v-if="word.mem.testAfter" :date="word.mem.testAfter" />
+                        <span v-else class="number">今</span>
+                    </div>
+                    <WordMemCalendar :mem="word.mem" />
+                </template>
+                <template #dict>
+                    <div>
+                        Hey
+                    </div>
+                </template>
+            </NyaTab>
         </div>
     </div>
 </template>

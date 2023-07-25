@@ -1,18 +1,19 @@
 <script setup lang="ts">
-import { computed, reactive, Ref, ref } from 'vue'
+import { computed, reactive, ref, toRefs, type Ref, watch } from 'vue'
 import {
     emptyMem, getCorrectness, getYomikataIndex,
-    getRomaji, getLastTestTime, useWords,
+    getRomaji, getLastTestTime, useWord
 } from '@store/words'
+import { useTest } from '@/stores/test'
 import { storeRef } from '@util/storage'
-import type { IWord } from '@type'
-
 import WordEditor from '@comp/WordEditor.vue'
 import WordList from '@comp/WordList.vue'
 import WordDetail from '@comp/WordDetail.vue'
 import { add as addNoti } from '@/utils/notif'
+import type { IWord } from '@type'
 
-const wordsStore = useWords()
+const wordStore = useWord()
+const testStore = useTest()
 
 const currentWord = ref<IWord>()
 
@@ -43,14 +44,25 @@ const toolbarConfig = reactive<ToolbarConfigItem[]>([
     }
 ])
 
-const searchText = ref('')
+const { search, testId } = toRefs(wordStore.filter)
+watch(testId, () => {
+    if (testId.value) toolbarMode.value = 'filter'
+}, { immediate: true })
+
 const filteredWords = computed<IWord[]>(() => {
-    const pat = searchText.value
-    if (! pat) return [...wordsStore.words]
-    return wordsStore.words.filter(word => (
-        word.disp.includes(pat) || word.sub.includes(pat) ||
-        getRomaji(word).includes(pat)
-    ))
+    let words = [...wordStore.words]
+    if (testId?.value !== undefined) {
+        const test = testStore.getById(testId.value)
+        if (! test) return []
+        words = test.wordIds.map(id => wordStore.getById(id)!)
+    }
+
+    const text = search?.value
+    if (! text) return [...words]
+    return words.filter(word => {
+        ! text || word.disp.includes(text) || word.sub.includes(text) ||
+        getRomaji(word).includes(text)
+    })
 })
 
 const sortMethodInfo = {
@@ -101,8 +113,8 @@ const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
         return
     }
 
-    const id = wordsStore.add({ ...word, mem: emptyMem() })
-    currentWord.value = wordsStore.getById(id)
+    const id = wordStore.add({ ...word, mem: emptyMem() })
+    currentWord.value = wordStore.getById(id)
 }
 </script>
 
@@ -136,13 +148,18 @@ const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
                             />
                         </span>
                     </div>
-                    <div v-else-if="toolbarMode === 'filter'" class="filter">
-                        <input v-model="searchText" class="card up search" />
-                        <fa-icon
-                            @click="searchText = ''"
-                            icon="times-circle"
-                            class="button"
-                        />
+                    <div v-else-if="toolbarMode === 'filter'">
+                        <div class="filter-search">
+                            <input v-model="search" class="card up search" />
+                            <fa-icon
+                                @click="search = ''"
+                                icon="times-circle"
+                                class="button"
+                            />
+                        </div>
+                        <span v-if="testId" @click="testId = undefined" class="badge">
+                            テスト <span class="id">{{ testId }}</span>
+                        </span>
                     </div>
                 </div>
             </div>
@@ -226,12 +243,13 @@ input.search {
     padding: .2em .5em;
 }
 
-.filter {
+.filter-search {
     display: flex;
     align-items: center;
+    margin-bottom: .5em;
 }
 
-.filter > input {
+.filter-search > input {
     font-family: var(--ja-serif);
 }
 </style>

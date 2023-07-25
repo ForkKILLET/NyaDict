@@ -4,6 +4,8 @@ import type { RouteRecordRaw } from 'vue-router'
 import HomeView from '@comp/views/HomeView.vue'
 import WordsView from '@comp/views/WordsView.vue'
 import TestView from '@comp/views/TestView.vue'
+import TestCreateView from '@comp/views/TestCreateView.vue'
+import TestGoView from '@comp/views/TestGoView.vue'
 import SyncView from '@comp/views/SyncView.vue'
 import SignInView from '@comp/views/SignInView.vue'
 import SignUpView from '@comp/views/SignUpView.vue'
@@ -22,6 +24,14 @@ export const routes = [
     {
         path: '/test',
         component: TestView
+    },
+    {
+        path: '/test/create',
+        component: TestCreateView        
+    },
+    {
+        path: '/test/go',
+        component: TestGoView,
     },
     {
         path: '/sync',

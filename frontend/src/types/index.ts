@@ -27,6 +27,11 @@ export type ITestRec = {
     oldEasiness: number
 }
 
+export type IWordFilter = {
+    search: string | undefined
+    testId: number | undefined
+}
+
 export type ITestMode = 'disp' | 'sub'
 
 // @compress { "accessTime": "TA", "createTime": "TC", "currentIndex": "IC", "maxIndex": "IM" }

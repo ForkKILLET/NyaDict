@@ -4,7 +4,7 @@ import { storeRef, storeReactive } from '@/utils/storage'
 import type { IArchiveInfo, IArchiveData, IPortableArchive } from '@/types'
 import { kDispose } from '@/utils/disposable'
 
-export const useArchives = defineStore('archives', () => {
+export const useArchive = defineStore('archives', () => {
     const currentId = storeRef('archiveId', '0')
     const archiveInfo = storeReactive<Record<string, IArchiveInfo>>('archiveInfo', {})
 

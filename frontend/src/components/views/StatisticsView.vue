@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useWords } from '@/stores/words'
+import { useWord } from '@/stores/words'
 import dayjs from 'dayjs'
 import { interpolateRgb } from 'd3-interpolate'
 
@@ -10,11 +10,11 @@ import Calendar from '@comp/charts/Calendar.vue'
 import PieChart, { type PieData } from '@comp/charts/PieChart.vue'
 import { RelativeTestTime, getRelativeTestTime, relativeTestTimeColors } from '@/stores/test'
 
-const wordsStore = useWords()
+const wordStore = useWord()
 
 const data = {
     createWord: () => {
-        const words = wordsStore.words
+        const words = wordStore.words
         const today = dayjs()
 
         const dates = []
@@ -55,7 +55,7 @@ const data = {
         }
     },
     easiness: () => {
-        const words = wordsStore.words
+        const words = wordStore.words
         const total = words.length
         const groups: Record<string, number> = {}
         words.forEach(word => {
@@ -82,7 +82,7 @@ const data = {
         return { data }
     },
     testAfter: () => {
-        const words = wordsStore.words
+        const words = wordStore.words
         const now = Date.now()
         const total = words.length
         const groups: Record<RelativeTestTime, number> = {

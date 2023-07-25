@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useWords } from '@store/words'
+import { useWord } from '@store/words'
 import type { IWord } from '@type'
 
 import Word from '@comp/Word.vue'
@@ -15,17 +15,17 @@ const emit = defineEmits<{
     (event: 'goto-word', word: IWord): void
 }>()
 
-const wordsStore = useWords()
+const wordStore = useWord()
 
 const editMode = ref(false)
 const onChange = (newWord: Omit<IWord, 'id' | 'mem'>) => {
-    wordsStore.modify({ ...props.word, ...newWord })
+    wordStore.modify({ ...props.word, ...newWord })
     editMode.value = false
 }
 </script>
 
 <template>
-    <div class="word-list-entry">
+    <div class="word-entry">
         <Word v-show="! editMode" :word="word" :class="{ barber: active }">
             <fa-icon
                 v-if="active"

@@ -1,21 +1,38 @@
 import { defineStore } from 'pinia' 
-import { ref } from 'vue'
-import { getStorage, setStorage } from '@util/storage'
+import { computed, ref, type Ref } from 'vue'
+import { useArchive } from '@store/archive'
+import { storeArray, type ArrayStore, storeRef } from '@util/storage'
 import { sample } from '@util'
 import type { ITest, ITestMode, IWord } from '@type'
+import type { Disposable } from '@/utils/disposable'
+
+declare module '@type' {
+    interface IArchiveData {
+        tests: Ref<ArrayStore<ITest>> & Disposable
+        ongoingTestId: Ref<number | undefined> & Disposable
+        testMaxId: Ref<number> & Disposable
+    }
+}
 
 export const useTest = defineStore('test', () => {
-    const currentTest = ref<ITest | undefined>(getStorage('currentTest'))
+    const archiveStore = useArchive()
+    archiveStore.defineArchiveItem('tests', (key) => storeArray(key))
+    archiveStore.defineArchiveItem('ongoingTestId', (key) => storeRef(key, undefined))
+    archiveStore.defineArchiveItem('testMaxId', (key) => storeRef(key, 0))
+    const { tests, ongoingTestId, testMaxId: maxId } = archiveStore.extractData([ 'tests', 'ongoingTestId', 'testMaxId' ])
+    
+    const ongoingTest = computed(() => {
+        return getById(ongoingTestId.value)
+    })
 
-    const save = () => {
-        setStorage('currentTest', currentTest.value)
-    }
+    const lasrTestId = ref<number>()
 
-    const generateTest = (testableWords: IWord[], mode: ITestMode, size = 20) => {
+    const create = (testableWords: IWord[], mode: ITestMode, size = 20) => {
         const testableWordIds = testableWords.map((word: IWord) => word.id)
         const wordIds = sample(testableWordIds, size)
 
         const test: ITest = {
+            id: ++ maxId.value,
             createTime: Date.now(),
             accessTime: Date.now(),
             mode,
@@ -23,17 +40,21 @@ export const useTest = defineStore('test', () => {
             maxIndex: 0,
             currentIndex: 0,
             correctness: [],
-            completed: false
+            locked: false
         }
 
-        currentTest.value = test
-        save()
+        tests.value.push(test)
         return test
     }
 
+    const getById = (id: number | undefined): ITest | undefined => {
+        if (id === undefined) return
+        return tests.value.find(test => test.id === id)
+    }
+
     return {
-        currentTest,
-        save, generateTest
+        tests, ongoingTest, ongoingTestId, lastTestId: lasrTestId,
+        create, getById
     }
 })
 

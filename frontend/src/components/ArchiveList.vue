@@ -7,16 +7,16 @@ import { api } from '@util/api'
 import { handleResp } from '@util/notif'
 import ArchiveInfo from '@comp/ArchiveInfo.vue'
 import LongPressButton from '@comp/LongPressButton.vue'
-import { useArchives } from '@/stores/archive'
+import { useArchive } from '@/stores/archive'
 import type { IArchiveInfo } from '@type'
 import type {
     IRemoteArchiveInfo, IArchiveGetMineResp, IArchiveUploadResp, IArchiveDownloadResp
 } from '@type/network'
 import { IPortableArchive } from '@type'
 
-const archivesStore = useArchives()
+const archiveStore = useArchive()
 const { jwtPayload, axiosHeader } = storeToRefs(useAuth())
-const { currentId, archiveInfo } = storeToRefs(archivesStore)
+const { currentId, archiveInfo } = storeToRefs(archiveStore)
 
 type RemoteArchives = Record<string, IRemoteArchiveInfo>
 const remoteInfo = ref<RemoteArchives | null>(null)
@@ -41,12 +41,12 @@ const blobs: Record<string, Blob> = {}
  
 const makeBlob = (id: string) => {
     blobs[id] = new Blob([
-        jsons[id] = JSON.stringify(archivesStore.exportArchive(id))
+        jsons[id] = JSON.stringify(archiveStore.exportArchive(id))
     ])
 }
 const withdraw = (id: string) => {
     delete archiveInfo.value[id]
-    archivesStore.withdrawArchive(id)
+    archiveStore.withdrawArchive(id)
 }
 const exports = (id: string) => {
     const url = URL.createObjectURL(blobs[id])
@@ -77,7 +77,7 @@ const imports = async () => {
     for (const id in archiveInfo.value) newId = Math.max(+ id, newId)
     newId ++
 
-    archivesStore.importArchive(String(newId), newData)
+    archiveStore.importArchive(String(newId), newData)
 }
 
 for (const id in archiveInfo.value) {
@@ -142,12 +142,12 @@ const download = async (id: string) => {
 
     const newData = tryJSON(resp.content) as IPortableArchive
     if (! newData) return
-    archivesStore.importArchive(id, newData)
+    archiveStore.importArchive(id, newData)
 
     makeBlob(id)
 
     if (currentId.value === resp.idPerUser) {
-        archivesStore.reloadArchive()
+        archiveStore.reloadArchive()
     }
 }
 

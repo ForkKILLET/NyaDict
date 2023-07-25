@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useArchives } from '@/stores/archive'
+import { useArchive } from '@/stores/archive'
 
-const archivesStore = useArchives()
+const archiveStore = useArchive()
 const json = ref('')
 </script>
 
@@ -13,11 +13,11 @@ const json = ref('')
         <br />
         <button
             class="inline card"
-            @click="json = JSON.stringify(archivesStore.exportArchive())"
+            @click="json = JSON.stringify(archiveStore.exportArchive())"
         >load</button>
         <button
             class="inline card"
-            @click="archivesStore.importArchive(archivesStore.currentId, JSON.parse(json))"
+            @click="archiveStore.importArchive(archiveStore.currentId, JSON.parse(json))"
         >save</button>
     </div>
 </template>
