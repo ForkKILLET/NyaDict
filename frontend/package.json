@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite --port 1635",
     "build": "vue-tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+	"compress": "pnpm -F nyadict-frontend-script compress -i ../src/types/index.ts -b @type -o ../src/utils/compress.ts"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.4.0",
@@ -24,10 +25,10 @@
     "wanakana": "^5.1.0"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^4.2.3",
-    "@vue/runtime-core": "^3.3.4",
     "@types/d3-interpolate": "^3.0.1",
     "@types/wanakana": "^4.0.3",
+    "@vitejs/plugin-vue": "^4.2.3",
+    "@vue/runtime-core": "^3.3.4",
     "typescript": "^5.1.3",
     "vite": "^4.3.8",
     "vue-tsc": "^1.6.5"

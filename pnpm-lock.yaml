@@ -157,6 +157,32 @@ importers:
         specifier: ^1.6.5
         version: 1.6.5(typescript@5.1.3)
 
+  frontend/scripts:
+    devDependencies:
+      '@types/dedent':
+        specifier: ^0.7.0
+        version: 0.7.0
+      '@types/minimist':
+        specifier: ^1.2.2
+        version: 1.2.2
+      '@types/node':
+        specifier: 18.16.12
+        version: 18.16.12
+      dedent:
+        specifier: ^1.2.0
+        version: 1.2.0
+      minimist:
+        specifier: ^1.2.8
+        version: 1.2.8
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.1(@types/node@18.16.12)(typescript@5.1.3)
+      typescript:
+        specifier: ^5.1.3
+        version: 5.1.3
+
+  native: {}
+
 packages:
 
   /@angular-devkit/core@16.0.1(chokidar@3.5.3):
@@ -926,6 +952,10 @@ packages:
       '@types/d3-color': 3.1.0
     dev: true
 
+  /@types/dedent@0.7.0:
+    resolution: {integrity: sha512-EGlKlgMhnLt/cM4DbUSafFdrkeJoC9Mvnj0PUCU7tFmTjMjNRT957kXCx0wYm3JuEq4o4ZsS5vG+NlkM2DMd2A==}
+    dev: true
+
   /@types/eslint-scope@3.7.4:
     resolution: {integrity: sha512-9K4zoImiZc3HlIp6AVUDE4CWYx22a+lhSZMYNpbjW04+YF0KWj4pJXnEMjdnFTiQibFFmElcsasJXDbdI/EPhA==}
     dependencies:
@@ -953,6 +983,10 @@ packages:
     dependencies:
       '@types/node': 18.16.12
     dev: false
+
+  /@types/minimist@1.2.2:
+    resolution: {integrity: sha512-jhuKLIRrhvCPLqwPcx6INqmKeiA5EWrsCOPhrlFSrbrmU4ZMPjj5Ul/oLCMDO98XRUIwVm78xICz4EPCektzeQ==}
+    dev: true
 
   /@types/node@18.16.12:
     resolution: {integrity: sha512-tIRrjbY9C277MOfP8M3zjMIhtMlUJ6YVqkGgLjz+74jVsdf4/UjC6Hku4+1N0BS0qyC0JAS6tJLUk9H6JUKviQ==}
@@ -1406,12 +1440,12 @@ packages:
       acorn: 8.8.2
     dev: true
 
-  /acorn-jsx@5.3.2(acorn@8.8.2):
+  /acorn-jsx@5.3.2(acorn@8.10.0):
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
     peerDependencies:
       acorn: ^6.0.0 || ^7.0.0 || ^8.0.0
     dependencies:
-      acorn: 8.8.2
+      acorn: 8.10.0
     dev: true
 
   /acorn-walk@8.2.0:
@@ -1867,6 +1901,15 @@ packages:
     dependencies:
       ms: 2.1.2
 
+  /dedent@1.2.0:
+    resolution: {integrity: sha512-i4tcg0ClgvMUSxwHpt+NHQ01ZJmAkl6eBvDNrSZG9e+oLRTCSHv0wpr/Bzjpf6CwKeIHGevE1M34Y1Axdms5VQ==}
+    peerDependencies:
+      babel-plugin-macros: ^3.1.0
+    peerDependenciesMeta:
+      babel-plugin-macros:
+        optional: true
+    dev: true
+
   /deep-is@0.1.4:
     resolution: {integrity: sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==}
     dev: true
@@ -2128,8 +2171,8 @@ packages:
     resolution: {integrity: sha512-7OASN1Wma5fum5SrNhFMAMJxOUAbhyfQ8dQ//PJaJbNw0URTPWqIghHWt1MmAANKhHZIYOHruW4Kw4ruUWOdGw==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     dependencies:
-      acorn: 8.8.2
-      acorn-jsx: 5.3.2(acorn@8.8.2)
+      acorn: 8.10.0
+      acorn-jsx: 5.3.2(acorn@8.10.0)
       eslint-visitor-keys: 3.4.1
     dev: true
 
@@ -3757,7 +3800,7 @@ packages:
     hasBin: true
     dependencies:
       '@jridgewell/source-map': 0.3.3
-      acorn: 8.8.2
+      acorn: 8.10.0
       commander: 2.20.3
       source-map-support: 0.5.21
     dev: true
@@ -3843,7 +3886,7 @@ packages:
       '@tsconfig/node14': 1.0.3
       '@tsconfig/node16': 1.0.4
       '@types/node': 18.16.12
-      acorn: 8.8.2
+      acorn: 8.10.0
       acorn-walk: 8.2.0
       arg: 4.1.3
       create-require: 1.1.1

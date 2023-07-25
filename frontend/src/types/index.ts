@@ -1,11 +1,12 @@
+// @compress
 export type IWord = {
     id: number
     disp: string
     sub: string
-    desc?: string
     mem: IMemory
 }
 
+// @compress { "testAfter": "TT", "createTime": "TC" }
 export type IMemory = {
     easiness: number
     testAfter: number
@@ -18,6 +19,7 @@ export type IMemory = {
 
 export type ICorrect = 0 | 0.5 | 1
 
+// @compress { "oldEasiness": "E" }
 export type ITestRec = {
     time: number
     correct: ICorrect
@@ -27,7 +29,9 @@ export type ITestRec = {
 
 export type ITestMode = 'disp' | 'sub'
 
+// @compress { "accessTime": "TA", "createTime": "TC", "currentIndex": "IC", "maxIndex": "IM" }
 export type ITest = {
+    id: number
     createTime: number
     accessTime: number
     mode: ITestMode
@@ -35,7 +39,7 @@ export type ITest = {
     currentIndex: number
     maxIndex: number
     correctness: ICorrect[]
-    completed: boolean
+    locked: boolean
 }
 
 export type IMemMode = 'disp' | 'sub' | 'both'
