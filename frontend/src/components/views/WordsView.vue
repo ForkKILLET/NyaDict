@@ -11,6 +11,7 @@ import WordList from '@comp/WordList.vue'
 import WordDetail from '@comp/WordDetail.vue'
 import { add as addNoti } from '@/utils/notif'
 import type { IWord } from '@type'
+import { ITestRec } from '@type'
 
 const wordStore = useWord()
 const testStore = useTest()
@@ -44,25 +45,31 @@ const toolbarConfig = reactive<ToolbarConfigItem[]>([
     }
 ])
 
-const { search, testId } = toRefs(wordStore.filter)
+const { search, testId, testCorrectLevel } = toRefs(wordStore.filter)
 watch(testId, () => {
     if (testId.value) toolbarMode.value = 'filter'
 }, { immediate: true })
 
 const filteredWords = computed<IWord[]>(() => {
     let words = [...wordStore.words]
-    if (testId?.value !== undefined) {
+    let recs: ITestRec[] = []
+    if (testId.value !== null) {
         const test = testStore.getById(testId.value)
         if (! test) return []
-        words = test.wordIds.map(id => wordStore.getById(id)!)
+        words = test.wordIds.map((id, index) => {
+            const word = wordStore.getById(id)!
+            recs[index] = word.mem.testRec[test.recIds[index]]
+            return word
+        })
     }
 
     const text = search?.value
-    if (! text) return [...words]
-    return words.filter(word => {
+    return words.filter((word, index) => (
         ! text || word.disp.includes(text) || word.sub.includes(text) ||
         getRomaji(word).includes(text)
-    })
+    ) && (
+        testId.value === null || recs[index].correct <= testCorrectLevel.value
+    ))
 })
 
 const sortMethodInfo = {
@@ -70,7 +77,7 @@ const sortMethodInfo = {
     acc: '正確率',
     correctCount: 'パス数',
     wrongCount: 'ミス数',
-    halfCorrectCount: 'ハーフパス数',
+    halfCorrectCount: 'あやふや数',
     yomikata: '読み方',
     testTime: 'テスト時間',
     easiness: 'EZ'
@@ -150,15 +157,34 @@ const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
                     </div>
                     <div v-else-if="toolbarMode === 'filter'">
                         <div class="filter-search">
-                            <input v-model="search" class="card up search" />
+                            <input v-model="search" class="card up" />
                             <fa-icon
                                 @click="search = ''"
                                 icon="times-circle"
                                 class="button"
                             />
                         </div>
-                        <span v-if="testId" @click="testId = undefined" class="badge">
+                        <span v-if="testId" class="filter-test badge">
                             テスト <span class="id">{{ testId }}</span>
+                            <fa-icon
+                                @click="testCorrectLevel = (testCorrectLevel + 0.5) % 1.5"
+                                :icon="
+                                    testCorrectLevel === 1 ? 'check-circle' :
+                                    testCorrectLevel === 0 ? 'times-circle' :
+                                    'question-circle'
+                                "
+                                class="button no-hover"
+                                :class="
+                                    testCorrectLevel === 1 ? 'correct' :
+                                    testCorrectLevel === 0 ? 'wrong' :
+                                    'half-correct'
+                                "
+                            />
+                            <fa-icon
+                                @click="testId = null"
+                                icon="trash"
+                                class="button"
+                            />
                         </span>
                     </div>
                 </div>
@@ -236,13 +262,6 @@ const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
     display: none;
 }
 
-input.search {
-    width: calc(100% - 1.6em);
-    font-family: serif;
-    font-size: 1rem;
-    padding: .2em .5em;
-}
-
 .filter-search {
     display: flex;
     align-items: center;
@@ -250,6 +269,14 @@ input.search {
 }
 
 .filter-search > input {
+    width: calc(100% - 1.6em);
+    padding: .2em .5em;
+    font-size: 1rem;
     font-family: var(--ja-serif);
+}
+
+.filter-test > svg.button {
+    padding: 0;
+    margin-left: .5em;
 }
 </style>

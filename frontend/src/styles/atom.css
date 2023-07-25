@@ -16,13 +16,13 @@
     content: '#';
 }
 
-.correct {
+.correct, svg.button.correct {
     color: #95e35d;
 }
-.half-correct {
+.half-correct, svg.button.half-correct {
     color: #db8e30;
 }
-.wrong {
+.wrong, svg.button.wrong {
     color: #ec4e1e;
 }
 

@@ -5,7 +5,7 @@ import { randomItem } from '@util'
 import { useArchive } from '@store/archive'
 import { compress_IWord } from '@/utils/compress'
 import type { IMemory, ITestRec, IWord } from '@type'
-import { storeRef, type ArrayStore, storeArray } from '@/utils/storage'
+import { storeRef, type ArrayStore, storeArray, storeRefReactive } from '@/utils/storage'
 import type { Disposable } from '@/utils/disposable'
 
 export const baseInterval = 5
@@ -39,9 +39,10 @@ export const useWord = defineStore('words', () => {
         },
         map: compress_IWord
     }))
-    archiveStore.defineArchiveItem('wordFilter', (key) => storeRef(key, {
-        search: undefined,
-        testId: undefined
+    archiveStore.defineArchiveItem('wordFilter', (key) => storeRefReactive(key, {
+        search: null,
+        testId: null,
+        testCorrectLevel: 1
     }))
     const { words, wordMaxId: maxId, wordFilter: filter } = archiveStore.extractData([ 'words', 'wordMaxId', 'wordFilter' ])
 
@@ -84,7 +85,10 @@ export const useWord = defineStore('words', () => {
         const interval = baseInterval * word.mem.easiness + 0.25
         word.mem.testAfter = Date.now() + interval * 24 * 3600 * 1000
 
-        return word.mem.easiness
+        return {
+            recId: word.mem.testRec.length - 1,
+            newEasiness: word.mem.easiness
+        }
     }
 
     const popTestRec = (word: IWord): ITestRec | undefined => {

@@ -90,7 +90,7 @@ svg.button:not(.no-animation, .disabled) {
     cursor: pointer;
     animation: .3s hop;
 }
-svg.button:not(.no-animation, .disabled):hover {
+svg.button:not(.no-animation, .no-hover, .disabled):hover {
     color: #f4a23e;
 }
 svg.button:active {

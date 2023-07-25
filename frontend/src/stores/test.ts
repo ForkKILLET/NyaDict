@@ -40,6 +40,7 @@ export const useTest = defineStore('test', () => {
             maxIndex: 0,
             currentIndex: 0,
             correctness: [],
+            recIds: [],
             locked: false
         }
 

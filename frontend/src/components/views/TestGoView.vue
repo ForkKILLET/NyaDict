@@ -56,12 +56,13 @@ const nextWord = (correct: ICorrect) => {
         test.maxIndex ++
     }
 
-    const newEasiness = wordStore.pushTestRec(word, {
+    const { recId, newEasiness } = wordStore.pushTestRec(word, {
         time: Date.now(),
         correct,
         mode: test.mode
     })
     test.correctness[test.currentIndex] = correct
+    test.recIds[test.currentIndex] = recId
 
     if (nid.value !== undefined) removeNoti(nid.value)
     nid.value = addNoti({

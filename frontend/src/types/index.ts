@@ -28,8 +28,9 @@ export type ITestRec = {
 }
 
 export type IWordFilter = {
-    search: string | undefined
-    testId: number | undefined
+    search: string | null
+    testId: number | null
+    testCorrectLevel: number
 }
 
 export type ITestMode = 'disp' | 'sub'
@@ -44,6 +45,7 @@ export type ITest = {
     currentIndex: number
     maxIndex: number
     correctness: ICorrect[]
+    recIds: number[]
     locked: boolean
 }
 

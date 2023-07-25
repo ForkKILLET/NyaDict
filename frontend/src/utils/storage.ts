@@ -33,6 +33,11 @@ export const storeReactive = <T extends object>(key: string, value: T): T & Disp
     })
 }
 
+export const storeRefReactive = <T extends object>(key: string, value: T): Ref<T> & Disposable => {
+    const r = storeReactive(key, value)
+    return Object.assign(ref(r) as Ref<T>, { [kDispose]: r[kDispose] })
+}
+
 export type ArrayStore<T> = T[] & {
     set: (index: number, value: T) => T
     remove: (index: number) => boolean
