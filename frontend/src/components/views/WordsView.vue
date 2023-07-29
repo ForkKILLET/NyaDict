@@ -241,6 +241,7 @@ const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
 
 .right {
     box-sizing: border-box;
+    padding: 0 1em;
 }
 
 @media screen and (orientation: portrait) and (max-device-width: 600px) {
@@ -251,10 +252,10 @@ const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
         padding-left: 0;
 	}
     .right {
-        flex-basis: calc(100vw - .5em);
+        flex-basis: 100vw;
         flex-grow: 0;
         flex-shrink: 0;
-        padding-left: 1em;
+        padding: 0 .5em;
     }
 }
 

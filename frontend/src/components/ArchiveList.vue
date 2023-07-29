@@ -197,7 +197,7 @@ if (jwtPayload.value) {
 
             <div
                 v-for="[ local, remote ], id in infoWithRemote"
-                class="archive-list-entry"
+                class="archive-entry"
             >
                 <ArchiveInfo
                     :active="id === currentId"
@@ -272,16 +272,24 @@ if (jwtPayload.value) {
     display: none;
 }
 
-.archive-list-entry {
+.archive-entry {
     display: flex;
     flex-wrap: wrap;
 }
 
 .archive-info {
     flex: 1;
-    min-width: 12.5em;
-    max-width: calc(50% - 3.2em);
-    margin: 0 .8em 1.5em .8em;
+    margin: 0 2.5em 1.5em .8em;
+}
+
+@media screen and (orientation: portrait) and (max-device-width: 600px) {
+    .archive-info {
+        flex-basis: 100%;
+    }
+
+    .archive-entry {
+        margin-bottom: 1.5em;
+    }
 }
 
 #file {

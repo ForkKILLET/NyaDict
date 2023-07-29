@@ -26,7 +26,6 @@ const activeTabName = ref<string>(props.tabs[0].name)
 <style scoped>
 .tab-header {
     display: inline-block;
-    border-bottom: 2px solid #db8e30;
 }
 
 .tab-header > span.active {
@@ -37,6 +36,7 @@ const activeTabName = ref<string>(props.tabs[0].name)
 .tab-header > span {
     padding: 0 .5em;
     border-radius: .3em .3em 0 0;
+    border-bottom: 2px solid #db8e30;
     font-size: 1.3em;
     font-weight: bold;
     transition: .3s color;
