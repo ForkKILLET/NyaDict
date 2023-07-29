@@ -6,7 +6,7 @@ const route = useRoute()
 </script>
 
 <template>
-    <div class="back-to-home">
+    <div class="topbar">
         <a href="javascript:void 0;" @click="router.back()">
             <fa-icon icon="arrow-left" /> 戻る
         </a> /
@@ -17,7 +17,7 @@ const route = useRoute()
 </template>
 
 <style scoped>
-.back-to-home {
+.topbar {
     height: 1.5rem;
     padding: 1rem;
 }

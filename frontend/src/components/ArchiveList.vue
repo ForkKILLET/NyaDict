@@ -4,7 +4,7 @@ import { computed, ref } from 'vue'
 import { useAuth } from '@store/auth'
 import { downloadURL, tryJSON } from '@util'
 import { api } from '@util/api'
-import { handleResp } from '@util/notif'
+import { add as addNoti, handleResp } from '@util/notif'
 import ArchiveInfo from '@comp/ArchiveInfo.vue'
 import LongPressButton from '@comp/LongPressButton.vue'
 import { useArchive } from '@/stores/archive'
@@ -47,8 +47,18 @@ const makeBlob = (id: string) => {
 const withdraw = (id: string) => {
     delete archiveInfo.value[id]
     archiveStore.withdrawArchive(id)
+    currentId.value = Object.keys(archiveInfo.value)[0]
 }
-const exports = (id: string) => {
+const exports = (id: string, remake?: boolean) => {
+    if (remake) {
+        makeBlob(id)
+        addNoti({
+            type: 'success',
+            content: 'ダウンロード・リンクを作り直しました',
+            duration: 2 * 1000
+        })
+    }
+
     const url = URL.createObjectURL(blobs[id])
     downloadURL(url, `nyadict-${archiveInfo.value[id].title}-${Date.now()}.json`)
     URL.revokeObjectURL(url)
@@ -202,7 +212,7 @@ if (jwtPayload.value) {
                         :fixed-width="true"
                     />
                     <fa-icon
-                        @click="exports(id)"
+                        @click="(event: MouseEvent) => exports(id, event.shiftKey)"
                         class="button"
                         icon="file-arrow-down"
                         :fixed-width="true"
