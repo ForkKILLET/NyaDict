@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { computed, ref, type Ref } from 'vue'
 import { useArchive } from '@store/archive'
 import { storeArray, type ArrayStore, storeRef } from '@util/storage'
-import { sample } from '@util'
+import { groupBy, sample } from '@util'
 import type { ITest, ITestMode, IWord } from '@type'
 import type { Disposable } from '@/utils/disposable'
 
@@ -27,9 +27,35 @@ export const useTest = defineStore('test', () => {
 
     const lasrTestId = ref<number>()
 
-    const create = (testableWords: IWord[], mode: ITestMode, size = 20) => {
-        const testableWordIds = testableWords.map((word: IWord) => word.id)
-        const wordIds = sample(testableWordIds, size)
+    const create = (testableWords: IWord[], {
+        mode, size, preferUntested
+    }: {
+        mode: ITestMode
+        size: number
+        preferUntested?: boolean
+    }) => {
+        const wordIds: number[] = []
+
+        if (preferUntested) {
+            const { true: untestedWordIds = [], false: testedWordIds = [] } = groupBy(
+                testableWords,
+                word => String(! word.mem.testAfter) as 'true' | 'false',
+                word => word.id
+            )
+            if (untestedWordIds.length <= size) {
+                wordIds.push(
+                    ...untestedWordIds,
+                    ...sample(testedWordIds, size - untestedWordIds.length)
+                )
+            }
+            else {
+                wordIds.push(...sample(untestedWordIds, size))
+            }
+        }
+        else {
+            const testableWordIds = testableWords.map(word => word.id)
+            wordIds.push(...sample(testableWordIds, size))
+        }
 
         const test: ITest = {
             id: ++ maxId.value,

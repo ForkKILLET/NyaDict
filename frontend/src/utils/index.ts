@@ -35,6 +35,18 @@ export const sample = <T>(items: T[], size: number) => {
     return items.slice(0, size)
 }
 
+export type GroupByResult<R extends string, U> = {
+    [key in R]?: U[]
+}
+export const groupBy = <R extends string, T, U = T>(items: T[], group: (item: T) => R, map?: (item: T) => U): GroupByResult<R, U> => {
+    const result: GroupByResult<R, U> = {}
+    items.forEach(item => {
+        const groupName = group(item)
+        ; (result[groupName] ??= []).push((map ? map(item) : item) as U)
+    })
+    return result
+}
+
 export type Grade = 'top' | 'high' | 'medium' | 'low' | 'none'
 export const gradeColors: Record<Grade, string> = {
     top: '#39d353',

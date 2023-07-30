@@ -19,13 +19,13 @@ const testModeInfo: Record<ITestMode, string> = {
 
 const testMode = ref<ITestMode | null>(null)
 const testSize = ref(20)
-const untestedOnly = ref(false)
+const preferUntested = ref(false)
 
 const testableWords = computed(() => {
     const now = Date.now()
     return wordStore.words.filter(word => {
         const { testAfter } = word.mem
-        return ! testAfter || (! untestedOnly.value && testAfter < now)
+        return ! testAfter || testAfter < now
     })
 })
 
@@ -45,7 +45,11 @@ const createTest = () => {
         })
         return
     }
-    testStore.create(testableWords.value, testMode.value!, testSize.value)
+    testStore.create(testableWords.value, {
+        mode: testMode.value!,
+        size: testSize.value,
+        preferUntested: preferUntested.value
+    })
 
     router.push('/test')
 }
@@ -66,7 +70,7 @@ const createTest = () => {
         </div>
         <div>
             <p>フィルタ</p>
-            <NyaCheckbox v-model="untestedOnly">未テストだけ</NyaCheckbox>
+            <NyaCheckbox v-model="preferUntested">未テスト優先</NyaCheckbox>
         </div>
         <div>
             <p>単語数</p>
