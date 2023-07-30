@@ -47,7 +47,7 @@ const toolbarConfig = reactive<ToolbarConfigItem[]>([
 
 const { search, testId, testCorrectLevel } = toRefs(wordStore.filter)
 watch(testId, () => {
-    if (testId.value) toolbarMode.value = 'filter'
+    if (search.value || testId.value) toolbarMode.value = 'filter'
 }, { immediate: true })
 
 const filteredWords = computed<IWord[]>(() => {
