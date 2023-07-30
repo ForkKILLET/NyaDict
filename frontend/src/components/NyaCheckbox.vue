@@ -5,13 +5,13 @@ const props = defineProps<{
     modelValue?: boolean
 }>()
 
-const emits = defineEmits<{
+const emit = defineEmits<{
     (event: 'update:modelValue', value: boolean): void
 }>()
 
 const value = computed({
     get: () => props.modelValue,
-    set: v => emits('update:modelValue', v)
+    set: v => emit('update:modelValue', v)
 })
 </script>
 

@@ -75,7 +75,7 @@ const selectedTitle = computed(() => {
 const onSelectFile = (event: Event) => {
     selectedFile.value = (event.currentTarget as HTMLInputElement).files?.[0]
 }
-const imports = async () => {
+const imports = async (id?: string) => {
     const file = selectedFile.value!
     const newJSON = await file.text()
     const newData: IPortableArchive = tryJSON(newJSON)
@@ -83,11 +83,13 @@ const imports = async () => {
 
     selectedFile.value = undefined
 
-    let newId = 0
-    for (const id in archiveInfo.value) newId = Math.max(+ id, newId)
-    newId ++
+    if (! id) {
+        let newId = 0
+        for (const id in archiveInfo.value) newId = Math.max(+ id, newId)
+        id = String(newId + 1)
+    }
 
-    archiveStore.importArchive(String(newId), newData)
+    archiveStore.importArchive(id, newData)
 }
 
 for (const id in archiveInfo.value) {
@@ -178,22 +180,22 @@ if (jwtPayload.value) {
             <input id="file" type="file" accept=".json" @change="onSelectFile" />
         </p>
         <div class="archive-list-entries">
-            <ArchiveInfo
-                v-if="selectedFile"
-                id="アップ"
-                :info="{
-                    title: selectedTitle!,
-                    accessTime: selectedFile.lastModified,
-                    size: selectedFile.size,
-                    version: 'N/A'
-                }"
-            >
-                <fa-icon
-                    @click="imports"
-                    class="button"
-                    icon="file-import"
+            <div v-if="selectedFile" class="archive-entry">
+                <ArchiveInfo
+                    id="アップ"
+                    :info="{
+                        title: selectedTitle!,
+                        accessTime: selectedFile.lastModified,
+                        size: selectedFile.size,
+                        version: 'N/A'
+                    }"
                 />
-            </ArchiveInfo>
+
+                <ArchiveInfo
+                    :is-importing="true"
+                    @upload-here="imports()"
+                />
+            </div>
 
             <div
                 v-for="[ local, remote ], id in infoWithRemote"
@@ -204,6 +206,8 @@ if (jwtPayload.value) {
                     :id="id"
                     :info="local"
                     :no-info-reason="'noLocal'"
+                    :is-importing="!! selectedFile"
+                    @upload-here="imports(id)"
                 >
                     <fa-icon
                         @click="currentId !== id && (currentId = id)"
