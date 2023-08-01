@@ -1,9 +1,41 @@
-// @compress
+import type { DistributiveOmit } from "@type/tool"
+
+// @compress { "doc": "d" }
 export type IWord = {
     id: number
     disp: string
     sub: string
     mem: IMemory
+    doc?: IWordDocuments
+}
+
+export type IWordDocuments = {
+    maxId: number
+    docs: IWordDocument[]
+}
+
+export type IWordDocument = IMeaningDocument | ISentenceDocument
+export type IWordDocumentWithoutId = DistributiveOmit<IWordDocument, 'id'>
+
+export enum DocumentKind {
+    Meaning,
+    Sentence
+}
+
+export type IMeaningDocument = {
+    kind: DocumentKind.Meaning
+    id: number
+    lang?: string
+    text: string
+    children: IWordDocument[]
+}
+
+export type ISentenceDocument = {
+    kind: DocumentKind.Sentence
+    id: number
+    lang?: string
+    text: string
+    tran: string
 }
 
 // @compress { "testAfter": "TT", "createTime": "TC" }
@@ -47,7 +79,7 @@ export type ITest = {
     correctness: ICorrect[]
     recIds: number[]
     locked: boolean
-    lockTime: number | undefined
+    lockTime?: number
 }
 
 export type IMemMode = 'disp' | 'sub' | 'both'

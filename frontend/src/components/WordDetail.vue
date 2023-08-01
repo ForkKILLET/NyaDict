@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useWord } from '@store/words'
-import type { IWord } from '@type'
 import NyaDate from '@comp/NyaDate.vue'
 import LongPressButton from '@comp/LongPressButton.vue'
 import WordMemCalendar from '@comp/WordMemCalendar.vue'
-import NyaTab from './NyaTab.vue'
+import NyaTab from '@comp/NyaTab.vue'
+import WordDocument from '@comp/WordDocument.vue'
+import WordDocumentAdder from '@comp/WordDocumentAdder.vue'
+import type { IWord, IWordDocumentWithoutId } from '@type'
 
 const wordStore = useWord()
 
@@ -14,6 +16,21 @@ const props = defineProps<{
 }>()
 
 const withdrawed = computed(() => ! wordStore.getById(props.word.id))
+
+const newlyAddedDocId = ref<number | null>(null)
+
+const addDoc = (newDoc: IWordDocumentWithoutId) => {
+    const doc = props.word.doc ??= {
+        maxId: 0,
+        docs: []
+    }
+    const id = doc.maxId ++
+    doc.docs.push({
+        ...newDoc,
+        id
+    })
+    newlyAddedDocId.value = id
+}
 </script>
 
 <template>
@@ -41,7 +58,7 @@ const withdrawed = computed(() => ! wordStore.getById(props.word.id))
         </p>
         <div class="mem-detail">
             <NyaTab :tabs="[
-                // { name: 'dict', title: '辞書' },
+                { name: 'dict', title: '辞書' },
                 { name: 'mem', title: 'メモリー' },
             ]">
                 <template #mem>
@@ -57,9 +74,12 @@ const withdrawed = computed(() => ! wordStore.getById(props.word.id))
                     <WordMemCalendar :mem="word.mem" />
                 </template>
                 <template #dict>
-                    <div>
-                        Hey
-                    </div>
+                    <WordDocumentAdder :word="word" @add-doc="addDoc" />
+                    <WordDocument
+                        v-for="doc of word.doc?.docs ?? []"
+                        :doc="doc"
+                        :edit-mode="newlyAddedDocId === doc.id"
+                    />
                 </template>
             </NyaTab>
         </div>

@@ -25,7 +25,7 @@ const activeTabName = ref<string>(props.tabs[0].name)
 
 <style scoped>
 .tab-header {
-    display: inline-block;
+    margin-bottom: 1em;
 }
 
 .tab-header > span.active {

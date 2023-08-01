@@ -73,6 +73,7 @@ const filteredWords = computed<IWord[]>(() => {
 })
 
 const sortMethodInfo = {
+    id: 'ID',
     createTime: '作成時間',
     acc: '正確率',
     correctCount: 'パス数',
@@ -90,6 +91,7 @@ const sortFunction = computed(() => {
     const { value: method } = sortMethod
     return (a: IWord, b: IWord) => {
         const delta =
+            method === 'id' ? b.id - a.id :
             method === 'createTime' ? a.mem.createTime - b.mem.createTime :
             method === 'acc' ? getCorrectness(a.mem) - getCorrectness(b.mem) :
             method === 'correctCount' ? a.mem.correctCount - b.mem.correctCount :
@@ -240,6 +242,7 @@ const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
 }
 
 .right {
+    flex: 1;
     box-sizing: border-box;
     padding: 0 1em;
 }

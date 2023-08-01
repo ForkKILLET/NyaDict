@@ -288,7 +288,8 @@ watch(route, ({ path }) => {
 }
 
 .archive-info {
-    flex: 1;
+    flex-basis: calc(50% - 2.5em - .8em);
+    flex-grow: 0;
     margin: 0 2.5em 1.5em .8em;
 }
 

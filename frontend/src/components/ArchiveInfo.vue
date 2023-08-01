@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import type { IArchiveInfo } from '@type'
 import NyaDate from '@comp/NyaDate.vue'
-import LongPressButton from './LongPressButton.vue';
+import LongPressButton from '@comp/LongPressButton.vue'
+import NyaConfirmInput from '@comp/NyaConfirmInput.vue'
 
 type INoInfoReason = 'noAccount' | 'noRemote' | 'noLocal'
 
-const props = defineProps<{
+defineProps<{
     info?: IArchiveInfo
     id?: string
     active?: boolean
@@ -23,19 +23,6 @@ const noInfoReasons: Record<INoInfoReason, string> = {
     noAccount: 'ログインしていません',
     noRemote: 'アップロードしていません',
     noLocal: 'ダウンロードしていません'
-}
-
-const editMode = ref(false)
-const newTitle = ref('')
-const startEditing = () => {
-    if (! props.info) return
-    newTitle.value = props.info.title
-    editMode.value = true
-}
-const endEditing = () => {
-    if (! props.info) return
-    props.info.title = newTitle.value
-    editMode.value = false
 }
 </script>
 
@@ -66,29 +53,8 @@ const endEditing = () => {
             <div class="archive-info-content">
                 <div class="archive-info-header">
                     <span v-if="id !== undefined" class="id">{{ id }}</span>
-                    <div class="archive-info-title-container">
-                        <template v-if="! editMode">
-                            <span class="archive-info-title">{{ info.title }}</span>
-                            <fa-icon
-                                v-if="! remote"
-                                @click="startEditing"
-                                icon="edit"
-                                class="button" 
-                            />
-                        </template>
-                        <template v-else>
-                            <input
-                                type="text"
-                                autofocus="true"
-                                v-model="newTitle"
-                                class="archive-info-title"
-                            />
-                            <fa-icon
-                                @click="endEditing"
-                                icon="circle-check"
-                                class="button"
-                            />
-                        </template>
+                    <div class="archive-info-title">
+                        <NyaConfirmInput v-model="info.title" :autofocus="true" />
                     </div>
                 </div>
                 <div>
@@ -152,27 +118,19 @@ const endEditing = () => {
     margin-right: .5em;
 }
 
-.archive-info-title-container {
-    display: inline-flex;
+.archive-info-title {
     flex: 1;
     justify-content: space-between;
     align-items: center;
-}
-
-.archive-info-title {
-    display: inline-block;
-    flex: 1;
     color: #db8e30;
     font-weight: bold;
 }
 
-input.archive-info-title {
-    max-width: 10em;
-    font-size: 1em;
+.archive-info-title > .nya-confirm-input:deep(> input) {
+    width: 100%;
+    color: #db8e30;
+    font-weight: bold;
     font-family: inherit;
-    padding: 0 .3em;
-    margin: 0 -.3em;
-    box-shadow: 0 0 .2em #f3aa6d4d inset;
 }
 
 .archive-info-content > div > svg:first-child {

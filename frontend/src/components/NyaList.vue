@@ -26,9 +26,9 @@ const {
 </script>
 
 <template>
-    <div class="nyalist">
-        <div class="nyalist-header">
-            <div class="nyalist-count">
+    <div class="nya-list">
+        <div class="nya-list-header">
+            <div class="nya-list-count">
                 <slot name="header" :count="items.length"></slot>
             </div>
             <Pager
@@ -42,7 +42,7 @@ const {
                 :is-last-page="isLastPage"
             />
         </div>
-        <div class="nyalist-entries">
+        <div class="nya-list-entries">
             <p v-for="item of items.slice((page - 1) * pageSize, page * pageSize)">
                 <slot name="default" :item="item"></slot>
             </p>
@@ -51,27 +51,27 @@ const {
 </template>
 
 <style scoped>
-.nyalist {
+.nya-list {
     display: flex;
     flex-flow: column;
     overflow: hidden;
     margin: 0 -1em;
     padding: 0 1em;
 }
-.nyalist-header {
+.nya-list-header {
     margin-bottom: .5em;
 }
-.nyalist-entries {
+.nya-list-entries {
     flex: 1;
     margin: 0 -1em;
     padding: 0 1em;
     overflow-y: auto;
     scrollbar-width: none;
 }
-.nyalist-entries::-webkit-scrollbar {
+.nya-list-entries::-webkit-scrollbar {
     display: none;
 }
-.nyalist-count {
+.nya-list-count {
     margin-bottom: .5em;
 }
 </style>

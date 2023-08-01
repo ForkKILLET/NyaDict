@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 import { toHiragana, toRomaji, isHiragana} from 'wanakana'
 import { randomItem } from '@util'
 import { useArchive } from '@store/archive'
-import { compress_IWord } from '@/utils/compress'
+import { IWord_Compress, compress_IWord } from '@/utils/compress'
 import type { IMemory, ITestRec, IWord } from '@type'
 import { storeRef, type ArrayStore, storeArray, storeRefReactive } from '@/utils/storage'
 import type { Disposable } from '@/utils/disposable'
@@ -21,7 +21,7 @@ declare module '@type' {
 export const useWord = defineStore('words', () => {
     const archiveStore = useArchive()
     archiveStore.defineArchiveItem('wordMaxId', (key) => storeRef(key, 0))
-    archiveStore.defineArchiveItem('words', (key) => storeArray(key, {
+    archiveStore.defineArchiveItem('words', (key) => storeArray<IWord, IWord_Compress>(key, {
         onInit: (store) => {
             store.push({
                 id: 0,

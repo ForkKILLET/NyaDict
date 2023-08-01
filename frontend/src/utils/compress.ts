@@ -1,23 +1,26 @@
-import type { IWord, IMemory, ITestRec, ITest, ICorrect, ITestMode } from '@type'
+import type { IWord, IMemory, ITestRec, ITest, IWordDocuments, ICorrect, ITestMode } from '@type'
 
 export type IWord_Compress = {
   I: number
   D: string
   S: string
   M: IMemory_Compress
+  d?: IWordDocuments
 }
 export const compress_IWord = {
-  serialize: ({ id: I, disp: D, sub: S, mem: M }: IWord) => ({
+  serialize: ({ id: I, disp: D, sub: S, mem: M, doc: d }: IWord) => ({
     I,
     D,
     S,
     M: compress_IMemory.serialize(M),
+    d,
   }),
-  deserialize: ({ I: id, D: disp, S: sub, M: mem }: IWord_Compress) => ({
+  deserialize: ({ I: id, D: disp, S: sub, M: mem, d: doc }: IWord_Compress) => ({
     id,
     disp,
     sub,
     mem: compress_IMemory.deserialize(mem),
+    doc,
   })
 }
 export type IMemory_Compress = {
@@ -80,7 +83,7 @@ export type ITest_Compress = {
   C: ICorrect[]
   R: number[]
   L: boolean
-  TL: number | undefined
+  TL?: number
 }
 export const compress_ITest = {
   serialize: ({ id: I, createTime: TC, accessTime: TA, mode: M, wordIds: W, currentIndex: IC, maxIndex: IM, correctness: C, recIds: R, locked: L, lockTime: TL }: ITest) => ({

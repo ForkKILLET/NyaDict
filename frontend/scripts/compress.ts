@@ -17,8 +17,9 @@ const error = (header: string, fmt: string, ...p: any[]) => {
 const tab2 = ' '.repeat(4)
 
 type PropMap = Record<string, {
-    typeNode: ts.Node
     newName: string
+    question: boolean
+    typeNode: ts.Node
 }>
 
 type TypeToCompress = {
@@ -58,7 +59,11 @@ function compress(file: string, base: string): string {
 
                     node.forEachChild(node => {
                         if (ts.isPropertySignature(node)) {
-                            const [ propIdentifier,, propType ] = node.getChildren(f)
+                            const children = node.getChildren(f)
+                            const propIdentifier = children[0]
+                            const propType = children.at(- 1)
+                            const question = ts.isQuestionToken(children[1])
+
                             if (! ts.isIdentifier(propIdentifier)) return
 
                             const propName = propIdentifier.getText(f)
@@ -72,6 +77,7 @@ function compress(file: string, base: string): string {
 
                             typeDef.propMap[propName] = {
                                 newName,
+                                question,
                                 typeNode: propType
                             }
                         }
@@ -92,9 +98,16 @@ function compress(file: string, base: string): string {
 
         const typeDef = typeDefs[typeName]
         for (const propName in typeDef.propMap) {
-            const { newName, typeNode } = typeDef.propMap[propName]
+            const { newName, question, typeNode } = typeDef.propMap[propName]
             const typeText = typeNode.getText(f)
-            log('Map', '%o: %s -> %o', propName, typeText, newName)
+            const questionMark = question ? '?' : ''
+            const refOutput = (de: boolean) => {
+                const name = de ? propName : newName
+                const inner = `compress_${typeText}.${de ? 'de' : ''}serialize(${name})`
+                return question ? `${name} ? ${inner} : undefined` : inner
+            }
+
+            log('Map', '%o%s: %s -> %o', propName, questionMark, typeText, newName)
 
             serInputs.push(`${propName}: ${newName}`)
             deserInputs.push(`${newName}: ${propName}`)
@@ -102,9 +115,9 @@ function compress(file: string, base: string): string {
             if (ts.isTypeReferenceNode(typeNode)) {
                 imports.add(typeText)
                 if (typeText in typeDefs) {
-                    compressTypes.push(`${newName}: ${typeText}_Compress`)
-                    serOutputs.push(`${newName}: compress_${typeText}.serialize(${newName})`)
-                    deserOutputs.push(`${propName}: compress_${typeText}.deserialize(${propName})`)
+                    compressTypes.push(`${newName}${questionMark}: ${typeText}_Compress`)
+                    serOutputs.push(`${newName}: ${refOutput(false)}`)
+                    deserOutputs.push(`${propName}: ${refOutput(true)}`)
                     continue
                 }
             }
@@ -115,15 +128,15 @@ function compress(file: string, base: string): string {
                 if (ts.isTypeReferenceNode(eleTypeNode)) {
                     imports.add(eleTypeText)
                     if (eleTypeText in typeDefs) {
-                        compressTypes.push(`${newName}: ${eleTypeText}_Compress[]`)
-                        serOutputs.push(`${newName}: ${newName}.map(compress_${eleTypeText}.serialize)`)
-                        deserOutputs.push(`${propName}: ${propName}.map(compress_${eleTypeText}.deserialize)`)
+                        compressTypes.push(`${newName}${questionMark}: ${eleTypeText}_Compress[]`)
+                        serOutputs.push(`${newName}: ${newName}${questionMark}.map(compress_${eleTypeText}.serialize)`)
+                        deserOutputs.push(`${propName}: ${propName}${questionMark}.map(compress_${eleTypeText}.deserialize)`)
                         continue
                     }
                 }
             }
 
-            compressTypes.push(`${newName}: ${typeText}`)
+            compressTypes.push(`${newName}${questionMark}: ${typeText}`)
             serOutputs.push(newName)
             deserOutputs.push(propName)
         }
