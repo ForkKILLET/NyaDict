@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { useAuth } from '@store/auth'
+import { useArchive } from '@/stores/archive'
 import { downloadURL, tryJSON } from '@util'
 import { api } from '@util/api'
 import { add as addNoti, handleResp } from '@util/notif'
 import ArchiveInfo from '@comp/ArchiveInfo.vue'
 import LongPressButton from '@comp/LongPressButton.vue'
-import { useArchive } from '@/stores/archive'
-import type { IArchiveInfo } from '@type'
+import type { IArchiveInfo, IPortableArchive } from '@type'
 import type {
     IRemoteArchiveInfo, IArchiveGetMineResp, IArchiveUploadResp, IArchiveDownloadResp
 } from '@type/network'
-import { IPortableArchive } from '@type'
 
 const archiveStore = useArchive()
 const { jwtPayload, axiosHeader } = storeToRefs(useAuth())
@@ -163,9 +163,12 @@ const download = async (id: string) => {
     }
 }
 
-if (jwtPayload.value) {
-    getRemoteInfo()
-}
+const route = useRoute()
+watch(route, ({ path }) => {
+    if (path === '/sync' && jwtPayload.value) {
+        getRemoteInfo()
+    }
+}, { immediate: true })
 </script>
 
 <template>
@@ -174,10 +177,13 @@ if (jwtPayload.value) {
             <span class="number">{{
                 Object.keys(infoWithRemote).length
             }}</span> アーカイブ 
+
             <label for="file">
                 <fa-icon icon="file-arrow-up" class="button" />
             </label>
             <input id="file" type="file" accept=".json" @change="onSelectFile" />
+            
+            <fa-icon @click="getRemoteInfo" icon="rotate" class="button" />
         </p>
         <div class="archive-list-entries">
             <div v-if="selectedFile" class="archive-entry">
