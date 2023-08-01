@@ -1,3 +1,49 @@
+<script lang="ts">
+import dayjs from 'dayjs'
+import { gradeBy } from '@/utils'
+
+export const getCalendarData = <T>(source: T[], getDate: (item: T) => number) => {
+    const today = dayjs()
+
+    const dates = []
+    const nums: Record<string, number> = {}
+    let firstDate: number = Infinity
+    let maxNum = 0
+
+    source.forEach(item => {
+        const date = + dayjs(getDate(item)).startOf('d')
+        if (date < firstDate) firstDate = date
+        nums[date] ??= 0
+        if (++ nums[date] > maxNum) maxNum = nums[date]
+    })
+
+    for (
+        let day = dayjs(firstDate);
+        ! day.isAfter(today, 'd');
+        day = day.add(1, 'd')
+    ) {
+        const date = + day.startOf('d')
+        dates.push(date)
+    }
+
+    const data = dates
+        .map(date => {
+            const num = nums[date]
+            return {
+                kind: gradeBy(num, maxNum),
+                value: {
+                    num,
+                    date
+                }
+            }
+        })
+    return {
+        firstDate: dayjs(firstDate),
+        data
+    }
+}
+</script>
+
 <script setup lang="ts" generic="T">
 import { ref } from 'vue'
 

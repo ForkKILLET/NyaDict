@@ -1,58 +1,22 @@
 <script setup lang="ts">
-import { useWord } from '@/stores/words'
-import dayjs from 'dayjs'
 import { interpolateRgb } from 'd3-interpolate'
-
-import { gradeBy, gradeColors } from '@/utils'
+import { useWord } from '@/stores/words'
+import {
+    useTest,
+    getRelativeTestTime, relativeTestTimeColors, type RelativeTestTime
+} from '@/stores/test'
+import { gradeColors } from '@/utils'
 import NyaDate from '@comp/NyaDate.vue'
 import StatisticsItem from '@comp/StatisticsItem.vue'
-import Calendar from '@comp/charts/Calendar.vue'
+import Calendar, { getCalendarData } from '@comp/charts/Calendar.vue'
 import PieChart, { type PieData } from '@comp/charts/PieChart.vue'
-import { RelativeTestTime, getRelativeTestTime, relativeTestTimeColors } from '@/stores/test'
 
 const wordStore = useWord()
+const testStore = useTest()
 
 const data = {
     createWord: () => {
-        const words = wordStore.words
-        const today = dayjs()
-
-        const dates = []
-        const nums: Record<string, number> = {}
-        let firstDate: number = Infinity
-        let maxCreateNum = 0
-
-        words.forEach((word) => {
-            const date = + dayjs(word.mem.createTime).startOf('d')
-            if (date < firstDate) firstDate = date
-            nums[date] ??= 0
-            if (++ nums[date] > maxCreateNum) maxCreateNum = nums[date]
-        })
-
-        for (
-            let day = dayjs(firstDate);
-            ! day.isAfter(today, 'd');
-            day = day.add(1, 'd')
-        ) {
-            const date = + day.startOf('d')
-            dates.push(date)
-        }
-
-        const data = dates
-            .map(date => {
-                const num = nums[date]
-                return {
-                    kind: gradeBy(num, maxCreateNum),
-                    value: {
-                        num,
-                        date
-                    }
-                }
-            })
-        return {
-            firstDate: dayjs(firstDate),
-            data
-        }
+        return getCalendarData(wordStore.words, word => word.mem.createTime)
     },
     easiness: () => {
         const words = wordStore.words
@@ -103,6 +67,9 @@ const data = {
             }))
             .sort((a, b) => + b.name - + a.name)
         return { data }
+    },
+    createTest: () => {
+        return getCalendarData(testStore.tests, test => test.createTime)
     }
 }
 </script>
@@ -147,6 +114,28 @@ const data = {
             >
                 <template #default="{ data: { data } }">
                     <PieChart :data="data" />
+                </template>
+            </StatisticsItem>
+
+            <StatisticsItem
+                title="テスト作成"
+                :data="data.createTest"
+            >
+                <template #default="{ data: { data, firstDate } }">
+                    <Calendar
+                        :start-day="firstDate.get('d')"
+                        :data="data"
+                        :colors="gradeColors"
+                    >
+                        <template #current="{ value }">
+                            <div v-if="value">
+                                <NyaDate :date="value.date" />
+                                にテストを
+                                <span class="number">{{ value.num ?? 0 }}</span>
+                                個作成しました
+                            </div>
+                        </template>
+                    </Calendar>
                 </template>
             </StatisticsItem>
         </div>
