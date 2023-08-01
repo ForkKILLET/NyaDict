@@ -78,10 +78,12 @@ export type ITest_Compress = {
   IC: number
   IM: number
   C: ICorrect[]
+  R: number[]
   L: boolean
+  TL: number | undefined
 }
 export const compress_ITest = {
-  serialize: ({ id: I, createTime: TC, accessTime: TA, mode: M, wordIds: W, currentIndex: IC, maxIndex: IM, correctness: C, locked: L }: ITest) => ({
+  serialize: ({ id: I, createTime: TC, accessTime: TA, mode: M, wordIds: W, currentIndex: IC, maxIndex: IM, correctness: C, recIds: R, locked: L, lockTime: TL }: ITest) => ({
     I,
     TC,
     TA,
@@ -90,9 +92,11 @@ export const compress_ITest = {
     IC,
     IM,
     C,
+    R,
     L,
+    TL,
   }),
-  deserialize: ({ I: id, TC: createTime, TA: accessTime, M: mode, W: wordIds, IC: currentIndex, IM: maxIndex, C: correctness, L: locked }: ITest_Compress) => ({
+  deserialize: ({ I: id, TC: createTime, TA: accessTime, M: mode, W: wordIds, IC: currentIndex, IM: maxIndex, C: correctness, R: recIds, L: locked, TL: lockTime }: ITest_Compress) => ({
     id,
     createTime,
     accessTime,
@@ -101,6 +105,8 @@ export const compress_ITest = {
     currentIndex,
     maxIndex,
     correctness,
+    recIds,
     locked,
+    lockTime,
   })
 }

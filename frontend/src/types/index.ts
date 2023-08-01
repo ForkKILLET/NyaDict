@@ -35,7 +35,7 @@ export type IWordFilter = {
 
 export type ITestMode = 'disp' | 'sub'
 
-// @compress { "accessTime": "TA", "createTime": "TC", "currentIndex": "IC", "maxIndex": "IM" }
+// @compress { "accessTime": "TA", "createTime": "TC", "currentIndex": "IC", "maxIndex": "IM", "lockTime": "TL" }
 export type ITest = {
     id: number
     createTime: number
@@ -47,6 +47,7 @@ export type ITest = {
     correctness: ICorrect[]
     recIds: number[]
     locked: boolean
+    lockTime: number | undefined
 }
 
 export type IMemMode = 'disp' | 'sub' | 'both'

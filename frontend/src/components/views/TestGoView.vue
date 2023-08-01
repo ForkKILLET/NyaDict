@@ -89,6 +89,7 @@ const navigateTestedWord = (delta: number) => {
 const endTest = () => {
     const test = ongoingTest.value!
     test.locked = true
+    test.lockTime = Date.now()
     testStore.lastTestId = test.id
     router.push('/test')
 }
