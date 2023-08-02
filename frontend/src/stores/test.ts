@@ -5,6 +5,7 @@ import { storeArray, type ArrayStore, storeRef } from '@util/storage'
 import { groupBy, sample } from '@util'
 import type { ITest, ITestMode, IWord } from '@type'
 import type { Disposable } from '@/utils/disposable'
+import { type ITest_Compress, compress_ITest } from '@/utils/compress'
 
 declare module '@type' {
     interface IArchiveData {
@@ -16,7 +17,9 @@ declare module '@type' {
 
 export const useTest = defineStore('test', () => {
     const archiveStore = useArchive()
-    archiveStore.defineArchiveItem('tests', (key) => storeArray(key))
+    archiveStore.defineArchiveItem('tests', (key) => storeArray<ITest, ITest_Compress>(key, {
+        map: compress_ITest
+    }))
     archiveStore.defineArchiveItem('ongoingTestId', (key) => storeRef(key, undefined))
     archiveStore.defineArchiveItem('testMaxId', (key) => storeRef(key, 0))
     const { tests, ongoingTestId, testMaxId: maxId } = archiveStore.extractData([ 'tests', 'ongoingTestId', 'testMaxId' ])

@@ -144,16 +144,16 @@ function compress(file: string, base: string): string {
         const code = dedent`export type ${typeName}_Compress = {${compressTypes.map(ln => '\n          ' + ln).join('')}
         }
         export const compress_${typeName} = {
-          serialize: ({ ${serInputs.join(', ')} }: ${typeName}) => ({${serOutputs.map(ln => '\n            ' + ln + ',').join('')}
+          serialize: ({ ${serInputs.join(', ')} }: ${typeName}): ${typeName}_Compress => ({${serOutputs.map(ln => '\n            ' + ln + ',').join('')}
           }),
-          deserialize: ({ ${deserInputs.join(', ')} }: ${typeName}_Compress) => ({${deserOutputs.map(ln => '\n            ' + ln + ',').join('')}
+          deserialize: ({ ${deserInputs.join(', ')} }: ${typeName}_Compress): ${typeName} => ({${deserOutputs.map(ln => '\n            ' + ln + ',').join('')}
           })
         }`
 
         codes.push(code)
     }
 
-    return `import type { ${[...imports].join(', ')} } from '${base}'\n\n` + codes.join('\n')
+    return `import type { ${[...imports].join(', ')} } from '${base}'\n\n` + codes.join('\n') + '\n'
 }
 
 const { input, base, output } = minimist(process.argv.slice(2), {

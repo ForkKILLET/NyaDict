@@ -28,7 +28,6 @@ export const useArchive = defineStore('archives', () => {
     }
 
     const reloadArchive = () => {
-        debugger
         const newId = currentId.value
         archiveItemHooks.forEach(({ load }) => load(archiveData)(newId))
     }
