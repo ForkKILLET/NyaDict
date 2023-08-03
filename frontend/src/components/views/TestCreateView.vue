@@ -99,8 +99,6 @@ const createTest = () => {
 .content {
     display: flex;
     flex-flow: column;
-    height: calc(100vh - 3.5rem);
-    box-sizing: border-box;
     text-align: center;
     align-items: center;
 }

@@ -10,7 +10,7 @@ const route = useRoute()
 <template>
     <Topbar v-if="route.path !== '/'" />
     <Notifications />
-    <main>
+    <main class="scroll-y">
         <RouterView v-slot="{ Component }">
             <KeepAlive>
                 <component :is="Component" />
@@ -18,3 +18,10 @@ const route = useRoute()
         </RouterView>
     </main>
 </template>
+
+<style scoped>
+main {
+	height: calc(100vh - 3.5rem);
+    box-sizing: border-box;
+}
+</style>

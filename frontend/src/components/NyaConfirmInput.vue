@@ -33,8 +33,7 @@ const submit = () => {
             <fa-icon
                 v-if="! disabled"
                 @click="editMode = true"
-                icon="edit"
-                class="button"
+                icon="edit" class="button"
             />
         </template>
         <template v-else>

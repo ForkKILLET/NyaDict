@@ -162,8 +162,7 @@ const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
                             <input v-model="search" class="card up" />
                             <fa-icon
                                 @click="search = ''"
-                                icon="times-circle"
-                                class="button"
+                                icon="times-circle" class="button"
                             />
                         </div>
                         <span v-if="testId" class="filter-test badge">
@@ -184,8 +183,7 @@ const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
                             />
                             <fa-icon
                                 @click="testId = null"
-                                icon="trash"
-                                class="button"
+                                icon="trash" class="button"
                             />
                         </span>
                     </div>
@@ -195,41 +193,21 @@ const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
                 :active-word-id="currentWord?.id"
                 :words="sortedWords"
                 @goto-word="(word: IWord) => currentWord = word"
+                class="scroll-y"
             />
         </div>
         <WordDetail
             v-if="currentWord"
-            class="right"
             :word="currentWord"
+            class="right"
         />
     </div>
 </template>
 
 <style scoped>
-.toolbar {
-    margin: -.8em;
-    margin-bottom: .5em;
-}
-
-.toolbar-nav {
-    font-size: 1.2em;
-}
-.toolbar-nav > :first-child {
-    margin: 0;
-}
-.toolbar-main > :first-child {
-    margin-top: .5em;
-}
-
-.sort-methods {
-    display: flex;
-    flex-wrap: wrap;
-}
-
 .content {
     display: flex;
-    height: calc(100vh - 3.5rem);
-    box-sizing: border-box;
+    height: 100%;
 }
 
 .left {
@@ -262,8 +240,24 @@ const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
     }
 }
 
-.word-list::-webkit-scrollbar {
-    display: none;
+.toolbar {
+    margin: -.8em;
+    margin-bottom: .5em;
+}
+
+.toolbar-nav {
+    font-size: 1.2em;
+}
+.toolbar-nav > :first-child {
+    margin: 0;
+}
+.toolbar-main > :first-child {
+    margin-top: .5em;
+}
+
+.sort-methods {
+    display: flex;
+    flex-wrap: wrap;
 }
 
 .filter-search {

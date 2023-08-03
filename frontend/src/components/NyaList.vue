@@ -42,7 +42,7 @@ const {
                 :is-last-page="isLastPage"
             />
         </div>
-        <div class="nya-list-entries">
+        <div class="nya-list-entries scroll-y">
             <p v-for="item of items.slice((page - 1) * pageSize, page * pageSize)">
                 <slot name="default" :item="item"></slot>
             </p>
@@ -65,11 +65,6 @@ const {
     flex: 1;
     margin: 0 -1em;
     padding: 0 1em;
-    overflow-y: auto;
-    scrollbar-width: none;
-}
-.nya-list-entries::-webkit-scrollbar {
-    display: none;
 }
 .nya-list-count {
     margin-bottom: .5em;

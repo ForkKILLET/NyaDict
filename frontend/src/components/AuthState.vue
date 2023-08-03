@@ -23,8 +23,7 @@ const signOut = () => {
             <span class="username">{{ jwtPayload.name }}</span> さん &middot;
             <fa-icon
                 @click="signOut"
-                icon="right-from-bracket"
-                class="button"
+                icon="right-from-bracket" class="button"
             />
         </template>
         <template v-else>

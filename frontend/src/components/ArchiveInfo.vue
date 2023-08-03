@@ -54,7 +54,11 @@ const noInfoReasons: Record<INoInfoReason, string> = {
                 <div class="archive-info-header">
                     <span v-if="id !== undefined" class="id">{{ id }}</span>
                     <div class="archive-info-title">
-                        <NyaConfirmInput v-model="info.title" :autofocus="true" />
+                        <NyaConfirmInput
+                            v-model="info.title"
+                            :disabled="remote"
+                            :autofocus="true"
+                        />
                     </div>
                 </div>
                 <div>

@@ -91,3 +91,12 @@
 .center {
     text-align: center;
 }
+
+.scroll-y {
+	overflow-y: auto;
+    scrollbar-width: none;
+}
+
+.scroll-y::-webkit-scrollbar {
+    display: none;
+}

@@ -76,85 +76,72 @@ const data = {
 
 <template>
     <div class="content">
-        <div class="list">
-            <StatisticsItem
-                title="単語作成"
-                :data="data.createWord"
-            >
-                <template #default="{ data: { data, firstDate } }">
-                    <Calendar
-                        :start-day="firstDate.get('d')"
-                        :data="data"
-                        :colors="gradeColors"
-                    >
-                        <template #current="{ value }">
-                            <div v-if="value">
-                                <NyaDate :date="value.date" />
-                                に単語を
-                                <span class="number">{{ value.num ?? 0 }}</span>
-                                個作成しました
-                            </div>
-                        </template>
-                    </Calendar>
-                </template>
-            </StatisticsItem>
+        <StatisticsItem
+            title="単語作成"
+            :data="data.createWord"
+        >
+            <template #default="{ data: { data, firstDate } }">
+                <Calendar
+                    :start-day="firstDate.get('d')"
+                    :data="data"
+                    :colors="gradeColors"
+                >
+                    <template #current="{ value }">
+                        <div v-if="value">
+                            <NyaDate :date="value.date" />
+                            に単語を
+                            <span class="number">{{ value.num ?? 0 }}</span>
+                            個作成しました
+                        </div>
+                    </template>
+                </Calendar>
+            </template>
+        </StatisticsItem>
 
-            <StatisticsItem
-                title="EZ 分布"
-                :data="data.easiness"
-            >
-                <template #default="{ data: { data } }">
-                    <PieChart :data="data" />
-                </template>
-            </StatisticsItem>
+        <StatisticsItem
+            title="EZ 分布"
+            :data="data.easiness"
+        >
+            <template #default="{ data: { data } }">
+                <PieChart :data="data" />
+            </template>
+        </StatisticsItem>
 
-            <StatisticsItem
-                title="次のテストの時間"
-                :data="data.testAfter"
-            >
-                <template #default="{ data: { data } }">
-                    <PieChart :data="data" />
-                </template>
-            </StatisticsItem>
+        <StatisticsItem
+            title="次のテストの時間"
+            :data="data.testAfter"
+        >
+            <template #default="{ data: { data } }">
+                <PieChart :data="data" />
+            </template>
+        </StatisticsItem>
 
-            <StatisticsItem
-                title="テスト作成"
-                :data="data.createTest"
-            >
-                <template #default="{ data: { data, firstDate } }">
-                    <Calendar
-                        :start-day="firstDate.get('d')"
-                        :data="data"
-                        :colors="gradeColors"
-                    >
-                        <template #current="{ value }">
-                            <div v-if="value">
-                                <NyaDate :date="value.date" />
-                                にテストを
-                                <span class="number">{{ value.num ?? 0 }}</span>
-                                個作成しました
-                            </div>
-                        </template>
-                    </Calendar>
-                </template>
-            </StatisticsItem>
-        </div>
+        <StatisticsItem
+            title="テスト作成"
+            :data="data.createTest"
+        >
+            <template #default="{ data: { data, firstDate } }">
+                <Calendar
+                    :start-day="firstDate.get('d')"
+                    :data="data"
+                    :colors="gradeColors"
+                >
+                    <template #current="{ value }">
+                        <div v-if="value">
+                            <NyaDate :date="value.date" />
+                            にテストを
+                            <span class="number">{{ value.num ?? 0 }}</span>
+                            個作成しました
+                        </div>
+                    </template>
+                </Calendar>
+            </template>
+        </StatisticsItem>
     </div>
 </template>
 
 <style scoped>
 .content {
-    padding: 0 1em;
-	height: calc(100vh - 3.5rem);
-    box-sizing: border-box;
-	overflow-y: auto;
-    scrollbar-width: none;
-}
-.content::-webkit-scrollbar {
-    display: none;
-}
-
-.list {
     padding: 1em;
     display: flex;
     flex-flow: wrap;

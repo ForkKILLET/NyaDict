@@ -101,8 +101,7 @@ const endTest = () => {
             <fa-icon
                 v-if="! ongoingTest.locked"
                 @click="navigateTestedWord(- 1)"
-                icon="circle-arrow-left"
-                class="button"
+                icon="circle-arrow-left" class="button"
                 :class="{ disabled: ongoingTest.currentIndex === 0 }"
             />
             <span class="order">{{ ongoingTest.currentIndex }}</span> /
@@ -110,8 +109,7 @@ const endTest = () => {
             <fa-icon
                 v-if="! ongoingTest.locked"
                 @click="navigateTestedWord(+ 1)"
-                icon="circle-arrow-right"
-                class="button"
+                icon="circle-arrow-right" class="button"
                 :class="{ disabled: ongoingTest.currentIndex >= ongoingTest.maxIndex }"
             />
         </span>
@@ -141,7 +139,7 @@ const endTest = () => {
                 </button>
             </p>
         </div>
-        <div v-else-if="! showAnswer" class="test-area">
+        <div v-else-if="! showAnswer" class="test-area scroll-y">
             <div>
                 <span class="question">{{ currentWord![ongoingTest.mode] }}</span>
             </div>
@@ -152,7 +150,7 @@ const endTest = () => {
                 >答案を見る</button>
             </p>
         </div>
-        <div v-else class="test-area">
+        <div v-else class="test-area scroll-y">
             <div>
                 <Word class="answer inline" :word="currentWord!">
                     <fa-icon
@@ -195,8 +193,6 @@ const endTest = () => {
 .content {
     display: flex;
     flex-flow: column;
-    height: calc(100vh - 3.5rem);
-    box-sizing: border-box;
     text-align: center;
     align-items: center;
 }
@@ -205,11 +201,6 @@ const endTest = () => {
     height: 100%;
     margin: 1.5rem -1em 0 -1em;
     padding: 1em;
-    overflow-y: auto;
-    scrollbar-width: none;
-}
-.test-area::-webkit-scrollbar {
-    display: none;
 }
 
 .test-area > div:first-child {

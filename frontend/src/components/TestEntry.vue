@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router';
 import NyaDate from '@comp/NyaDate.vue'
 import type { ITest } from '@type'
 import { useWord } from '@/stores/words';
+import { computed } from 'vue';
 
 const props = defineProps<{
     test: ITest
@@ -23,6 +24,11 @@ const showInWordsView = () => {
     wordStore.filter.testId = props.test.id
     router.push('/words')
 }
+
+const currentWordText = computed(() => wordStore
+    .getById(props.test.wordIds[props.test.currentIndex])
+    ?.[props.test.mode === 'disp' ? 'sub' : 'disp']
+)
 </script>
 
 <template>
@@ -34,24 +40,29 @@ const showInWordsView = () => {
                 <span class="order">{{ test.currentIndex }}</span> /
                 <span class="order">{{ test.wordIds.length }}</span>
             </span>
+            <span class="current-word-text">{{ currentWordText }}</span>
         </span>
         <span class="test-entry-action">
             <fa-icon
                 v-if="test.locked"
                 @click="showInWordsView"
-                icon="book"
-                class="button"
+                icon="book" class="button"
             />
             <fa-icon
                 @click="startTest"
-                icon="arrow-circle-right"
-                class="button"
+                icon="arrow-circle-right" class="button"
             />
         </span>
     </div>
 </template>
 
 <style scoped>
+.id {
+    display: inline-block;
+    text-align: left;
+    width: 2em;
+}
+
 .test-entry {
     display: flex;
     justify-content: space-between;
@@ -60,5 +71,9 @@ const showInWordsView = () => {
 
 .test-entry-info > * {
     margin-right: .5em;
+}
+
+.current-word-text {
+    color: #aaa;
 }
 </style>

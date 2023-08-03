@@ -12,8 +12,7 @@ import TestList from '@comp/TestList.vue'
 .content {
     display: flex;
     flex-flow: column;
-    height: calc(100vh - 3.5rem);
-    box-sizing: border-box;
+    height: 100%;
     text-align: center;
     align-items: center;
 }

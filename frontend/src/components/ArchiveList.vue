@@ -185,7 +185,7 @@ watch(route, ({ path }) => {
             
             <fa-icon @click="getRemoteInfo" icon="rotate" class="button" />
         </p>
-        <div class="archive-list-entries">
+        <div class="archive-list-entries scroll-y">
             <div v-if="selectedFile" class="archive-entry">
                 <ArchiveInfo
                     id="アップ"
@@ -273,13 +273,8 @@ watch(route, ({ path }) => {
 
 .archive-list-entries {
     flex: 1;
-    overflow-y: auto;
     margin: -1em -.5em;
     padding: 1em;
-    scrollbar-width: none;
-}
-.archive-list-entries::-webkit-scrollbar {
-    display: none;
 }
 
 .archive-entry {

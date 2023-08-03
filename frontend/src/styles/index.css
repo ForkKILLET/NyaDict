@@ -23,6 +23,10 @@
 	}
 }
 
+#app {
+    height: 100vh;
+}
+
 * {
     outline: none;
     border: none;
