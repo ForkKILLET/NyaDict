@@ -5,10 +5,9 @@ import NyaDate from '@comp/NyaDate.vue'
 import LongPressButton from '@comp/LongPressButton.vue'
 import WordMemCalendar from '@comp/WordMemCalendar.vue'
 import NyaTab from '@comp/NyaTab.vue'
-import WordDocument from '@comp/WordDocument.vue'
-import WordDocumentAdder from '@comp/WordDocumentAdder.vue'
-import type { IWord, IWordDocumentWithoutId } from '@type'
+import type { IWord } from '@type'
 import NyaConfirmInput from './NyaConfirmInput.vue'
+import WordDocumentList from './WordDocumentList.vue'
 
 const wordStore = useWord()
 
@@ -17,21 +16,7 @@ const props = defineProps<{
 }>()
 
 const withdrawed = computed(() => ! wordStore.getById(props.word.id))
-
-const newlyAddedDocId = ref<number | null>(null)
-
-const addDoc = (newDoc: IWordDocumentWithoutId) => {
-    const doc = props.word.doc ??= {
-        maxId: 0,
-        docs: []
-    }
-    const id = doc.maxId ++
-    doc.docs.push({
-        ...newDoc,
-        id
-    })
-    newlyAddedDocId.value = id
-}
+const actionMode = ref(false)
 </script>
 
 <template>
@@ -75,12 +60,11 @@ const addDoc = (newDoc: IWordDocumentWithoutId) => {
                 <WordMemCalendar :mem="word.mem" />
             </template>
             <template #dict>
-                <WordDocumentAdder :word="word" @add-doc="addDoc" />
-                <WordDocument
-                    v-for="doc of word.doc?.docs ?? []"
-                    :doc="doc"
-                    :edit-mode="newlyAddedDocId === doc.id"
+                <fa-icon
+                    @click="actionMode = ! actionMode"
+                    icon="gear" class="button"
                 />
+                <WordDocumentList :word="word" :node="word" :action-mode="actionMode" />
             </template>
         </NyaTab>
     </div>
@@ -112,5 +96,10 @@ const addDoc = (newDoc: IWordDocumentWithoutId) => {
 
 .nya-tab[data-tab=dict] {
     margin-bottom: 5em;
+}
+
+.nya-tab[data-tab=dict] > svg.button {
+    padding-left: 0;
+    margin-bottom: .5em;
 }
 </style>

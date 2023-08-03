@@ -9,9 +9,9 @@ import { storeRef } from '@util/storage'
 import WordEditor from '@comp/WordEditor.vue'
 import WordList from '@comp/WordList.vue'
 import WordDetail from '@comp/WordDetail.vue'
-import { addNoti } from '@/utils/notif'
 import type { IWord } from '@type'
 import { ITestRec } from '@type'
+import { useRoute } from 'vue-router'
 
 const wordStore = useWord()
 const testStore = useTest()
@@ -116,6 +116,23 @@ const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
     const id = wordStore.add({ ...word, mem: emptyMem() })
     currentWord.value = wordStore.getById(id)
 }
+
+const route = useRoute()
+const currentWordBeforeQuerying = ref<IWord>()
+
+watch(route, () => {
+    const { id } = route.query
+    if (typeof id === 'string' && id) {
+        const queryingWord = wordStore.getById(+ id)
+        if (queryingWord) {
+            currentWordBeforeQuerying.value = currentWord.value
+            currentWord.value = queryingWord
+        }
+    }
+    else if (currentWordBeforeQuerying.value) {
+        currentWord.value = currentWordBeforeQuerying.value
+    }
+}, { immediate: true })
 </script>
 
 <template>

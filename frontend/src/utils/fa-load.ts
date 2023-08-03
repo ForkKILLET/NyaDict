@@ -7,7 +7,7 @@ import {
     faFlag, faFlagCheckered, faUserCircle, faUserPlus, faRightToBracket,
     faRightFromBracket, faLock, faTrash, faTrashRestore, faGift, faSpinner,
     faCloud, faCloudArrowDown, faCloudArrowUp, faInfoCircle, faCircleQuestion,
-    faForward, faPlus, faChartLine, faCode, faEye, faBars,
+    faForward, faPlus, faChartLine, faCode, faEye, faBars, faGear,
 } from '@fortawesome/free-solid-svg-icons'
 
 
@@ -19,6 +19,6 @@ library.add(...[
     faFlag, faFlagCheckered, faUserCircle, faUserPlus, faRightToBracket,
     faRightFromBracket, faLock, faTrash, faTrashRestore, faGift, faSpinner,
     faCloud, faCloudArrowUp, faCloudArrowDown, faInfoCircle, faCircleQuestion,
-    faForward, faPlus, faChartLine, faCode, faEye, faBars,
+    faForward, faPlus, faChartLine, faCode, faEye, faBars, faGear,
 ])
 

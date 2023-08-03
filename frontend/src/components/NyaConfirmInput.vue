@@ -1,15 +1,18 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import LongPressButton from './LongPressButton.vue';
 
 const props = defineProps<{
     modelValue: string
     autofocus?: boolean
     disabled?: boolean
+    withdrawable?: boolean
     editMode?: boolean
 }>()
 
 const emit = defineEmits<{
     (event: 'update:modelValue', value: string): void
+    (event: 'withdraw'): void
 }>()
 
 const value = ref(props.modelValue)
@@ -27,14 +30,25 @@ const submit = () => {
 </script>
 
 <template>
-    <div class="nya-confirm-input">
+    <div class="nya-confirm-input" :class="{ withdrawable }">
         <template v-if="! editMode">
-            <span class="value">{{ modelValue }}</span>
-            <fa-icon
-                v-if="! disabled"
-                @click="editMode = true"
-                icon="edit" class="button"
-            />
+            <slot name="content">
+                <span class="value">{{ modelValue }}</span>
+            </slot>
+            <div class="edit-buttons">
+                <fa-icon
+                    v-if="! disabled"
+                    @click="editMode = true"
+                    icon="edit" class="button"
+                />
+                <LongPressButton
+                    v-if="withdrawable"
+                    @long-press="emit('withdraw')"
+                    icon="trash"
+                    color="#ec4e1e"
+                    :duration="1.5"
+                />
+            </div>
         </template>
         <template v-else>
             <input
@@ -63,6 +77,10 @@ const submit = () => {
     align-items: baseline;
 }
 
+.nya-confirm-input.withdrawable {
+    line-height: 2rem;
+}
+
 input {
     margin: -.1rem -.3rem;
     padding: .1rem .3rem;
@@ -78,5 +96,6 @@ input:hover, input:focus {
 
 .edit-buttons {
     margin-left: .3rem;
+    white-space: nowrap;
 }
 </style>

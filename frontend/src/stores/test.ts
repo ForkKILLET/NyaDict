@@ -17,11 +17,11 @@ declare module '@type' {
 
 export const useTest = defineStore('test', () => {
     const archiveStore = useArchive()
-    archiveStore.defineArchiveItem('tests', (key) => storeArray<ITest, ITest_Compress>(key, {
+    archiveStore.defineArchiveItem('tests', key => storeArray<ITest, ITest_Compress>(key, {
         map: compress_ITest
     }))
-    archiveStore.defineArchiveItem('ongoingTestId', (key) => storeRef(key, undefined))
-    archiveStore.defineArchiveItem('testMaxId', (key) => storeRef(key, 0))
+    archiveStore.defineArchiveItem('ongoingTestId', key => storeRef(key, undefined))
+    archiveStore.defineArchiveItem('testMaxId', key => storeRef(key, 0))
     const { tests, ongoingTestId, testMaxId: maxId } = archiveStore.extractData([ 'tests', 'ongoingTestId', 'testMaxId' ])
     
     const ongoingTest = computed(() => {

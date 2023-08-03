@@ -26,7 +26,7 @@ const addDoc = (kind: DocumentKind) => {
             newDoc = {
                 kind,
                 text: '',
-                children: []
+                docs: []
             }
             break
         case DocumentKind.Sentence:
@@ -75,5 +75,9 @@ const addDoc = (kind: DocumentKind) => {
 
 input {
     display: inline;
+}
+
+.doc-adder-toolbar > svg.button {
+    padding-left: 0;
 }
 </style>

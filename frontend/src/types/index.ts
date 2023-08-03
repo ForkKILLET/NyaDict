@@ -1,17 +1,12 @@
 import type { DistributiveOmit } from "@type/tool"
 
-// @compress { "doc": "d" }
+// @compress { "docs": "d" }
 export type IWord = {
     id: number
     disp: string
     sub: string
     mem: IMemory
-    doc?: IWordDocuments
-}
-
-export type IWordDocuments = {
-    maxId: number
-    docs: IWordDocument[]
+    docs?: IWordDocument[]
 }
 
 export type IWordDocument = IMeaningDocument | ISentenceDocument
@@ -27,7 +22,7 @@ export type IMeaningDocument = {
     id: number
     lang?: string
     text: string
-    children: IWordDocument[]
+    docs: IWordDocument[]
 }
 
 export type ISentenceDocument = {

@@ -205,6 +205,7 @@ watch(route, ({ path }) => {
 
             <div
                 v-for="[ local, remote ], id in infoWithRemote"
+                :key="id"
                 class="archive-entry"
             >
                 <ArchiveInfo

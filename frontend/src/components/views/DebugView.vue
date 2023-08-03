@@ -8,7 +8,7 @@ const json = ref('')
 
 <template>
     <div>
-        <textarea readonly :value="json" spellcheck="false"></textarea>
+        <textarea :value="json" spellcheck="false"></textarea>
         <br />
         <br />
         <button

@@ -4,10 +4,10 @@ import { toHiragana, toRomaji, isHiragana} from 'wanakana'
 import { randomItem } from '@util'
 import { useArchive } from '@store/archive'
 import { IWord_Compress, compress_IWord } from '@/utils/compress'
-import type { IMemory, ITestRec, IWord } from '@type'
 import { storeRef, type ArrayStore, storeArray, storeRefReactive } from '@/utils/storage'
 import type { Disposable } from '@/utils/disposable'
-import { ICorrect } from '@type'
+import type { IMemory, ITestRec, IWord, ICorrect, IWordDocumentWithoutId } from '@type'
+import { IWordDocument } from '@type'
 
 export const baseInterval = 5
 
@@ -16,6 +16,7 @@ declare module '@type' {
         words: Ref<ArrayStore<IWord>> & Disposable
         wordMaxId: Ref<number> & Disposable
         wordFilter: Ref<IWordFilter> & Disposable
+        docMaxId: Ref<number> & Disposable
     }
 }
 
@@ -45,10 +46,11 @@ export const useWord = defineStore('words', () => {
         testId: null,
         testCorrectLevel: 1
     }))
-    const { words, wordMaxId: maxId, wordFilter: filter } = archiveStore.extractData([ 'words', 'wordMaxId', 'wordFilter' ])
+    archiveStore.defineArchiveItem('docMaxId', key => storeRef(key, 0))
+    const { words, wordMaxId, wordFilter: filter, docMaxId } = archiveStore.extractData([ 'words', 'wordMaxId', 'wordFilter', 'docMaxId' ])
 
     const add = (word: Omit<IWord, 'id'>) => {
-        const id = ++ maxId.value
+        const id = ++ wordMaxId.value
         words.value.push({ ...word, id })
         archiveStore.archiveInfo[archiveStore.currentId].wordCount! ++
         return id
@@ -92,6 +94,15 @@ export const useWord = defineStore('words', () => {
         }
     }
 
+    const addDoc = (docs: IWordDocument[], newDoc: IWordDocumentWithoutId) => {
+        const id = ++ docMaxId.value 
+        docs.push({
+            ...newDoc,
+            id
+        })
+        return id
+    }
+
     const popTestRec = (word: IWord): ITestRec | undefined => {
         const rec = word.mem.testRec.pop()
         return rec
@@ -99,9 +110,12 @@ export const useWord = defineStore('words', () => {
 
     const randomWord = () => randomItem(words.value)
 
+    Object.assign(window, { words })
+
     return {
         words, filter,
         add, modify, withdraw,
+        addDoc,
         getById, pushTestRec, popTestRec, randomWord
     }
 })
