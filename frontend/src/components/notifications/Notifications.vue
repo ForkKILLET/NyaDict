@@ -11,8 +11,8 @@ import ListTransitionGroup from '@comp/transitions/ListTransitionGroup.vue'
             <div v-if="noti">
                 <Noti
                     :noti="noti"
-                    @click="notif.remove(id)"
-                    @expire="notif.remove(id)"
+                    @click="notif.removeNoti(id)"
+                    @expire="notif.removeNoti(id)"
                 />
             </div>
         </template>

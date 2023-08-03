@@ -86,6 +86,7 @@ input {
 }
 
 svg.button {
+    font-size: 1rem;
     color: #db8e30;
     padding: 0 .4rem;
     transition: .3s color;

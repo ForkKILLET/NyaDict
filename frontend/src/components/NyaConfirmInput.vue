@@ -64,18 +64,19 @@ const submit = () => {
 }
 
 input {
-    margin: -.1em -.3em;
-    padding: .1em .3em;
-    border-radius: .5em;
-    box-shadow: 0 0 .3em #f3aa6d4d;
+    margin: -.1rem -.3rem;
+    padding: .1rem .3rem;
+    border-radius: .5rem;
+    box-shadow: 0 0 .3rem #f3aa6d4d;
+    font: inherit;
     transition: .3s box-shadow;
 }
 
 input:hover, input:focus {
-    box-shadow: 0 0 .4em #faae70ef;
+    box-shadow: 0 0 .4rem #faae70ef;
 }
 
 .edit-buttons {
-    margin-left: .3em;
+    margin-left: .3rem;
 }
 </style>

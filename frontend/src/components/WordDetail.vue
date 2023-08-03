@@ -8,6 +8,7 @@ import NyaTab from '@comp/NyaTab.vue'
 import WordDocument from '@comp/WordDocument.vue'
 import WordDocumentAdder from '@comp/WordDocumentAdder.vue'
 import type { IWord, IWordDocumentWithoutId } from '@type'
+import NyaConfirmInput from './NyaConfirmInput.vue'
 
 const wordStore = useWord()
 
@@ -35,11 +36,11 @@ const addDoc = (newDoc: IWordDocumentWithoutId) => {
 
 <template>
     <div class="word-detail">
-        <p class="word-disp">
-            {{ word.disp }}
-            <span class="id">{{ word.id }}</span>
-        </p>
-        <p class="word-sub">{{ word.sub }}</p>
+        <span class="id">{{ word.id }}</span>
+
+        <NyaConfirmInput v-model="word.disp" class="word-disp" />
+        <NyaConfirmInput v-model="word.sub" class="word-sub" />
+
         <p>
             <LongPressButton
                 v-if="! withdrawed"
@@ -86,14 +87,18 @@ const addDoc = (newDoc: IWordDocumentWithoutId) => {
 </template>
 
 <style scoped>
-.word-disp {
+.word-disp, .word-sub {
     margin: 0;
-    font-size: 2em;
-    font-weight: bold;
 }
 
-.word-sub {
-    margin: 0;
+.word-disp :deep(input), .word-sub :deep(input) {
+    width: calc(100% - 4rem);
+}
+
+.word-disp {
+    font-size: 2em;
+    font-weight: bold;
+    margin-bottom: .5rem;
 }
 
 .calendar {

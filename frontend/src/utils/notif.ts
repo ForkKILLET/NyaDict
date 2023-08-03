@@ -12,10 +12,16 @@ export type Noti = {
 
 export const notis = reactive<Array<Noti | undefined>>([])
 
-export const add = (noti: Noti): number => {
+export const addNoti = (noti: Noti): number => {
     noti = reactive(noti)
     notis.push(noti)
     return notis.length - 1
+}
+
+export const removeNoti = (notiId: number): boolean => {
+    if (! notis[notiId]) return false
+    notis[notiId] = undefined
+    return true
 }
 
 export const handleResp = async <T>(options: {
@@ -23,17 +29,17 @@ export const handleResp = async <T>(options: {
     silentSuccess?: boolean
     action: () => Promise<NyaResp<T>>
 }) => {
-    const id = add({
+    const id = addNoti({
         content: `${options.name}しています`,
         type: 'pending'
     })
 
     const resp = await options.action()
 
-    remove(id)
+    removeNoti(id)
 
     if (resp?.statusCode === 200) {
-        if (! options.silentSuccess) add({
+        if (! options.silentSuccess) addNoti({
             content: `${options.name}・完了`,
             type: 'success',
             duration: 2 * 1000
@@ -45,15 +51,9 @@ export const handleResp = async <T>(options: {
     if (! resp) content = `${options.name}・エラー`
     else content = resp.message
 
-    add({
+    addNoti({
         content,
         type: 'error',
         duration: 3 * 1000
     })
-}
-
-export const remove = (notiId: number): boolean => {
-    if (! notis[notiId]) return false
-    notis[notiId] = undefined
-    return true
 }

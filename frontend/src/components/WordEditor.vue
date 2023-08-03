@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { isHiragana } from 'wanakana'
+import { addNoti } from '@/utils/notif'
 import type { IWord } from '@type'
 
 const props = defineProps<{
@@ -33,6 +34,18 @@ const onCancel = () => {
 }
 
 const onChange = () => {
+    if (! disp.value || ! sub.value) {
+        const missing = []
+        if (! disp.value) missing.push('書き方')
+        if (! sub.value) missing.push('読み方')
+        addNoti({
+            type: 'error',
+            content: `単語の${missing.join('と')}を入力ください`,
+            duration: 2 * 1000
+        })
+        return
+    }
+
     emit('change', {
         disp: disp.value,
         sub: sub.value
@@ -62,21 +75,26 @@ const onCompositionEnd = (event: CompositionEvent) => {
                 @compositionupdate="onCompositionUpdate"
                 @compositionend="onCompositionEnd"
                 @keydown.enter="onChange"
+                placeholder="書き方"
             />
         </span>
         <span class="word-sub">
-            <input v-model="sub" @keydown.enter="onChange" />
+            <input
+                v-model="sub"
+                @keydown.enter="onChange"
+                placeholder="読み方"
+            />
         </span>
-        <fa-icon
-            @click="onCancel"
-            class="button"
-            icon="times-circle"
-        />
-        <fa-icon
-            @click="onChange"
-            class="button"
-            icon="circle-check"
-        />
+        <div class="edit-buttons">
+            <fa-icon
+                @click="onCancel"
+                icon="times-circle" class="button"
+            />
+            <fa-icon
+                @click="onChange"
+                icon="circle-check" class="button"
+            />
+        </div>
     </div>
 </template>
 
@@ -99,5 +117,9 @@ input {
     color: inherit;
     background-color: transparent;
     font-family: inherit;
+}
+
+.edit-buttons {
+    white-space: nowrap;
 }
 </style>
