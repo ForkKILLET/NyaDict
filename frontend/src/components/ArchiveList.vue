@@ -43,6 +43,7 @@ const makeBlob = (id: string) => {
     blobs[id] = new Blob([
         jsons[id] = JSON.stringify(archiveStore.exportArchive(id))
     ])
+    archiveInfo.value[id].size = blobs[id].size
 }
 const withdraw = (id: string) => {
     delete archiveInfo.value[id]
@@ -94,7 +95,6 @@ const imports = async (id?: string) => {
 
 for (const id in archiveInfo.value) {
     makeBlob(id)
-    archiveInfo.value[id].size = blobs[id].size
 }
 
 const getRemoteInfo = async () => {

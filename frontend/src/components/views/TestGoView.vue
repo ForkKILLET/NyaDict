@@ -3,7 +3,7 @@ import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useTest } from '@/stores/test'
-import { useWord } from '@/stores/words'
+import { getCorrectnessCount, useWord } from '@/stores/words'
 import { add as addNoti, remove as removeNoti } from '@/utils/notif'
 import Word from '@comp/Word.vue'
 import Correctness from '@comp/Correctness.vue'
@@ -22,27 +22,13 @@ const currentWord = computed(() => wordStore.getById(
     ongoingTest.value?.wordIds[ongoingTest.value.currentIndex]
 ))
 const showAnswer = ref(false)
-const showDetail = ref(false)
 const nid = ref<number>()
 
-const correctnessCount = computed(() => {
-    let correct = 0
-    let halfCorrect = 0
-    let wrong = 0
-    for (const c of ongoingTest.value!.correctness) {
-        if (c === 1) correct ++
-        else if (c === 0) wrong ++
-        else halfCorrect ++
-    }
-    return {
-        correct, halfCorrect, wrong
-    }
-})
+const correctnessCount = computed(() => getCorrectnessCount(ongoingTest.value!.correctness))
 
 const testCompleted = computed(() => ongoingTest.value!.currentIndex === testSize.value) 
 
 const nextWord = (correct: ICorrect) => {
-    if (showDetail.value) showDetail.value = false
     showAnswer.value = false
 
     const word = currentWord.value!
@@ -152,13 +138,7 @@ const endTest = () => {
         </div>
         <div v-else class="test-area scroll-y">
             <div>
-                <Word class="answer inline" :word="currentWord!">
-                    <fa-icon
-                        @click="showDetail = ! showDetail"
-                        class="button"
-                        icon="arrow-circle-right"
-                    />
-                </Word>
+                <Word class="answer inline" :word="currentWord!" />
             </div>
             <p class="choose-correctness">
                 <button
@@ -180,7 +160,7 @@ const endTest = () => {
                     <fa-icon icon="times-circle" class="wrong" />
                 </button>
             </p>
-            <WordDetail v-if="showDetail" :word="currentWord!" />
+            <WordDetail :word="currentWord!" />
         </div>
     </div>
     <div v-else>

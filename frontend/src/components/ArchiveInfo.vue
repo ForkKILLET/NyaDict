@@ -63,7 +63,7 @@ const noInfoReasons: Record<INoInfoReason, string> = {
                 </div>
                 <div>
                     <fa-icon icon="calendar" :fixed-width="true" />
-                    <NyaDate :date="info.accessTime" :long="true" />
+                    <NyaDate :date="info.accessTime" format="YYYY-MM-DD hh:mm:ss" />
                 </div>
                 <div>
                     <fa-icon icon="folder" :fixed-width="true" />

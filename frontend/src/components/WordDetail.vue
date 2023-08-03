@@ -56,33 +56,32 @@ const addDoc = (newDoc: IWordDocumentWithoutId) => {
                 :duration=".5"
             />
         </p>
-        <div class="mem-detail">
-            <NyaTab :tabs="[
-                { name: 'dict', title: '辞書' },
-                { name: 'mem', title: 'メモリー' },
-            ]">
-                <template #mem>
-                    <div>
-                        <fa-icon icon="plus" :fixed-width="true" />
-                        <NyaDate :date="word.mem.createTime" />
-                    </div>
-                    <div>
-                        <fa-icon icon="forward" :fixed-width="true" /> 
-                        <NyaDate v-if="word.mem.testAfter" :date="word.mem.testAfter" />
-                        <span v-else class="number">今</span>
-                    </div>
-                    <WordMemCalendar :mem="word.mem" />
-                </template>
-                <template #dict>
-                    <WordDocumentAdder :word="word" @add-doc="addDoc" />
-                    <WordDocument
-                        v-for="doc of word.doc?.docs ?? []"
-                        :doc="doc"
-                        :edit-mode="newlyAddedDocId === doc.id"
-                    />
-                </template>
-            </NyaTab>
-        </div>
+
+        <NyaTab :tabs="[
+            { name: 'dict', title: '辞書' },
+            { name: 'mem', title: 'メモリー' },
+        ]">
+            <template #mem>
+                <div>
+                    <fa-icon icon="plus" :fixed-width="true" />
+                    <NyaDate :date="word.mem.createTime" />
+                </div>
+                <div>
+                    <fa-icon icon="forward" :fixed-width="true" /> 
+                    <NyaDate v-if="word.mem.testAfter" :date="word.mem.testAfter" />
+                    <span v-else class="number">今</span>
+                </div>
+                <WordMemCalendar :mem="word.mem" />
+            </template>
+            <template #dict>
+                <WordDocumentAdder :word="word" @add-doc="addDoc" />
+                <WordDocument
+                    v-for="doc of word.doc?.docs ?? []"
+                    :doc="doc"
+                    :edit-mode="newlyAddedDocId === doc.id"
+                />
+            </template>
+        </NyaTab>
     </div>
 </template>
 
@@ -102,7 +101,11 @@ const addDoc = (newDoc: IWordDocumentWithoutId) => {
     margin-top: 1em;
 }
 
-.mem-detail > div > svg {
+.nya-tab[data-tab=mem] > div > svg {
     margin-right: .2em;
+}
+
+.nya-tab[data-tab=dict] {
+    margin-bottom: 5em;
 }
 </style>

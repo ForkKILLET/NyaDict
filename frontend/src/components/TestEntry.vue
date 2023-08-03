@@ -27,7 +27,7 @@ const showInWordsView = () => {
 
 const currentWordText = computed(() => wordStore
     .getById(props.test.wordIds[props.test.currentIndex])
-    ?.[props.test.mode === 'disp' ? 'sub' : 'disp']
+    ?.[props.test.mode]
 )
 </script>
 

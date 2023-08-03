@@ -1,18 +1,24 @@
 <script setup lang="ts">
 import { interpolateRgb } from 'd3-interpolate'
-import { useWord } from '@/stores/words'
+import dayjs from 'dayjs'
+import { getCorrectnessCount, useWord } from '@/stores/words'
 import {
     useTest,
     getRelativeTestTime, relativeTestTimeColors, type RelativeTestTime
 } from '@/stores/test'
 import { gradeColors } from '@/utils'
+import { getDecimalHour } from '@/utils/date'
 import NyaDate from '@comp/NyaDate.vue'
 import StatisticsItem from '@comp/StatisticsItem.vue'
 import Calendar, { getCalendarData } from '@comp/charts/Calendar.vue'
 import PieChart, { type PieData } from '@comp/charts/PieChart.vue'
+import TimeChart, { BarData } from '@comp/charts/TimeChart.vue'
+import { ITest } from '@type'
 
 const wordStore = useWord()
 const testStore = useTest()
+
+const interpolate = interpolateRgb('#ec4e1e', '#95e35d')
 
 const data = {
     createWord: () => {
@@ -28,7 +34,6 @@ const data = {
             groups[easiness] ++
         })
 
-        const interpolate = interpolateRgb('#ec4e1e', '#95e35d')
         const data: PieData = Object.entries(groups)
             .map(([ easiness, value ]) => ({
                 ratio: value / total,
@@ -70,6 +75,33 @@ const data = {
     },
     createTest: () => {
         return getCalendarData(testStore.tests, test => test.createTime)
+    },
+    recentTests: () => {
+        const tests = testStore.tests.filter(test => test.lockTime).slice(- 7)
+        const data: BarData<{
+            acc: number
+            test: ITest
+        }> = tests.map(test => {
+            const { acc } = getCorrectnessCount(test.correctness)
+            return {
+                period: {
+                    name: '',
+                    startPos: getDecimalHour(dayjs(test.createTime)) / 24,
+                    endPos: getDecimalHour(dayjs(test.lockTime)) / 24,
+                    startColor: '#ec4e1e',
+                    endColor: '#8358f9',
+                },
+                point: {
+                    pos: 1 - acc,
+                    color: '#39d353',
+                },
+                value: {
+                    acc, test
+                }
+            }
+        })
+
+        return { data }
     }
 }
 </script>
@@ -135,6 +167,23 @@ const data = {
                         </div>
                     </template>
                 </Calendar>
+            </template>
+        </StatisticsItem>
+
+        <StatisticsItem
+            title="最近のテスト"
+            :data="data.recentTests"
+        >
+            <template #default="{ data: { data } }">
+                <TimeChart :data="data" :height="{ value: 6, unit: 'em' }">
+                    <template #current="{ value }">
+                        <small v-if="value">
+                            <NyaDate :date="value.test.createTime" format="hh:mm:ss" /> から
+                            <NyaDate :date="value.test.lockTime!" format="hh:mm:ss" /> まで、
+                            ACC []<span class="number">{{ (value.acc * 100).toFixed(2) }}%</span>
+                        </small>
+                    </template>
+                </TimeChart>
             </template>
         </StatisticsItem>
     </div>

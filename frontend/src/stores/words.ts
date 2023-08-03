@@ -7,6 +7,7 @@ import { IWord_Compress, compress_IWord } from '@/utils/compress'
 import type { IMemory, ITestRec, IWord } from '@type'
 import { storeRef, type ArrayStore, storeArray, storeRefReactive } from '@/utils/storage'
 import type { Disposable } from '@/utils/disposable'
+import { ICorrect } from '@type'
 
 export const baseInterval = 5
 
@@ -133,3 +134,18 @@ export const getYomikataIndex = (word: IWord) => (
 )
 
 export const getLastTestTime = (word: IWord) => word.mem.testRec.at(-1)?.time ?? 0
+
+export const getCorrectnessCount = (correctness: ICorrect[]) => {
+    let correct = 0
+    let halfCorrect = 0
+    let wrong = 0
+    for (const c of correctness) {
+        if (c === 1) correct ++
+        else if (c === 0) wrong ++
+        else halfCorrect ++
+    }
+    return {
+        correct, halfCorrect, wrong,
+        acc: correct / correctness.length
+    }
+}
