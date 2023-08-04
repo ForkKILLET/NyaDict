@@ -180,7 +180,7 @@ const data = {
                         <small v-if="value">
                             <NyaDate :date="value.test.createTime" format="hh:mm:ss" /> から
                             <NyaDate :date="value.test.lockTime!" format="hh:mm:ss" /> まで、
-                            ACC []<span class="number">{{ (value.acc * 100).toFixed(2) }}%</span>
+                            ACC [<span class="number">{{ (value.acc * 100).toFixed(2) }}%</span>]
                         </small>
                     </template>
                 </TimeChart>
