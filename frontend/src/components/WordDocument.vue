@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 import { DocumentKind, type IWordDocumentWithoutId, type IWord } from '@type'
 import NyaConfirmInput from '@comp/NyaConfirmInput.vue'
 import WordDocumentList from '@comp/WordDocumentList.vue'
-import Sentence from './Sentence.vue';
+import Sentence from '@comp/Sentence.vue'
+import WordMiniSearcher from '@comp/WordMiniSearcher.vue'
 
 const props = defineProps<{
     word: IWord
@@ -17,6 +18,28 @@ const emit = defineEmits<{
 }>()
 
 const lang = computed(() => props.doc.lang ?? navigator.language)
+
+const showMiniSearcher = ref(false)
+const miniSearcher = ref<InstanceType<typeof WordMiniSearcher>>()
+const sentenceInput = ref<HTMLInputElement>()
+const sharpStart = () => {
+    showMiniSearcher.value = true
+    nextTick(() => {
+        miniSearcher.value?.focus()
+    })
+}
+const sharpEnd = (word: IWord, model: { value: string }) => {
+    showMiniSearcher.value = false
+    model.value += word.id
+    sentenceInput.value!.focus()
+}
+const sharpCancel = () => {
+    showMiniSearcher.value = false
+    sentenceInput.value!.focus()
+}
+const onSentenceCompositionEnd = (event: CompositionEvent) => {
+    if (event.data === '#') sharpStart()
+}
 </script>
 
 <template>
@@ -45,6 +68,22 @@ const lang = computed(() => props.doc.lang ?? navigator.language)
                 <template #content>
                     <Sentence :text="doc.text" :word="word" />
                 </template>
+                <template #input="{ model, submit }">
+                    <WordMiniSearcher
+                        v-if="showMiniSearcher"
+                        ref="miniSearcher"
+                        @select-word="word => sharpEnd(word, model.ref)"
+                        @cancel="sharpCancel"
+                    />
+                    <input
+                        class="input"
+                        ref="sentenceInput"
+                        v-model="model.ref.value"
+                        @keypress.enter="submit"
+                        @keypress.#="sharpStart"
+                        @compositionend="onSentenceCompositionEnd"
+                    />
+                </template>
             </NyaConfirmInput>
         </div>
     </div>
@@ -60,6 +99,7 @@ const lang = computed(() => props.doc.lang ?? navigator.language)
 }
 
 .setence-doc {
+    position: relative;
     margin: 1em .8em 1em 0;
 }
 
@@ -67,7 +107,15 @@ const lang = computed(() => props.doc.lang ?? navigator.language)
     margin-left: 1em;
 }
 
-.nya-confirm-input :deep(input) {
-    width: calc(100% - 4rem);
+.nya-confirm-input :deep(.input) {
+    width: 0;
+    flex: 1;
+    margin: 0 .1rem;
+}
+
+.word-mini-searcher {
+    position: absolute;
+    bottom: calc(100% + 1em);
+    width: 100%;
 }
 </style>

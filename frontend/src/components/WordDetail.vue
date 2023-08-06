@@ -32,14 +32,14 @@ const actionMode = ref(false)
                 @long-press="wordStore.withdraw(word.id)"
                 icon="trash"
                 color="#ec4e1e"
-                :duration="1.5"
+                :delay="1.5"
             />
             <LongPressButton
                 v-else
                 @long-press="word.id = wordStore.add(word)"
                 icon="trash-restore"
                 color="#db8e30"
-                :duration=".5"
+                :delay=".5"
             />
         </p>
 

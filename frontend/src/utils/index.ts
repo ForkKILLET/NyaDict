@@ -47,6 +47,17 @@ export const groupBy = <R extends string, T, U = T>(items: T[], group: (item: T)
     return result
 }
 
+export const filterN = <T>(items: T[], count: number, pred: (item: T) => boolean) => {
+    const filtered: T[] = []
+    for(const item of items) {
+        if (pred(item)) {
+            filtered.push(item)
+            if (filtered.length === count) break
+        }
+    }
+    return filtered
+}
+
 export type Grade = 'top' | 'high' | 'medium' | 'low' | 'none'
 export const gradeColors: Record<Grade, string> = {
     top: '#39d353',

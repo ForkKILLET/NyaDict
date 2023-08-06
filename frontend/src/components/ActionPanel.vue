@@ -17,7 +17,7 @@ const onSubmit = () => {
             <h2>{{ title }}</h2>
             <slot></slot>
             <div>
-                <button @click="onSubmit" class="card inline up">
+                <button @click="onSubmit" class="card inline light">
                     <fa-icon
                         :icon="pending ? 'spinner' : 'arrow-right'"
                         :spin="pending"

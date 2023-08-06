@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { vOnLongPress } from '@vueuse/components'
 
-const props = defineProps<{
-    duration: number
+defineProps<{
+    delay: number
     icon: string
     color: string
 }>()
@@ -10,30 +10,13 @@ const props = defineProps<{
 const emit = defineEmits<{
     (event: 'long-press'): void
 }>()
-
-const startTime = ref<number | null>(null)
-const onLongPressStart = () => {
-    startTime.value = Date.now()
-}
-const onLongPressEnd = () => {
-    if (! startTime.value) return
-
-    const duration = Date.now() - startTime.value
-    if (duration >= props.duration * 1000) {
-        startTime.value = null
-        emit('long-press')
-    }
-}
 </script>
 
 <template>
     <div
-        @mousedown="onLongPressStart"
-        @touchstart="onLongPressStart"
-        @mouseup="onLongPressEnd"
-        @touchend="onLongPressEnd"
+        v-on-long-press="[ () => emit('long-press'), { delay: delay * 1000 } ]"
         class="long-press-button"
-        :style="{ '--duration': duration + 's', '--color': color }"
+        :style="{ '--delay': delay + 's', '--color': color }"
     >
         <fa-icon :icon="icon" />
     </div>
@@ -65,6 +48,6 @@ const onLongPressEnd = () => {
 }
 
 .long-press-button:active {
-    animation: var(--duration) longpress ease-in, .3s hop var(--duration);
+    animation: var(--delay) longpress ease-in, .3s hop var(--delay);
 }
 </style>

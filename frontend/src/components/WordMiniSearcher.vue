@@ -1,0 +1,117 @@
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import { getRomaji, useWord } from '@/stores/words'
+import { filterN } from '@/utils'
+import { vOnClickOutside } from '@vueuse/components'
+import type { IWord } from '@type'
+
+const props = withDefaults(defineProps<{
+    maxResult?: number
+}>(), {
+    maxResult: 3
+})
+
+const emit = defineEmits<{
+    (event: 'select-word', word: IWord): void
+    (event: 'cancel'): void
+}>()
+
+const wordStore = useWord()
+const search = ref('')
+
+const filteredWords = computed(() => {
+    const text = search.value
+    if (! text) return []
+    return filterN(
+        wordStore.words, props.maxResult,
+        word => (
+            word.disp.startsWith(text) || word.sub.startsWith(text) || getRomaji(word).startsWith(text)
+        )
+    )
+})
+
+const cancel = () => {
+    emit('cancel')
+    search.value = ''
+}
+
+const submit = (word: IWord) => {
+    emit('select-word', word)
+    search.value = ''
+}
+
+const inputEl = ref<HTMLInputElement>()
+const focus = () => {
+    inputEl.value?.focus()
+}
+
+const activeWordIndex = ref(0)
+const navigateActiveWord = (delta: number) => {
+    const { length } = filteredWords.value
+    if (! length) return
+    activeWordIndex.value = (activeWordIndex.value + delta + length) % length
+}
+const submitActiveWord = () => {
+    const activeWord = filteredWords.value[activeWordIndex.value]
+    if (activeWord) submit(activeWord)
+    else cancel()
+}
+
+defineExpose({
+    focus
+})
+</script>
+
+<template>
+    <div
+        v-on-click-outside="cancel"
+        class="word-mini-searcher card deep"
+    >
+        <input
+            v-model="search"
+            ref="inputEl"
+            @keypress.esc="cancel"
+            @keypress.enter="submitActiveWord"
+            @change="activeWordIndex = 0"
+            @keypress.down="navigateActiveWord(+ 1)"
+            @keypress.up="navigateActiveWord(- 1)"
+            class="card light"
+        />
+        <div class="word-mini-list" v-for="word, index of filteredWords">
+            <div
+                @click="submit(word)"
+                class="word-mini-item"
+                :class="{ active: index === activeWordIndex }"
+            >{{ word.disp }}</div>
+        </div>
+    </div>
+</template>
+
+<style scoped>
+.word-mini-searcher {
+    font-size: .8em;
+    padding: .5em;
+}
+
+input.card.light {
+    width: 100%;
+    padding: 0 .5em;
+}
+
+.word-mini-list:not(:empty) {
+    margin-top: .5em;
+}
+
+.word-mini-item {
+    margin: .2em;
+    padding: 0 .3em;
+    border-radius: .5em;
+    line-height: 1.5;
+    color: #db8e30;
+    transition: .3s background-color;
+}
+
+.word-mini-item:hover, .word-mini-item.active {
+    background-color: #fffaf6;
+}
+</style>

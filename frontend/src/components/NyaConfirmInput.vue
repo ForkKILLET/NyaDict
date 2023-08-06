@@ -15,7 +15,9 @@ const emit = defineEmits<{
     (event: 'withdraw'): void
 }>()
 
-const value = ref(props.modelValue)
+const model = {
+    ref: ref(props.modelValue)
+}
 
 const editMode = ref(props.editMode)
 
@@ -24,7 +26,7 @@ const clear = () => {
 }
 
 const submit = () => {
-    emit('update:modelValue', value.value)
+    emit('update:modelValue', model.ref.value)
     clear()
 }
 </script>
@@ -33,7 +35,7 @@ const submit = () => {
     <div class="nya-confirm-input" :class="{ withdrawable }">
         <template v-if="! editMode">
             <slot name="content">
-                <span class="value">{{ modelValue }}</span>
+                <span class="content">{{ modelValue }}</span>
             </slot>
             <div class="edit-buttons">
                 <fa-icon
@@ -46,16 +48,19 @@ const submit = () => {
                     @long-press="emit('withdraw')"
                     icon="trash"
                     color="#ec4e1e"
-                    :duration="1.5"
+                    :delay="1.5"
                 />
             </div>
         </template>
         <template v-else>
-            <input
-                v-model="value"
-                @keypress.enter="submit"
-                :autofocus="autofocus"
-            />
+            <slot name="input" :model="model" :submit="submit" :autofocus="autofocus">
+                <input
+                    class="input"
+                    v-model="model.ref.value"
+                    @keypress.enter="submit"
+                    :autofocus="autofocus"
+                />
+            </slot>
             <div class="edit-buttons">
                 <fa-icon
                     @click="clear"
@@ -81,7 +86,7 @@ const submit = () => {
     line-height: 2rem;
 }
 
-input {
+:deep(.input) {
     margin: -.1rem -.3rem;
     padding: .1rem .3rem;
     border-radius: .5rem;
@@ -90,7 +95,7 @@ input {
     transition: .3s box-shadow;
 }
 
-input:hover, input:focus {
+:deep(.input:hover, .input:focus) {
     box-shadow: 0 0 .4rem #faae70ef;
 }
 

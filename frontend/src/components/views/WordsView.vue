@@ -167,7 +167,7 @@ watch(route, () => {
                     </div>
                     <div v-else-if="toolbarMode === 'filter'">
                         <div class="filter-search">
-                            <input v-model="search" class="card up" />
+                            <input v-model="search" class="card light" />
                             <fa-icon
                                 @click="search = ''"
                                 icon="times-circle" class="button"

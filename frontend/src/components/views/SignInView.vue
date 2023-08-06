@@ -44,7 +44,7 @@ const submit = async () => {
                 v-model="username"
                 type="text"
                 placeholder="ユーザー名"
-                class="card up"
+                class="card light"
             />
         </div>
         <div class="item">
@@ -53,7 +53,7 @@ const submit = async () => {
                 v-model="password"
                 type="password"
                 placeholder="パスワード"
-                class="card up"
+                class="card light"
             />
         </div>
     </ActionPanel>

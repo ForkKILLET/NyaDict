@@ -5,7 +5,7 @@ defineProps<{
     noti: Noti
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
     (event: 'expire'): void
 }>()
 
@@ -30,7 +30,7 @@ const typeIcons: Record<NotiType, string> = {
             v-if="noti.duration"
             class="noti-lasting"
             :style="{ '--duration': noti.duration + 'ms' }"
-            @animationend="$emit('expire')"
+            @animationend="emit('expire')"
         >
             <div class="noti-lasting-inner"></div>
         </div>

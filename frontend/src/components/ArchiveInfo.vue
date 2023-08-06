@@ -43,7 +43,7 @@ const noInfoReasons: Record<INoInfoReason, string> = {
                     <LongPressButton
                         icon="file-import"
                         color="#000"
-                        :duration=".5"
+                        :delay=".5"
                         @long-press="emit('upload-here')"
                     />
                 </div>

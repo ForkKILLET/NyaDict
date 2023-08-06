@@ -232,13 +232,13 @@ watch(route, ({ path }) => {
                         @long-press="upload(id)"
                         icon="cloud-arrow-up"
                         color="#000"
-                        :duration=".5"
+                        :delay=".5"
                     />
                     <LongPressButton
                         @long-press="withdraw(id)"
                         icon="trash"
                         color="#ec4e1e"
-                        :duration="1.5"
+                        :delay="1.5"
                     />
                 </ArchiveInfo>
 
@@ -253,7 +253,7 @@ watch(route, ({ path }) => {
                         @long-press="download(id)"
                         icon="cloud-arrow-down"
                         color="#000"
-                        :duration=".5"
+                        :delay=".5"
                     />
                     <template #labels>
                         <div>

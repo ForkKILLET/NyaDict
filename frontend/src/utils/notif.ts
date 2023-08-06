@@ -10,7 +10,7 @@ export type Noti = {
     style?: CSSProperties
 }
 
-export const notis = reactive<Array<Noti | undefined>>([])
+export const notis = reactive<Noti[]>([])
 
 export const addNoti = (noti: Noti): number => {
     noti = reactive(noti)
@@ -20,7 +20,7 @@ export const addNoti = (noti: Noti): number => {
 
 export const removeNoti = (notiId: number): boolean => {
     if (! notis[notiId]) return false
-    notis[notiId] = undefined
+    delete notis[notiId]
     return true
 }
 

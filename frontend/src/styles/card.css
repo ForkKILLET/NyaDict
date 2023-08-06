@@ -5,8 +5,11 @@
     border-radius: .8em;
     box-shadow: 0 0 .4em #faad704d;
 }
-.card.up {
+.card.light {
     background-color: #fff;
+}
+.card.deep {
+    background-color: #ffe0c8;
 }
 
 
