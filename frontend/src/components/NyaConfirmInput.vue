@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import LongPressButton from './LongPressButton.vue';
+import { ref, toRefs, watch } from 'vue'
+import LongPressButton from './LongPressButton.vue'
 
 const props = defineProps<{
     modelValue: string
-    autofocus?: boolean
     disabled?: boolean
     withdrawable?: boolean
     editMode?: boolean
+    withdrawWhenEmpty?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -15,13 +15,18 @@ const emit = defineEmits<{
     (event: 'withdraw'): void
 }>()
 
+const { modelValue } = toRefs(props)
 const model = {
-    ref: ref(props.modelValue)
+    ref: ref(modelValue.value)
 }
+watch(modelValue, newValue => {
+    model.ref.value = newValue
+})
 
 const editMode = ref(props.editMode)
 
 const clear = () => {
+    if (! modelValue.value) emit('withdraw')
     editMode.value = false
 }
 
@@ -53,12 +58,11 @@ const submit = () => {
             </div>
         </template>
         <template v-else>
-            <slot name="input" :model="model" :submit="submit" :autofocus="autofocus">
+            <slot name="input" :model="model" :submit="submit">
                 <input
                     class="input"
                     v-model="model.ref.value"
                     @keypress.enter="submit"
-                    :autofocus="autofocus"
                 />
             </slot>
             <div class="edit-buttons">

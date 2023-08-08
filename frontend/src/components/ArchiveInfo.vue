@@ -57,7 +57,6 @@ const noInfoReasons: Record<INoInfoReason, string> = {
                         <NyaConfirmInput
                             v-model="info.title"
                             :disabled="remote"
-                            :autofocus="true"
                         />
                     </div>
                 </div>

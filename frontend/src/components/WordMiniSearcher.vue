@@ -70,11 +70,11 @@ defineExpose({
         <input
             v-model="search"
             ref="inputEl"
-            @keypress.esc="cancel"
-            @keypress.enter="submitActiveWord"
+            @keydown.esc="cancel"
+            @keydown.enter="submitActiveWord"
+            @keydown.down="navigateActiveWord(+ 1)"
+            @keydown.up="navigateActiveWord(- 1)"
             @change="activeWordIndex = 0"
-            @keypress.down="navigateActiveWord(+ 1)"
-            @keypress.up="navigateActiveWord(- 1)"
             class="card light"
         />
         <div class="word-mini-list" v-for="word, index of filteredWords">

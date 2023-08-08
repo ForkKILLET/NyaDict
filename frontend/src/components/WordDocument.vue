@@ -49,8 +49,8 @@ const onSentenceCompositionEnd = (event: CompositionEvent) => {
                 v-model="doc.text"
                 @withdraw="emit('withdraw')"
                 :withdrawable="actionMode"
+                :withdraw-when-empty="true"
                 :edit-mode="editMode"
-                :autofocus="true"
             />
         </div>
 
@@ -61,9 +61,9 @@ const onSentenceCompositionEnd = (event: CompositionEvent) => {
             <NyaConfirmInput
                 v-model="doc.text"
                 @withdraw="emit('withdraw')"
+                :withdraw-when-empty="true"
                 :withdrawable="actionMode"
                 :edit-mode="editMode"
-                :autofocus="true"
             >
                 <template #content>
                     <Sentence :text="doc.text" :word="word" />
@@ -101,6 +101,7 @@ const onSentenceCompositionEnd = (event: CompositionEvent) => {
 .setence-doc {
     position: relative;
     margin: 1em .8em 1em 0;
+    padding: 0 .3em;
 }
 
 .doc-list {
@@ -110,7 +111,6 @@ const onSentenceCompositionEnd = (event: CompositionEvent) => {
 .nya-confirm-input :deep(.input) {
     width: 0;
     flex: 1;
-    margin: 0 .1rem;
 }
 
 .word-mini-searcher {

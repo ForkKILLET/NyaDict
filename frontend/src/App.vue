@@ -2,9 +2,10 @@
 import { useRoute } from 'vue-router'
 
 import Topbar from '@comp/Topbar.vue'
-import Notifications from '@comp/notifications/Notifications.vue';
+import Notifications from '@comp/notifications/Notifications.vue'
 
 const route = useRoute()
+
 </script>
 
 <template>

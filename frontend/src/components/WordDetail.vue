@@ -11,16 +11,30 @@ import WordDocumentList from './WordDocumentList.vue'
 
 const wordStore = useWord()
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
     word: IWord
-}>()
+    zenMode?: boolean
+}>(), {
+    zenMode: true
+})
 
 const withdrawed = computed(() => ! wordStore.getById(props.word.id))
 const actionMode = ref(false)
+
+const wordDetailEl = ref<HTMLDivElement>()
+const onFocus = ({ target: el }: FocusEvent) => {
+    if (! props.zenMode) return
+    if (! wordDetailEl.value) return
+    if (! (el && el instanceof HTMLInputElement)) return
+    if (el.parentElement?.classList.contains('word-mini-searcher')) return
+
+    const delta = el.getBoundingClientRect().y - window.innerHeight / 2
+	wordDetailEl.value.scrollBy({ top: delta, behavior: 'smooth' })   
+}
 </script>
 
 <template>
-    <div class="word-detail">
+    <div class="word-detail" ref="wordDetailEl">
         <span class="id">{{ word.id }}</span>
 
         <NyaConfirmInput v-model="word.disp" class="word-disp" />
@@ -64,7 +78,12 @@ const actionMode = ref(false)
                     @click="actionMode = ! actionMode"
                     icon="gear" class="button"
                 />
-                <WordDocumentList :word="word" :node="word" :action-mode="actionMode" />
+                <WordDocumentList
+                    @focus.capture="onFocus"
+                    :word="word"
+                    :node="word"
+                    :action-mode="actionMode"
+                />
             </template>
         </NyaTab>
     </div>
@@ -95,7 +114,7 @@ const actionMode = ref(false)
 }
 
 .nya-tab[data-tab=dict] {
-    margin-bottom: 5em;
+    margin-bottom: 10em;
 }
 
 .nya-tab[data-tab=dict] > svg.button {

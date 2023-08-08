@@ -1,17 +1,18 @@
 <script setup lang="ts">
-import { computed, reactive, ref, toRefs, type Ref, watch } from 'vue'
+import { computed, reactive, ref, toRefs, watch, type Ref, nextTick } from 'vue'
+import { useRoute } from 'vue-router'
 import {
     emptyMem, getCorrectness, getYomikataIndex,
     getRomaji, getLastTestTime, useWord
 } from '@store/words'
 import { useTest } from '@/stores/test'
+import { isPortrait } from '@/utils/media'
 import { storeRef } from '@util/storage'
 import WordEditor from '@comp/WordEditor.vue'
 import WordList from '@comp/WordList.vue'
 import WordDetail from '@comp/WordDetail.vue'
 import type { IWord } from '@type'
 import { ITestRec } from '@type'
-import { useRoute } from 'vue-router'
 
 const wordStore = useWord()
 const testStore = useTest()
@@ -117,6 +118,15 @@ const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
     currentWord.value = wordStore.getById(id)
 }
 
+const contentEl = ref<HTMLDivElement>()
+
+const gotoWord = (word: IWord) => {
+    currentWord.value = word
+    if (isPortrait.value) nextTick(() => {
+        contentEl.value?.scrollBy({ left: window.innerHeight, behavior: 'smooth' })
+    })
+}
+
 const route = useRoute()
 const currentWordBeforeQuerying = ref<IWord>()
 
@@ -136,7 +146,7 @@ watch(route, () => {
 </script>
 
 <template>
-    <div class="content">
+    <div class="content scroll-x" ref="contentEl">
         <div class="left">
             <div class="glowing toolbar">
                 <div class="toolbar-nav">
@@ -200,14 +210,14 @@ watch(route, () => {
             <WordList
                 :active-word-id="currentWord?.id"
                 :words="sortedWords"
-                @goto-word="(word: IWord) => currentWord = word"
+                @goto-word="gotoWord"
                 class="scroll-y"
             />
         </div>
         <WordDetail
             v-if="currentWord"
             :word="currentWord"
-            class="right"
+            class="right scroll-y"
         />
     </div>
 </template>
@@ -216,31 +226,27 @@ watch(route, () => {
 .content {
     display: flex;
     height: 100%;
+    margin: 0 -1em;
 }
 
 .left {
+    flex-basis: 50%;
+    min-width: 20em;
+
     display: flex;
     flex-flow: column;
     box-sizing: border-box;
-    flex-basis: 50%;
-    min-width: 20em;
-    padding: 1.2em 1em 0 1em;
+    padding: 0 1em;
 }
-
 .right {
     flex: 1;
+
     box-sizing: border-box;
     padding: 0 1em;
 }
 
 @media screen and (orientation: portrait) and (max-device-width: 600px) {
-	.left {
-        flex-basis: calc(100vw - 1em);
-        flex-grow: 0;
-        flex-shrink: 0;
-        padding-left: 0;
-	}
-    .right {
+	.left, .right {
         flex-basis: 100vw;
         flex-grow: 0;
         flex-shrink: 0;
@@ -249,7 +255,6 @@ watch(route, () => {
 }
 
 .toolbar {
-    margin: -.8em;
     margin-bottom: .5em;
 }
 
