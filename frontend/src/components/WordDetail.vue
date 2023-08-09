@@ -22,15 +22,25 @@ const withdrawed = computed(() => ! wordStore.getById(props.word.id))
 const actionMode = ref(false)
 
 const wordDetailEl = ref<HTMLDivElement>()
+const editingEl = ref<HTMLInputElement>()
 const onFocus = ({ target: el }: FocusEvent) => {
     if (! props.zenMode) return
     if (! wordDetailEl.value) return
     if (! (el && el instanceof HTMLInputElement)) return
     if (el.parentElement?.classList.contains('word-mini-searcher')) return
 
-    const delta = el.getBoundingClientRect().y - window.innerHeight / 2
-	wordDetailEl.value.scrollBy({ top: delta, behavior: 'smooth' })   
+    editingEl.value = el
+    setCenter(el)
 }
+const setCenter = (el: HTMLElement) => {
+    const delta = el.getBoundingClientRect().y - window.innerHeight / 2
+    wordDetailEl.value?.scrollBy({ top: delta, behavior: 'smooth' })
+}
+
+window.addEventListener('resize', () => {
+    const el = editingEl.value
+    if (el) setCenter(el)
+})
 </script>
 
 <template>
@@ -80,6 +90,7 @@ const onFocus = ({ target: el }: FocusEvent) => {
                 />
                 <WordDocumentList
                     @focus.capture="onFocus"
+                    @blur.capture="editingEl = undefined"
                     :word="word"
                     :node="word"
                     :action-mode="actionMode"
