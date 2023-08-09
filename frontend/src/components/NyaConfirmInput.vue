@@ -26,7 +26,7 @@ watch(modelValue, newValue => {
 const editMode = ref(props.editMode)
 
 const clear = () => {
-    if (! modelValue.value) emit('withdraw')
+    if (props.withdrawWhenEmpty && ! model.ref.value) emit('withdraw')
     editMode.value = false
 }
 
