@@ -13,6 +13,7 @@ import WordList from '@comp/WordList.vue'
 import WordDetail from '@comp/WordDetail.vue'
 import type { IWord } from '@type'
 import { ITestRec } from '@type'
+import { useDebounceFn } from '@vueuse/core'
 
 const wordStore = useWord()
 const testStore = useTest()
@@ -47,6 +48,15 @@ const toolbarConfig = reactive<ToolbarConfigItem[]>([
 ])
 
 const { search, testId, testCorrectLevel } = toRefs(wordStore.filter)
+
+const updateSearch = useDebounceFn((v: string) => {
+    search.value = v
+}, 300)
+const searchDebounced = computed<string>({
+    get: () => search.value ?? '',
+    set: updateSearch
+})
+
 watch(testId, () => {
     if (search.value || testId.value) toolbarMode.value = 'filter'
 }, { immediate: true })
@@ -177,7 +187,7 @@ watch(route, () => {
                     </div>
                     <div v-else-if="toolbarMode === 'filter'">
                         <div class="filter-search">
-                            <input v-model="search" class="card light" />
+                            <input v-model="searchDebounced" class="card light" />
                             <fa-icon
                                 @click="search = ''"
                                 icon="times-circle" class="button"
