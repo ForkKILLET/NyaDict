@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, toRefs, watch } from 'vue'
+import { nextTick, ref, toRefs, watch } from 'vue'
 import LongPressButton from './LongPressButton.vue'
 
 const props = defineProps<{
@@ -24,6 +24,15 @@ watch(modelValue, newValue => {
 })
 
 const editMode = ref(props.editMode)
+const inputContainer = ref<HTMLDivElement>()
+
+const edit = () => {
+    editMode.value = true
+    nextTick(() => {
+        const inputEl = inputContainer.value?.querySelector('input.input') as HTMLInputElement | undefined
+        inputEl?.focus()
+    })
+}
 
 const clear = () => {
     if (props.withdrawWhenEmpty && ! model.ref.value) emit('withdraw')
@@ -45,7 +54,7 @@ const submit = () => {
             <div class="edit-buttons">
                 <fa-icon
                     v-if="! disabled"
-                    @click="editMode = true"
+                    @click="edit"
                     icon="edit" class="button"
                 />
                 <LongPressButton
@@ -58,13 +67,15 @@ const submit = () => {
             </div>
         </template>
         <template v-else>
-            <slot name="input" :model="model" :submit="submit">
-                <input
-                    class="input"
-                    v-model="model.ref.value"
-                    @keypress.enter="submit"
-                />
-            </slot>
+            <div class="input-container" ref="inputContainer">
+                <slot name="input" :model="model" :submit="submit">
+                    <input
+                        class="input"
+                        v-model="model.ref.value"
+                        @keypress.enter="submit"
+                    />
+                </slot>
+            </div>
             <div class="edit-buttons">
                 <fa-icon
                     @click="clear"
@@ -90,7 +101,12 @@ const submit = () => {
     line-height: 2rem;
 }
 
-:deep(.input) {
+.input-container {
+    flex: 1;
+}
+
+.input-container :deep(.input) {
+    width: 100%;
     margin: -.1rem -.3rem;
     padding: .1rem .3rem;
     border-radius: .5rem;
@@ -99,12 +115,12 @@ const submit = () => {
     transition: .3s box-shadow;
 }
 
-:deep(.input:hover, .input:focus) {
+.input-container :deep(.input:hover, .input:focus) {
     box-shadow: 0 0 .4rem #faae70ef;
 }
 
 .edit-buttons {
-    margin-left: .3rem;
+    margin-left: .5rem;
     white-space: nowrap;
 }
 </style>

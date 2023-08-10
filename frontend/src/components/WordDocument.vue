@@ -108,11 +108,6 @@ const onSentenceCompositionEnd = (event: CompositionEvent) => {
     margin-left: 1em;
 }
 
-.nya-confirm-input :deep(.input) {
-    width: 0;
-    flex: 1;
-}
-
 .word-mini-searcher {
     position: absolute;
     bottom: calc(100% + 1em);
