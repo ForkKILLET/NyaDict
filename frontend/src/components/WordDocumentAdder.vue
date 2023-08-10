@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { type IWord, DocumentKind, IWordDocumentWithoutId } from '@type'
+import {
+    DocumentKind, LinkDocumentRelationship,
+    type IWord, type IWordDocumentWithoutId
+} from '@type'
 
 defineProps<{
     word: IWord
@@ -12,7 +15,8 @@ const emit = defineEmits<{
 
 const documentKindInfo: Record<DocumentKind, string> = {
     [DocumentKind.Meaning]: '解釈',
-    [DocumentKind.Sentence]: '例'
+    [DocumentKind.Sentence]: '例',
+    [DocumentKind.Link]: 'リンク'
 }
 
 const showKinds = ref(false)
@@ -34,6 +38,13 @@ const addDoc = (kind: DocumentKind) => {
                 kind,
                 text: '',
                 tran: ''
+            }
+            break
+        case DocumentKind.Link:
+            newDoc = {
+                kind,
+                text: '',
+                rel: LinkDocumentRelationship.Other
             }
             break
     }

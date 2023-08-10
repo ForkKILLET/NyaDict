@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port 1635",
+    "check": "vue-tsc",
     "build": "vue-tsc && vite build",
     "preview": "vite preview",
     "compress": "pnpm -F nyadict-frontend-script compress -i ../src/types/index.ts -b @type -o ../src/utils/compress.ts"

@@ -9,12 +9,21 @@ export type IWord = {
     docs?: IWordDocument[]
 }
 
-export type IWordDocument = IMeaningDocument | ISentenceDocument
+export type IWordDocument = IMeaningDocument | ISentenceDocument | ILinkDocument
 export type IWordDocumentWithoutId = DistributiveOmit<IWordDocument, 'id'>
 
 export enum DocumentKind {
     Meaning,
-    Sentence
+    Sentence,
+    Link
+}
+
+export enum LinkDocumentRelationship {
+    SimilarMeaning,
+    OppositeMeaning,
+    SimilarSpelling,
+    SimilarPronunciation,
+    Other = -1
 }
 
 export type IMeaningDocument = {
@@ -31,6 +40,13 @@ export type ISentenceDocument = {
     lang?: string
     text: string
     tran: string
+}
+
+export type ILinkDocument = {
+    kind: DocumentKind.Link
+    id: number
+    text: string
+    rel: LinkDocumentRelationship
 }
 
 // @compress { "testAfter": "TT", "createTime": "TC" }

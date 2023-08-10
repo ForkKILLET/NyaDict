@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import { computed, nextTick, ref } from 'vue'
-import { DocumentKind, type IWordDocumentWithoutId, type IWord } from '@type'
+import {
+    DocumentKind,
+    type IWordDocumentWithoutId, type IWord
+} from '@type'
 import NyaConfirmInput from '@comp/NyaConfirmInput.vue'
+import NyaTemplate from '@comp/NyaTemplate.vue'
 import WordDocumentList from '@comp/WordDocumentList.vue'
-import Sentence from '@comp/Sentence.vue'
 import WordMiniSearcher from '@comp/WordMiniSearcher.vue'
+import WordLinkRelationship from './WordLinkRelationship.vue'
 
 const props = defineProps<{
     word: IWord
@@ -17,11 +21,14 @@ const emit = defineEmits<{
     (event: 'withdraw'): void
 }>()
 
-const lang = computed(() => props.doc.lang ?? navigator.language)
+const lang = computed(() => 'lang' in props.doc
+    ? (props.doc.lang ?? navigator.language)
+    : undefined
+)
 
 const showMiniSearcher = ref(false)
 const miniSearcher = ref<InstanceType<typeof WordMiniSearcher>>()
-const sentenceInput = ref<HTMLInputElement>()
+const templateInput = ref<HTMLInputElement>()
 const sharpStart = () => {
     showMiniSearcher.value = true
     nextTick(() => {
@@ -31,13 +38,13 @@ const sharpStart = () => {
 const sharpEnd = (word: IWord, model: { value: string }) => {
     showMiniSearcher.value = false
     model.value += word.id
-    sentenceInput.value!.focus()
+    templateInput.value!.focus()
 }
 const sharpCancel = () => {
     showMiniSearcher.value = false
-    sentenceInput.value!.focus()
+    templateInput.value!.focus()
 }
-const onSentenceCompositionEnd = (event: CompositionEvent) => {
+const onTemplateCompositionEnd = (event: CompositionEvent) => {
     if (event.data === '#') sharpStart()
 }
 </script>
@@ -56,7 +63,7 @@ const onSentenceCompositionEnd = (event: CompositionEvent) => {
 
         <WordDocumentList :word="word" :node="doc" :action-mode="actionMode" />
     </div>
-    <div v-else-if="doc.kind === DocumentKind.Sentence" class="setence-doc">
+    <div v-else-if="doc.kind === DocumentKind.Sentence || doc.kind === DocumentKind.Link" class="setence-doc">
         <div>
             <NyaConfirmInput
                 v-model="doc.text"
@@ -66,7 +73,13 @@ const onSentenceCompositionEnd = (event: CompositionEvent) => {
                 :edit-mode="editMode"
             >
                 <template #content>
-                    <Sentence :text="doc.text" :word="word" />
+                    <div>
+                        <WordLinkRelationship
+                            v-if="doc.kind === DocumentKind.Link"
+                            :rel="doc.rel"
+                        />
+                        <NyaTemplate :text="doc.text" :word="word" />
+                    </div>
                 </template>
                 <template #input="{ model, submit }">
                     <WordMiniSearcher
@@ -77,11 +90,11 @@ const onSentenceCompositionEnd = (event: CompositionEvent) => {
                     />
                     <input
                         class="input"
-                        ref="sentenceInput"
+                        ref="templateInput"
                         v-model="model.ref.value"
                         @keypress.enter="submit"
                         @keypress.#="sharpStart"
-                        @compositionend="onSentenceCompositionEnd"
+                        @compositionend="onTemplateCompositionEnd"
                     />
                 </template>
             </NyaConfirmInput>
