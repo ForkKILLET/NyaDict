@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { nextTick, ref, toRefs, watch } from 'vue'
-import LongPressButton from './LongPressButton.vue'
+import { vOnClickOutside } from '@vueuse/components'
+import LongPressButton from '@comp/LongPressButton.vue'
 
 const props = defineProps<{
     modelValue: string
     disabled?: boolean
+    more?: boolean
     withdrawable?: boolean
     editMode?: boolean
     withdrawWhenEmpty?: boolean
@@ -24,12 +26,13 @@ watch(modelValue, newValue => {
 })
 
 const editMode = ref(props.editMode)
-const inputContainer = ref<HTMLDivElement>()
+const showMore = ref(false)
+const root = ref<HTMLDivElement>()
 
 const edit = () => {
     editMode.value = true
     nextTick(() => {
-        const inputEl = inputContainer.value?.querySelector('input.input') as HTMLInputElement | undefined
+        const inputEl = root.value?.querySelector('inpua.input') as HTMLInputElement | undefined
         inputEl?.focus()
     })
 }
@@ -46,7 +49,7 @@ const submit = () => {
 </script>
 
 <template>
-    <div class="nya-confirm-input" :class="{ withdrawable }">
+    <div class="nya-confirm-input" ref="root" :class="{ withdrawable }">
         <template v-if="! editMode">
             <slot name="content">
                 <span class="content">{{ modelValue }}</span>
@@ -57,25 +60,37 @@ const submit = () => {
                     @click="edit"
                     icon="edit" class="button"
                 />
-                <LongPressButton
-                    v-if="withdrawable"
-                    @long-press="emit('withdraw')"
-                    icon="trash"
-                    color="#ec4e1e"
-                    :delay="1.5"
+                <fa-icon
+                    v-if="more"
+                    @click="showMore = true"
+                    icon="list-dots" class="button"
                 />
             </div>
+            <Transition name="fade" :duration=".3 * 1000">
+                <div
+                    v-if="more && showMore"
+                    v-on-click-outside="(event) => { event.stopPropagation(); showMore = false }"
+                    class="more card deep"
+                >
+                    <LongPressButton
+                        v-if="withdrawable"
+                        @long-press="emit('withdraw')"
+                        icon="trash"
+                        color="#ec4e1e"
+                        :delay="1.5"
+                    />
+                    <slot name="more"></slot>
+                </div>
+            </Transition>
         </template>
         <template v-else>
-            <div class="input-container" ref="inputContainer">
-                <slot name="input" :model="model" :submit="submit">
-                    <input
-                        class="input"
-                        v-model="model.ref.value"
-                        @keypress.enter="submit"
-                    />
-                </slot>
-            </div>
+            <slot name="input" :model="model" :submit="submit">
+                <input
+                    class="input"
+                    v-model="model.ref.value"
+                    @keypress.enter="submit"
+                />
+            </slot>
             <div class="edit-buttons">
                 <fa-icon
                     @click="clear"
@@ -92,20 +107,13 @@ const submit = () => {
 
 <style scoped>
 .nya-confirm-input {
+    position: relative;
     display: flex;
     justify-content: space-between;
     align-items: baseline;
 }
 
-.nya-confirm-input.withdrawable {
-    line-height: 2rem;
-}
-
-.input-container {
-    flex: 1;
-}
-
-.input-container :deep(.input) {
+:deep(.input) {
     width: 100%;
     margin: -.1rem -.3rem;
     padding: .1rem .3rem;
@@ -115,12 +123,18 @@ const submit = () => {
     transition: .3s box-shadow;
 }
 
-.input-container :deep(.input:hover, .input:focus) {
+:deep(.input:hover, .input:focus) {
     box-shadow: 0 0 .4rem #faae70ef;
 }
 
 .edit-buttons {
     margin-left: .5rem;
     white-space: nowrap;
+}
+
+.more {
+    position: absolute;
+    right: 0;
+    bottom: 100%;
 }
 </style>

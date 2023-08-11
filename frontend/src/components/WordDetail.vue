@@ -8,6 +8,7 @@ import NyaTab from '@comp/NyaTab.vue'
 import type { IWord } from '@type'
 import NyaConfirmInput from './NyaConfirmInput.vue'
 import WordDocumentList from './WordDocumentList.vue'
+import WordDocumentAdder from './WordDocumentAdder.vue'
 
 const wordStore = useWord()
 
@@ -19,7 +20,6 @@ const props = withDefaults(defineProps<{
 })
 
 const withdrawed = computed(() => ! wordStore.getById(props.word.id))
-const actionMode = ref(false)
 
 const wordDetailEl = ref<HTMLDivElement>()
 const editingEl = ref<HTMLInputElement>()
@@ -84,17 +84,14 @@ window.addEventListener('resize', () => {
                 <WordMemCalendar :mem="word.mem" />
             </template>
             <template #dict>
-                <fa-icon
-                    @click="actionMode = ! actionMode"
-                    icon="gear" class="button"
-                />
                 <WordDocumentList
                     @focus.capture="onFocus"
                     @blur.capture="editingEl = undefined"
                     :word="word"
                     :node="word"
-                    :action-mode="actionMode"
                 />
+
+                <WordDocumentAdder @add-doc="doc => wordStore.addDoc(word.docs ??= [], doc)" />
             </template>
         </NyaTab>
     </div>

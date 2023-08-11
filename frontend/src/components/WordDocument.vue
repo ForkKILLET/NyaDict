@@ -14,7 +14,6 @@ const props = defineProps<{
     word: IWord
     doc: IWordDocumentWithoutId
     editMode?: boolean
-    actionMode: boolean
 }>()
 
 const emit = defineEmits<{
@@ -55,21 +54,23 @@ const onTemplateCompositionEnd = (event: CompositionEvent) => {
             <NyaConfirmInput
                 v-model="doc.text"
                 @withdraw="emit('withdraw')"
-                :withdrawable="actionMode"
+                :more="true"
+                :withdrawable="true"
                 :withdraw-when-empty="true"
                 :edit-mode="editMode"
             />
         </div>
 
-        <WordDocumentList :word="word" :node="doc" :action-mode="actionMode" />
+        <WordDocumentList :word="word" :node="doc" />
     </div>
-    <div v-else-if="doc.kind === DocumentKind.Sentence || doc.kind === DocumentKind.Link" class="setence-doc">
+    <div v-else-if="doc.kind === DocumentKind.Sentence || doc.kind === DocumentKind.Link" class="template-doc">
         <div>
             <NyaConfirmInput
                 v-model="doc.text"
                 @withdraw="emit('withdraw')"
+                :more="true"
                 :withdraw-when-empty="true"
-                :withdrawable="actionMode"
+                :withdrawable="true"
                 :edit-mode="editMode"
             >
                 <template #content>
@@ -82,6 +83,11 @@ const onTemplateCompositionEnd = (event: CompositionEvent) => {
                     </div>
                 </template>
                 <template #input="{ model, submit }">
+                    <WordLinkRelationship
+                        v-if="doc.kind === DocumentKind.Link"
+                        v-model:rel="doc.rel"
+                        :edit-mode="true"
+                    />
                     <WordMiniSearcher
                         v-if="showMiniSearcher"
                         ref="miniSearcher"
@@ -111,10 +117,9 @@ const onTemplateCompositionEnd = (event: CompositionEvent) => {
     margin-bottom: .5em;
 }
 
-.setence-doc {
+.template-doc {
     position: relative;
-    margin: 1em .8em 1em 0;
-    padding: 0 .3em;
+    margin: .8em .8em .8em 0;
 }
 
 .doc-list {

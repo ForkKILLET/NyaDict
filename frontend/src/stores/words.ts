@@ -1,4 +1,4 @@
-import { type Ref } from 'vue'
+import { ref, type Ref } from 'vue'
 import { defineStore } from 'pinia' 
 import { toHiragana, toRomaji, isHiragana} from 'wanakana'
 import { randomItem } from '@util'
@@ -94,8 +94,11 @@ export const useWord = defineStore('words', () => {
         }
     }
 
+    const newlyAddedDocId = ref<number>()
+
     const addDoc = (docs: IWordDocument[], newDoc: IWordDocumentWithoutId) => {
         const id = ++ docMaxId.value 
+        newlyAddedDocId.value = id
         docs.push({
             ...newDoc,
             id
@@ -110,12 +113,10 @@ export const useWord = defineStore('words', () => {
 
     const randomWord = () => randomItem(words.value)
 
-    Object.assign(window, { words })
-
     return {
         words, filter,
         add, modify, withdraw,
-        addDoc,
+        newlyAddedDocId, addDoc,
         getById, pushTestRec, popTestRec, randomWord
     }
 })

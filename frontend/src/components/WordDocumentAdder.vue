@@ -1,13 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { vOnClickOutside } from '@vueuse/components'
 import {
     DocumentKind, LinkDocumentRelationship,
-    type IWord, type IWordDocumentWithoutId
+    type IWordDocumentWithoutId
 } from '@type'
-
-defineProps<{
-    word: IWord
-}>()
 
 const emit = defineEmits<{
     (event: 'add-doc', newDoc: IWordDocumentWithoutId): void
@@ -61,13 +58,19 @@ const addDoc = (kind: DocumentKind) => {
                 icon="circle-plus" class="button"
             />
 
-            <div class="doc-kinds" v-show="showKinds">
+            <Transition name="fade">
                 <div
-                    v-for="info, kind in documentKindInfo"
-                    @click="addDoc(+ kind)"
-                    class="doc-kind-info badge"
-                >{{ info }}</div>
-            </div>
+                    class="doc-kinds"
+                    v-if="showKinds"
+                    v-on-click-outside="(event) => { event.stopPropagation(); showKinds = false }"
+                >
+                    <div
+                        v-for="info, kind in documentKindInfo"
+                        @click="addDoc(+ kind)"
+                        class="doc-kind-info badge"
+                    >{{ info }}</div>
+                </div>
+            </Transition>
         </div>
     </div>
 </template>
@@ -80,8 +83,16 @@ const addDoc = (kind: DocumentKind) => {
 }
 
 .doc-kinds {
-    display: inline-block;
-    margin-left: .5em;
+    position: absolute;
+    left: -.5em;
+    z-index: 1;
+
+    background-color: white;
+    border-radius: .3em;
+}
+
+.doc-kind-info {
+    display: block;
 }
 
 input {
