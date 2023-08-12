@@ -74,7 +74,7 @@ const onTemplateCompositionEnd = (event: CompositionEvent) => {
                 :edit-mode="editMode"
             >
                 <template #content>
-                    <div>
+                    <div class="template-doc-content">
                         <WordLinkRelationship
                             v-if="doc.kind === DocumentKind.Link"
                             :rel="doc.rel"
@@ -120,6 +120,10 @@ const onTemplateCompositionEnd = (event: CompositionEvent) => {
 .template-doc {
     position: relative;
     margin: .8em .8em .8em 0;
+}
+
+.template-doc-content {
+    display: flex;
 }
 
 .doc-list {

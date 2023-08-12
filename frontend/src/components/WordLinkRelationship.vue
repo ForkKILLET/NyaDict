@@ -5,6 +5,7 @@ import { LinkDocumentRelationship } from '@type'
 
 defineProps<{
     rel: LinkDocumentRelationship
+    editMode?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -26,10 +27,10 @@ const showRels = ref(false)
     <div
         @click="showRels = true"
     >
-        <div class="link-doc-rel outter">{{ relInfo[rel] }}</div>
+        <div class="link-doc-rel outter" :class="{ editing: editMode }">{{ relInfo[rel] }}</div>
         <Transition name="fade">
             <div
-                v-if="showRels"
+                v-if="showRels && editMode"
                 v-on-click-outside="event => { event.stopPropagation(); showRels = false }"
                 class="link-doc-rels"
             >
@@ -59,7 +60,11 @@ const showRels = ref(false)
 
 .link-doc-rel.outter {
     margin-right: .8em;
+}
+
+.link-doc-rel.outter.editing {
     cursor: pointer;
+    animation: .3s hop;
 }
 
 .link-doc-rels > .link-doc-rel {
