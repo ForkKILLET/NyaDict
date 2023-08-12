@@ -256,6 +256,11 @@ watch(route, () => {
 }
 
 @media screen and (orientation: portrait) and (max-device-width: 600px) {
+    .word-list {
+        width: 100%;
+        padding-right: .5em;
+    }
+
 	.left, .right {
         flex-basis: 100vw;
         flex-grow: 0;
