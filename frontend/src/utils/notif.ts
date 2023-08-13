@@ -1,14 +1,21 @@
 import { reactive, type CSSProperties } from 'vue'
 import { NyaResp } from '@type/network'
 
-export type NotiType = 'error' | 'success' | 'info' | 'pending'
+export type NotiType = 'error' | 'success' | 'info' | 'pending' | 'charge'
 
 export type Noti = {
     content: string
-    type: NotiType
     duration?: number
     style?: CSSProperties
-}
+} & (
+    | {
+        type: Exclude<NotiType, 'charge'>
+    }
+    | {
+        type: 'charge'
+        icon: string
+    }
+)
 
 export const notis = reactive<Noti[]>([])
 

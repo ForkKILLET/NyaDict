@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { interpolateRgb } from 'd3-interpolate'
 import dayjs from 'dayjs'
-import { getCorrectnessCount, useWord } from '@/stores/words'
+import { getCorrectnessCount, useWord } from '@store/words'
 import {
     useTest,
     getRelativeTestTime, relativeTestTimeColors, type RelativeTestTime
-} from '@/stores/test'
+} from '@store/test'
 import { gradeColors } from '@/utils'
 import { getDecimalHour } from '@/utils/date'
 import NyaDate from '@comp/NyaDate.vue'

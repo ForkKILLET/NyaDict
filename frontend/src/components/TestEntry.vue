@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { useTest } from '@/stores/test'
+import { useTest } from '@store/test'
 import { useRouter } from 'vue-router';
 import NyaDate from '@comp/NyaDate.vue'
 import type { ITest } from '@type'
-import { useWord } from '@/stores/words';
+import { useWord } from '@store/words';
 import { computed } from 'vue';
 
 const props = defineProps<{

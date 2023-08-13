@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useWord } from '@/stores/words'
+import { useWord } from '@store/words'
 import WordDocument from '@comp/WordDocument.vue'
 import WordDocumentAdder from '@comp/WordDocumentAdder.vue'
 import type { IWord, IWordDocument, IWordDocumentWithoutId } from '@type'

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useTest } from '@/stores/test'
+import { useTest } from '@store/test'
 import NyaList from '@comp/NyaList.vue'
 import TestEntry from '@comp/TestEntry.vue'
 

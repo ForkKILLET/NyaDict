@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useArchive } from '@/stores/archive'
+import { useArchive } from '@store/archive'
+import LongPressButton from '@comp/LongPressButton.vue'
 
 const archiveStore = useArchive()
 const json = ref('')
@@ -9,16 +10,20 @@ const json = ref('')
 <template>
     <div>
         <textarea :value="json" spellcheck="false"></textarea>
-        <br />
-        <br />
+        <br /> <br />
+
         <button
-            class="inline card"
             @click="json = JSON.stringify(archiveStore.exportArchive())"
-        >load</button>
+        >load</button> &nbsp;
         <button
-            class="inline card"
             @click="archiveStore.importArchive(archiveStore.currentId, JSON.parse(json))"
-        >save</button>
+        >save</button> &nbsp;
+        <LongPressButton
+            icon="eye"
+            color="#000"
+            desc="test"
+            :delay="2"
+        />
     </div>
 </template>
 

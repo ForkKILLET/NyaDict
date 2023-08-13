@@ -6,7 +6,7 @@
 
 <style>
 .list-move, .list-enter-active, .list-leave-active {
-    transition: all 1s ease;
+    transition: all .5s ease;
 }
 .list-leave-active {
     position: absolute;

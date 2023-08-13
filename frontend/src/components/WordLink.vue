@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useWord } from '@/stores/words'
+import { useWord } from '@store/words'
 
 defineProps<{
     id: number

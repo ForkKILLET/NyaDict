@@ -58,6 +58,7 @@ window.addEventListener('resize', () => {
                 @long-press="wordStore.withdraw(word.id)"
                 icon="trash"
                 color="#ec4e1e"
+                desc="削除"
                 :delay="1.5"
             />
             <LongPressButton
@@ -65,6 +66,7 @@ window.addEventListener('resize', () => {
                 @long-press="word.id = wordStore.add(word)"
                 icon="trash-restore"
                 color="#db8e30"
+                desc="削除取り消し"
                 :delay=".5"
             />
         </p>

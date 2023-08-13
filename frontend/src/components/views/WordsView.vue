@@ -5,7 +5,7 @@ import {
     emptyMem, getCorrectness, getYomikataIndex,
     getRomaji, getLastTestTime, useWord
 } from '@store/words'
-import { useTest } from '@/stores/test'
+import { useTest } from '@store/test'
 import { isPortrait } from '@/utils/media'
 import { storeRef } from '@util/storage'
 import WordEditor from '@comp/WordEditor.vue'
@@ -164,7 +164,7 @@ watch(route, () => {
                         v-for="conf of toolbarConfig"
                         @click="changeToolbarMode(conf.mode)"
                         class="button"
-                        :icon="[ 'fas', conf.icon ]"
+                        :icon="conf.icon"
                     />
                 </div>
                 <div class="toolbar-main">

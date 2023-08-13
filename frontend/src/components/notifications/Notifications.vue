@@ -34,4 +34,8 @@ import ListTransitionGroup from '@comp/transitions/ListTransitionGroup.vue'
 .noti {
     pointer-events: all;
 }
+
+.list-leave-active > .noti {
+    animation-play-state: paused;
+}
 </style>

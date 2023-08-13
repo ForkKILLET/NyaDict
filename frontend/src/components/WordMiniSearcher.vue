@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { getRomaji, useWord } from '@/stores/words'
+import { getRomaji, useWord } from '@store/words'
 import { filterN } from '@/utils'
 import { vOnClickOutside } from '@vueuse/components'
 import type { IWord } from '@type'

@@ -3,7 +3,7 @@ import { storeToRefs } from 'pinia'
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuth } from '@store/auth'
-import { useArchive } from '@/stores/archive'
+import { useArchive } from '@store/archive'
 import { downloadURL, tryJSON } from '@util'
 import { api } from '@util/api'
 import { addNoti, handleResp } from '@util/notif'
@@ -232,12 +232,14 @@ watch(route, ({ path }) => {
                         @long-press="upload(id)"
                         icon="cloud-arrow-up"
                         color="#000"
+                        desc="アップロード"
                         :delay=".5"
                     />
                     <LongPressButton
                         @long-press="withdraw(id)"
                         icon="trash"
                         color="#ec4e1e"
+                        desc="削除"
                         :delay="1.5"
                     />
                 </ArchiveInfo>
@@ -249,12 +251,15 @@ watch(route, ({ path }) => {
                     :info="remote"
                     :no-info-reason="jwtPayload ? 'noRemote' : 'noAccount'"
                 >
-                    <LongPressButton #default
-                        @long-press="download(id)"
-                        icon="cloud-arrow-down"
-                        color="#000"
-                        :delay=".5"
-                    />
+                    <template #default>
+                        <LongPressButton 
+                            @long-press="download(id)"
+                            icon="cloud-arrow-down"
+                            color="#000"
+                            desc="ダウンロード"
+                            :delay=".5"
+                        />
+                    </template>
                     <template #labels>
                         <div>
                             <fa-icon icon="cloud" />

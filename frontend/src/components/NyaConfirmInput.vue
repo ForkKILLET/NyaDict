@@ -77,6 +77,7 @@ const submit = () => {
                         @long-press="emit('withdraw')"
                         icon="trash"
                         color="#ec4e1e"
+                        desc="削除"
                         :delay="1.5"
                     />
                     <slot name="more"></slot>

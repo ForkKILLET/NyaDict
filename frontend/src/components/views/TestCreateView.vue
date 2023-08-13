@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useWord } from '@/stores/words'
-import { useTest } from '@/stores/test'
+import { useWord } from '@store/words'
+import { useTest } from '@store/test'
 import NyaCheckbox from '@comp/NyaCheckbox.vue'
 import { addNoti } from '@/utils/notif'
 import type { ITestMode } from '@type'

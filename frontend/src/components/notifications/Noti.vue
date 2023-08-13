@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Noti, NotiType } from '@util/notif'
+import { type Noti, type NotiType } from '@util/notif'
 
 defineProps<{
     noti: Noti
@@ -9,19 +9,22 @@ const emit = defineEmits<{
     (event: 'expire'): void
 }>()
 
-const typeIcons: Record<NotiType, string> = {
+const typeIcons: Record<Exclude<NotiType, 'charge'>, string> = {
     info: 'info-circle',
     error: 'times-circle',
     success: 'check-circle',
-    pending: 'spinner'
+    pending: 'spinner',
 }
 </script>
 
 <template>
-    <div class="inline noti" :style="noti.style">
+    <div
+        class="inline noti"
+        :style="{ '--duration': noti.duration + 'ms', ...noti.style }"
+        :class="noti.type"
+    >
         <fa-icon
-            :icon="typeIcons[noti.type]"
-            :class="noti.type"
+            :icon="noti.type === 'charge' ? noti.icon : typeIcons[noti.type]"
             class="noti-type"
             :spin="noti.type === 'pending'"
         />
@@ -29,10 +32,9 @@ const typeIcons: Record<NotiType, string> = {
         <div
             v-if="noti.duration"
             class="noti-lasting"
-            :style="{ '--duration': noti.duration + 'ms' }"
             @animationend="emit('expire')"
         >
-            <div class="noti-lasting-inner"></div>
+            <div v-if="noti.type !== 'charge'" class="noti-lasting-inner"></div>
         </div>
     </div>
 </template>
@@ -55,6 +57,15 @@ const typeIcons: Record<NotiType, string> = {
     }
     to {
         width: 0;
+    }
+}
+
+@keyframes noti-charge {
+    from {
+        background-size: 0% 100%;
+    }
+    to {
+        background-size: 100% 100%;
     }
 }
 
@@ -82,14 +93,26 @@ const typeIcons: Record<NotiType, string> = {
 .noti-type {
     margin-right: .5em;
 }
-.noti-type.info {
+.info .noti-type {
     color: #8358f9;
 }
-.noti-type.error {
+.error .noti-type {
     color: #ec4e1e;
 }
-.noti-type.success {
+.success .noti-type {
     color: #95e35d;
 }
+
+.charge {
+    width: 10em;
+    max-width: 80%;
+    color: #fff;
+    background-color: #000;
+
+    background-repeat: no-repeat;
+    background-image: linear-gradient(#8358f9 0%, #8358f9 100%);
+    animation:
+        var(--duration) linear forwards noti-charge,
+        .3s hop var(--duration);
+}
 </style>
-../../utils/notif

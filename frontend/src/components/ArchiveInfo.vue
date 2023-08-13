@@ -41,10 +41,11 @@ const noInfoReasons: Record<INoInfoReason, string> = {
                 <div>
                     <span class="id">{{ id ?? '新' }}</span>
                     <LongPressButton
+                        @long-press="emit('upload-here')"
                         icon="file-import"
                         color="#000"
+                        desc="アップロード"
                         :delay=".5"
-                        @long-press="emit('upload-here')"
                     />
                 </div>
             </div>

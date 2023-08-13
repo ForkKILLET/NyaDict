@@ -1,22 +1,54 @@
 <script setup lang="ts">
-import { vOnLongPress } from '@vueuse/components'
+import { ref } from 'vue'
+import { addNoti, removeNoti } from '@/utils/notif'
 
-defineProps<{
+const props = defineProps<{
     delay: number
     icon: string
     color: string
+    desc: string
 }>()
 
 const emit = defineEmits<{
     (event: 'long-press'): void
 }>()
+
+const nid = ref()
+
+const startTime = ref<number>()
+const onLongPressStart = () => {
+    startTime.value = Date.now()
+    nid.value = addNoti({
+        content: props.desc,
+        type: 'charge',
+        icon: props.icon,
+        duration: props.delay * 1000
+    })
+}
+const onLongPressEnd = () => {
+    if (! startTime.value) return
+
+    const duration = Date.now() - startTime.value
+    if (duration >= props.delay * 1000) {
+        startTime.value = undefined
+        emit('long-press')
+    }
+
+    if (nid.value !== undefined) {
+        removeNoti(nid.value)
+        nid.value = undefined
+    }
+}
 </script>
 
 <template>
     <div
-        v-on-long-press="[ () => emit('long-press'), { delay: delay * 1000 } ]"
+        @mousedown="onLongPressStart"
+        @touchstart="onLongPressStart"
+        @mouseup="onLongPressEnd"
+        @touchend="onLongPressEnd"
         class="long-press-button"
-        :style="{ '--delay': delay + 's', '--color': color }"
+        :style="{ '--duration': delay + 's', '--color': color }"
     >
         <fa-icon :icon="icon" />
     </div>
@@ -24,7 +56,7 @@ const emit = defineEmits<{
 
 <style scoped>
 @keyframes longpress {
-    100% {
+    to {
         color: #fff;
         background-color: var(--color);
     }
@@ -48,6 +80,6 @@ const emit = defineEmits<{
 }
 
 .long-press-button:active {
-    animation: var(--delay) longpress ease-in, .3s hop var(--delay);
+    animation: var(--duration) longpress ease-in, .3s hop var(--duration);
 }
 </style>
