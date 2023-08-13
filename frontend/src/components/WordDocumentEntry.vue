@@ -32,7 +32,6 @@ const addDoc = (newDoc: IWordDocumentWithoutId) => {
             :key="doc.id"
             :word="word"
             :doc="doc"
-            :edit-mode="wordStore.newlyAddedDocId === doc.id"
         />
     </div>
 </template>

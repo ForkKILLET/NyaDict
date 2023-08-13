@@ -6,8 +6,11 @@ import { useArchive } from '@store/archive'
 import { IWord_Compress, compress_IWord } from '@/utils/compress'
 import { storeRef, type ArrayStore, storeArray, storeRefReactive } from '@/utils/storage'
 import type { Disposable } from '@/utils/disposable'
-import type { IMemory, ITestRec, IWord, ICorrect, IWordDocumentWithoutId } from '@type'
-import { IWordDocument } from '@type'
+import type {
+    IMemory, ITestRec, IWord, ICorrect,
+    IWordDocumentWithoutId, IWordGraph, IWordDocument, ITemplateDocument
+} from '@type'
+import { DocumentKind } from '@type'
 
 export const baseInterval = 5
 
@@ -22,8 +25,9 @@ declare module '@type' {
 
 export const useWord = defineStore('words', () => {
     const archiveStore = useArchive()
-    archiveStore.defineArchiveItem('wordMaxId', (key) => storeRef(key, 0))
-    archiveStore.defineArchiveItem('words', (key) => storeArray<IWord, IWord_Compress>(key, {
+
+    archiveStore.define('wordMaxId', (key) => storeRef(key, 0))
+    archiveStore.define('words', (key) => storeArray<IWord, IWord_Compress>(key, {
         onInit: (store) => {
             store.push({
                 id: 0,
@@ -41,31 +45,44 @@ export const useWord = defineStore('words', () => {
         },
         map: compress_IWord
     }))
-    archiveStore.defineArchiveItem('wordFilter', (key) => storeRefReactive(key, {
+    archiveStore.define('wordFilter', (key) => storeRefReactive(key, {
         search: null,
         testId: null,
         testCorrectLevel: 1
     }))
-    archiveStore.defineArchiveItem('docMaxId', key => storeRef(key, 0))
+    archiveStore.define('docMaxId', key => storeRef(key, 0))
     const { words, wordMaxId, wordFilter: filter, docMaxId } = archiveStore.extractData([ 'words', 'wordMaxId', 'wordFilter', 'docMaxId' ])
+    
+    const getWordDict = () => {
+        const dict: Record<string, IWord> = {}
+        words.value.forEach(word => {
+            dict[word.id] = word
+        })
+        return dict
+    }
 
     const add = (word: Omit<IWord, 'id'>) => {
         const id = ++ wordMaxId.value
         words.value.push({ ...word, id })
-        archiveStore.archiveInfo[archiveStore.currentId].wordCount! ++
+        archiveStore.currentInfo.wordCount! ++
         return id
     }
 
-    const modify = (word: IWord) => {
-        const oldIndex = words.value.findIndex(i => i.id === word.id)
-        if (oldIndex >= 0) words.value.set(oldIndex, word)
-        else words.value.push(word)
+    const restore = (word: IWord) => {
+        words.value.push(word)
+        archiveStore.currentInfo.wordCount! ++
+
+        if (word.docs) updateGraphByWord(word, word.docs, false)
     }
 
     const withdraw = (id: number) => {
         const index = words.value.findIndex(word => word.id === id)
+        const word = words.value[index]
         if (index >= 0) words.value.swapRemove(index)
-        archiveStore.archiveInfo[archiveStore.currentId].wordCount! --
+
+        if (word.docs) updateGraphByWord(word, word.docs, true)
+
+        archiveStore.currentInfo.wordCount! --
     }
 
     const getById = (id: number | undefined): IWord | undefined => {
@@ -111,12 +128,95 @@ export const useWord = defineStore('words', () => {
         return rec
     }
 
+    const updateGraphByDoc = (
+        doc: ITemplateDocument,
+        word: IWord, wordId: number,
+        wordDict?: Record<string, IWord>
+    ) => {
+        const segments = getTemplateSegement(doc.text)
+        segments.forEach(seg => {
+            if (typeof seg === 'object') {
+                const id = seg.id
+                if (! id) return
+
+                word.graph ??= emptyGraph()
+
+                const target = wordDict?.[id] ?? getById(id)
+                if (! target) return
+
+                target.graph ??= emptyGraph()
+                const { edgesIn } = target.graph
+                if (! edgesIn.includes(wordId)) edgesIn.push(wordId)
+
+                const { edgesOut } = word.graph
+                if (! edgesOut.includes(id)) edgesOut.push(id)
+            }
+        })
+    }
+
+    const updateGraphByDocReverse = (
+        doc: ITemplateDocument,
+        word: IWord, wordId: number,
+        wordDict?: Record<string, IWord>
+    ) => {
+        debugger
+
+        const segments = getTemplateSegement(doc.text)
+        segments.forEach(seg => {
+            if (typeof seg === 'object') {
+                const id = seg.id
+                if (! id) return
+
+                if (! word.graph) return
+
+                const target = wordDict?.[id] ?? getById(id)
+                if (target?.graph) {
+                    const { edgesIn } = target.graph
+                    const indexIn = edgesIn.indexOf(wordId)
+                    if (indexIn >= 0) edgesIn.splice(indexIn, 1)
+                }
+
+                const { edgesOut } = word.graph
+                const indexOut = edgesOut.indexOf(id)
+                if (indexOut >= 0) edgesOut.splice(indexOut, 1)
+            }
+        })
+    }
+
+    const updateGraphByWord = (
+        word: IWord,
+        docs: IWordDocument[],
+        reversed: boolean,
+        wordDict?: Record<string, IWord>
+    ) => {
+        const wordId = word.id
+
+        docs.forEach(doc => {
+            if (doc.kind === DocumentKind.Link || doc.kind === DocumentKind.Sentence) {
+                if (! reversed) updateGraphByDoc(doc, word, wordId, wordDict)
+                else updateGraphByDocReverse(doc, word, wordId, wordDict)
+            }
+            if ('docs' in doc) updateGraphByWord(word, doc.docs, reversed, wordDict)
+        })
+    }
+
+    const updateGraphs = () => {
+        const wordDict = getWordDict()
+
+        for (const id in wordDict) {
+            const word = wordDict[id]
+            debugger
+            if (word.docs) updateGraphByWord(word, word.docs, false, wordDict)
+        }
+    }
+
     const randomWord = () => randomItem(words.value)
 
     return {
         words, filter,
-        add, modify, withdraw,
+        add, withdraw, restore,
         newlyAddedDocId, addDoc,
+        updateGraphs, updateGraphByDoc, updateGraphByDocReverse,
         getById, pushTestRec, popTestRec, randomWord
     }
 })
@@ -164,3 +264,15 @@ export const getCorrectnessCount = (correctness: ICorrect[]) => {
         acc: correct / correctness.length
     }
 }
+
+export const getTemplateSegement = (template: string) => template
+    .split(/(#\d*\([^)]+?\)|#\d*)/)
+    .map(seg => {
+        if (seg[0] === '#') {
+            const { id, disp } = seg.match(/#(?<id>\d+)?(\((?<disp>[^)]+?)\))?/)!.groups as { id?: string, disp?: string }
+            return { id: id ? + id : undefined, disp }
+        }
+        return seg
+    })
+
+export const emptyGraph = (): IWordGraph => ({ edgesIn: [], edgesOut: [] })

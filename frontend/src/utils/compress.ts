@@ -1,4 +1,4 @@
-import type { IWord, IMemory, ITestRec, ITest, IWordDocument, ICorrect, ITestMode } from '@type'
+import type { IWord, IWordGraph, IMemory, ITestRec, ITest, IWordDocument, ICorrect, ITestMode } from '@type'
 
 export type IWord_Compress = {
   I: number
@@ -6,21 +6,38 @@ export type IWord_Compress = {
   S: string
   M: IMemory_Compress
   d?: IWordDocument[]
+  G?: IWordGraph_Compress
 }
 export const compress_IWord = {
-  serialize: ({ id: I, disp: D, sub: S, mem: M, docs: d }: IWord): IWord_Compress => ({
+  serialize: ({ id: I, disp: D, sub: S, mem: M, docs: d, graph: G }: IWord): IWord_Compress => ({
     I,
     D,
     S,
     M: compress_IMemory.serialize(M),
     d,
+    G: G ? compress_IWordGraph.serialize(G) : undefined,
   }),
-  deserialize: ({ I: id, D: disp, S: sub, M: mem, d: docs }: IWord_Compress): IWord => ({
+  deserialize: ({ I: id, D: disp, S: sub, M: mem, d: docs, G: graph }: IWord_Compress): IWord => ({
     id,
     disp,
     sub,
     mem: compress_IMemory.deserialize(mem),
     docs,
+    graph: graph ? compress_IWordGraph.deserialize(graph) : undefined,
+  })
+}
+export type IWordGraph_Compress = {
+  I: number[]
+  O: number[]
+}
+export const compress_IWordGraph = {
+  serialize: ({ edgesIn: I, edgesOut: O }: IWordGraph): IWordGraph_Compress => ({
+    I,
+    O,
+  }),
+  deserialize: ({ I: edgesIn, O: edgesOut }: IWordGraph_Compress): IWordGraph => ({
+    edgesIn,
+    edgesOut,
   })
 }
 export type IMemory_Compress = {

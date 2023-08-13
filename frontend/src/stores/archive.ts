@@ -7,6 +7,7 @@ import { kDispose } from '@/utils/disposable'
 export const useArchive = defineStore('archives', () => {
     const currentId = storeRef('archiveId', '0')
     const archiveInfo = storeReactive<Record<string, IArchiveInfo>>('archiveInfo', {})
+    const currentInfo = computed(() => archiveInfo[currentId.value])
 
     const archiveData = shallowReactive({} as IArchiveData)
 
@@ -14,7 +15,7 @@ export const useArchive = defineStore('archives', () => {
         load: (data: IArchiveData) => (newId: string) => void
     }> = []
 
-    const defineArchiveItem = <K extends keyof IArchiveData>(
+    const define = <K extends keyof IArchiveData>(
         name: K, getItem: (key: string) => IArchiveData[K]
     ) => {
         const load = (data: IArchiveData) => (newId: string) => {
@@ -84,7 +85,8 @@ export const useArchive = defineStore('archives', () => {
     }
 
     return {
-        currentId, archiveInfo, archiveData, extractData,
-        defineArchiveItem, disposeArchive, reloadArchive, exportArchive, withdrawArchive, importArchive
+        currentId, archiveInfo, currentInfo, archiveData,
+        extractData, define,
+        disposeArchive, reloadArchive, exportArchive, withdrawArchive, importArchive
     }
 })

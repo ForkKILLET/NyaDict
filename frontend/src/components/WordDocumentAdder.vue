@@ -51,32 +51,30 @@ const addDoc = (kind: DocumentKind) => {
 </script>
 
 <template>
-    <div class="doc-adder">
-        <div class="doc-adder-toolbar">
-            <fa-icon
-                @click="showKinds = ! showKinds"
-                icon="circle-plus" class="button"
-            />
+    <span class="doc-adder">
+        <fa-icon
+            @click="showKinds = ! showKinds"
+            icon="circle-plus" class="button"
+        />
 
-            <Transition name="fade">
+        <Transition name="fade">
+            <div
+                class="doc-kinds"
+                v-if="showKinds"
+                v-on-click-outside="(event) => { event.stopPropagation(); showKinds = false }"
+            >
                 <div
-                    class="doc-kinds"
-                    v-if="showKinds"
-                    v-on-click-outside="(event) => { event.stopPropagation(); showKinds = false }"
-                >
-                    <div
-                        v-for="info, kind in documentKindInfo"
-                        @click="addDoc(+ kind)"
-                        class="doc-kind-info badge"
-                    >{{ info }}</div>
-                </div>
-            </Transition>
-        </div>
-    </div>
+                    v-for="info, kind in documentKindInfo"
+                    @click="addDoc(+ kind)"
+                    class="doc-kind-info badge"
+                >{{ info }}</div>
+            </div>
+        </Transition>
+    </span>
 </template>
 
 <style scoped>
-.doc-adder-toolbar {
+.doc-adder {
     position: relative;
     margin-bottom: 1em;
     height: 1.5em;
@@ -99,7 +97,7 @@ input {
     display: inline;
 }
 
-.doc-adder-toolbar > svg.button {
+.doc-adder > svg.button {
     padding-left: 0;
 }
 </style>

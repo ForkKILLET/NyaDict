@@ -1,9 +1,11 @@
 import { reactive, type CSSProperties } from 'vue'
-import { NyaResp } from '@type/network'
+import type { NyaResp } from '@type/network'
+import type { DistributiveOmit } from '@/types/tool'
 
 export type NotiType = 'error' | 'success' | 'info' | 'pending' | 'charge'
 
 export type Noti = {
+    createTime: number
     content: string
     duration?: number
     style?: CSSProperties
@@ -19,9 +21,8 @@ export type Noti = {
 
 export const notis = reactive<Noti[]>([])
 
-export const addNoti = (noti: Noti): number => {
-    noti = reactive(noti)
-    notis.push(noti)
+export const addNoti = (noti: DistributiveOmit<Noti, 'createTime'>): number => {
+    notis.push(reactive({ ...noti, createTime: Date.now() }))
     return notis.length - 1
 }
 

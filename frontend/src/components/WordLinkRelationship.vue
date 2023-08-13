@@ -38,7 +38,7 @@ const showRels = ref(false)
                 <div
                     v-for="info, rel in relInfo"
                     class="link-doc-rel"
-                    @click="emit('update:rel', + rel)"
+                    @click.stop="emit('update:rel', + rel); showRels = false"
                 >{{ info }}</div>
             </div>
         </Transition>

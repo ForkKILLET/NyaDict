@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import WordDocumentEntry from '@comp/WordDocumentEntry.vue'
 import type { IWord, IWordDocument } from '@type'
-import WordDocumentEntry from './WordDocumentEntry.vue';
 
 defineProps<{
     node: { docs?: IWordDocument[] }

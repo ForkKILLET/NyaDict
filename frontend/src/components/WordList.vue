@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import WordEntry from '@comp/WordEntry.vue'
-import NyaList from './NyaList.vue'
+import NyaList from '@comp/NyaList.vue'
 import type { IWord } from '@type'
 
 defineProps<{

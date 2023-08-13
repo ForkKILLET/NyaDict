@@ -1,6 +1,6 @@
 import { reactive, ref, watch, type Ref, type WatchStopHandle } from 'vue'
 import { tryJSON } from '@util'
-import { kDispose, type Disposable } from './disposable'
+import { kDispose, type Disposable } from '@util/disposable'
 
 export const getStorage = <T>(key: string): T | undefined => {
     return tryJSON(localStorage.getItem(key))
@@ -124,7 +124,6 @@ export const storeArray = <T extends object, U>(key: string, options: {
         return arr.length
     }
     const update = (index: number, value: T) => {
-        console.trace('update %s#%s', key, index)
         localStorage.setItem(`${key}#${index}`, JSON.stringify(
             options.map ? options.map.serialize(value) : value
         ))

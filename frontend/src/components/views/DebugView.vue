@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useArchive } from '@store/archive'
 import LongPressButton from '@comp/LongPressButton.vue'
+import * as notif from '@util/notif'
 
 const archiveStore = useArchive()
 const json = ref('')
@@ -9,7 +10,7 @@ const json = ref('')
 
 <template>
     <div>
-        <textarea :value="json" spellcheck="false"></textarea>
+        <textarea v-model="json" spellcheck="false"></textarea>
         <br /> <br />
 
         <button
@@ -18,6 +19,10 @@ const json = ref('')
         <button
             @click="archiveStore.importArchive(archiveStore.currentId, JSON.parse(json))"
         >save</button> &nbsp;
+
+        <br /><br />
+
+        <button @click="notif.addNoti({ content: '' + Math.random(), type: 'info' })">noti</button> &nbsp;
         <LongPressButton
             icon="eye"
             color="#000"

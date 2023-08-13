@@ -1,29 +1,36 @@
 <script setup lang="ts">
 import { computed, nextTick, ref } from 'vue'
-import {
-    DocumentKind,
-    type IWordDocumentWithoutId, type IWord
-} from '@type'
+import { useWord } from '@store/words'
 import NyaConfirmInput from '@comp/NyaConfirmInput.vue'
 import NyaTemplate from '@comp/NyaTemplate.vue'
 import WordDocumentList from '@comp/WordDocumentList.vue'
 import WordMiniSearcher from '@comp/WordMiniSearcher.vue'
-import WordLinkRelationship from './WordLinkRelationship.vue'
+import WordLinkRelationship from '@comp/WordLinkRelationship.vue'
+import type { IWordDocument, IWord } from '@type'
+import { DocumentKind } from '@type'
+import { ITemplateDocument } from '@type'
 
 const props = defineProps<{
     word: IWord
-    doc: IWordDocumentWithoutId
-    editMode?: boolean
+    doc: IWordDocument
 }>()
 
 const emit = defineEmits<{
     (event: 'withdraw'): void
 }>()
 
+const wordStore = useWord()
+
 const lang = computed(() => 'lang' in props.doc
     ? (props.doc.lang ?? navigator.language)
     : undefined
 )
+
+const newlyAdded = ref(false)
+if (wordStore.newlyAddedDocId === props.doc.id) {
+    newlyAdded.value = true
+    wordStore.newlyAddedDocId = undefined
+}
 
 const showMiniSearcher = ref(false)
 const miniSearcher = ref<InstanceType<typeof WordMiniSearcher>>()
@@ -58,6 +65,12 @@ const sharpCancel = () => {
 const onTemplateCompositionEnd = (event: CompositionEvent) => {
     if (event.data === '#') sharpStart()
 }
+const onTemplateUpdate = (doc: ITemplateDocument) => {
+    wordStore.updateGraphByDoc(doc, props.word, props.word.id)
+}
+const onTemplateWithdraw = (doc: ITemplateDocument) => {
+    wordStore.updateGraphByDocReverse(doc, props.word, props.word.id)
+}
 </script>
 
 <template>
@@ -69,7 +82,7 @@ const onTemplateCompositionEnd = (event: CompositionEvent) => {
                 :more="true"
                 :withdrawable="true"
                 :withdraw-when-empty="true"
-                :edit-mode="editMode"
+                :edit-mode="newlyAdded"
             />
         </div>
 
@@ -79,11 +92,12 @@ const onTemplateCompositionEnd = (event: CompositionEvent) => {
         <div>
             <NyaConfirmInput
                 v-model="doc.text"
-                @withdraw="emit('withdraw')"
+                @update:modelValue="onTemplateUpdate(doc)"
+                @withdraw="onTemplateWithdraw(doc); emit('withdraw')"
                 :more="true"
                 :withdraw-when-empty="true"
                 :withdrawable="true"
-                :edit-mode="editMode"
+                :edit-mode="newlyAdded"
             >
                 <template #content>
                     <div class="template-doc-content">

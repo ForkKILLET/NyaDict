@@ -7,8 +7,8 @@ import ListTransitionGroup from '@comp/transitions/ListTransitionGroup.vue'
 
 <template>
     <ListTransitionGroup class="notis">
-        <template v-for="noti, id of notif.notis" :key="id">
-            <div v-if="noti">
+        <template v-for="noti, id of notif.notis">
+            <div v-if="noti" :key="noti.createTime">
                 <Noti
                     :noti="noti"
                     @click="notif.removeNoti(id)"

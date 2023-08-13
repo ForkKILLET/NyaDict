@@ -6,9 +6,10 @@ import LongPressButton from '@comp/LongPressButton.vue'
 import WordMemCalendar from '@comp/WordMemCalendar.vue'
 import NyaTab from '@comp/NyaTab.vue'
 import type { IWord } from '@type'
-import NyaConfirmInput from './NyaConfirmInput.vue'
-import WordDocumentList from './WordDocumentList.vue'
-import WordDocumentAdder from './WordDocumentAdder.vue'
+import NyaConfirmInput from '@comp/NyaConfirmInput.vue'
+import WordDocumentList from '@comp/WordDocumentList.vue'
+import WordDocumentAdder from '@comp/WordDocumentAdder.vue'
+import WordLink from '@comp/WordLink.vue'
 
 const wordStore = useWord()
 
@@ -63,7 +64,7 @@ window.addEventListener('resize', () => {
             />
             <LongPressButton
                 v-else
-                @long-press="word.id = wordStore.add(word)"
+                @long-press="wordStore.restore(word)"
                 icon="trash-restore"
                 color="#db8e30"
                 desc="削除取り消し"
@@ -74,6 +75,7 @@ window.addEventListener('resize', () => {
         <NyaTab :tabs="[
             { name: 'dict', title: '辞書' },
             { name: 'mem', title: 'メモリー' },
+            { name: 'link', title: 'リンク' }
         ]">
             <template #mem>
                 <div>
@@ -88,14 +90,26 @@ window.addEventListener('resize', () => {
                 <WordMemCalendar :mem="word.mem" />
             </template>
             <template #dict>
+                <div class="toolbar">
+                    <WordDocumentAdder @add-doc="doc => wordStore.addDoc(word.docs ??= [], doc)" />
+                </div>
+
                 <WordDocumentList
                     @focus.capture="onFocus"
                     @blur.capture="editingEl = undefined"
                     :word="word"
                     :node="word"
                 />
-
-                <WordDocumentAdder @add-doc="doc => wordStore.addDoc(word.docs ??= [], doc)" />
+            </template>
+            <template #link>
+                <template v-if="word.graph">
+                    <div v-for="id of word.graph.edgesOut">
+                        <fa-icon icon="arrow-right" /> <WordLink :id="id" />
+                    </div>
+                    <div v-for="id of word.graph.edgesIn">
+                        <fa-icon icon="arrow-left" /> <WordLink :id="id" />
+                    </div>
+                </template>
             </template>
         </NyaTab>
     </div>
@@ -129,8 +143,11 @@ window.addEventListener('resize', () => {
     margin-bottom: 10em;
 }
 
-.nya-tab[data-tab=dict] > svg.button {
-    padding-left: 0;
+.nya-tab[data-tab=dict] > .toolbar {
     margin-bottom: .5em;
+}
+
+.nya-tab[data-tab=link] > div > svg {
+    margin-right: .5em;
 }
 </style>

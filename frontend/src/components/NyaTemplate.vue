@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import WordLink from '@comp/WordLink.vue'
+import { getTemplateSegement } from '@/stores/words'
 import type { IWord } from '@type'
 
 const props = defineProps<{
@@ -8,16 +9,7 @@ const props = defineProps<{
     word: IWord
 }>()
 
-const segments = computed(() => props.text
-    .split(/(#\d*\([^)]+?\)|#\d*)/)
-    .map(seg => {
-        if (seg[0] === '#') {
-            const { id, disp } = seg.match(/#(?<id>\d+)?(\((?<disp>[^)]+?)\))?/)!.groups as { id?: string, disp?: string }
-            return { id: id ? + id : undefined, disp }
-        }
-        return seg
-    })
-)
+const segments = computed(() => getTemplateSegement(props.text))
 </script>
 
 <template>

@@ -7,10 +7,12 @@ export type IWord = {
     sub: string
     mem: IMemory
     docs?: IWordDocument[]
+    graph?: IWordGraph
 }
 
 export type IWordDocument = IMeaningDocument | ISentenceDocument | ILinkDocument
 export type IWordDocumentWithoutId = DistributiveOmit<IWordDocument, 'id'>
+export type ITemplateDocument = ISentenceDocument | ILinkDocument
 
 export enum DocumentKind {
     Meaning,
@@ -26,27 +28,34 @@ export enum LinkDocumentRelationship {
     Other = -1
 }
 
-export type IMeaningDocument = {
-    kind: DocumentKind.Meaning
+export type IWordDocumentBase = {
     id: number
+}
+
+export type IMeaningDocument = IWordDocumentBase & {
+    kind: DocumentKind.Meaning
     lang?: string
     text: string
     docs: IWordDocument[]
 }
 
-export type ISentenceDocument = {
+export type ISentenceDocument = IWordDocumentBase & {
     kind: DocumentKind.Sentence
-    id: number
     lang?: string
     text: string
     tran: string
 }
 
-export type ILinkDocument = {
+export type ILinkDocument = IWordDocumentBase & {
     kind: DocumentKind.Link
-    id: number
     text: string
     rel: LinkDocumentRelationship
+}
+
+// @compress { "edgesIn": "I", "edgesOut": "O" }
+export type IWordGraph = {
+    edgesIn: number[]
+    edgesOut: number[]
 }
 
 // @compress { "testAfter": "TT", "createTime": "TC" }
