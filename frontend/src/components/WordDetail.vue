@@ -45,7 +45,9 @@ window.addEventListener('resize', () => {
 
 <template>
     <div class="word-detail" ref="wordDetailEl">
-        <span class="id">{{ word.id }}</span>
+        <RouterLink :to="`/words?id=${word.id}`">
+            <span class="id">{{ word.id }}</span>
+        </RouterLink>
 
         <NyaConfirmInput v-model="word.disp" class="word-disp" />
         <NyaConfirmInput v-model="word.sub" class="word-sub" />
