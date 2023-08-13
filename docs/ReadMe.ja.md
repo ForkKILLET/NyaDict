@@ -1,6 +1,6 @@
 # NyaDict
 
-[简体中文](./docs/ReadMe.zh-Hans.md) | 日本語 | [English](../ReadMe.md)
+[简体中文](./ReadMe.zh-Hans.md) | 日本語 | [English](../ReadMe.md)
 
 NyaDict is an open-source web dictionary for Japanese vocabulary memorying.
 

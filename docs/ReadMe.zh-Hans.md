@@ -1,6 +1,6 @@
 # NyaDict
 
-简体中文 | [日本語](./docs/ReadMe.ja.md) | [English](../ReadMe.md)
+简体中文 | [日本語](./ReadMe.ja.md) | [English](../ReadMe.md)
 
 NyaDict 是一个面向日语单词记忆的开源网络词典。
 
