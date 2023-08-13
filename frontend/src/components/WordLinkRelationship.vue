@@ -25,9 +25,10 @@ const showRels = ref(false)
 
 <template>
     <div
+        :class="{ editing: editMode }"
         @click="showRels = true"
     >
-        <div class="link-doc-rel outter" :class="{ editing: editMode }">{{ relInfo[rel] }}</div>
+        <div class="link-doc-rel outter">{{ relInfo[rel] }}</div>
         <Transition name="fade">
             <div
                 v-if="showRels && editMode"
@@ -54,6 +55,7 @@ const showRels = ref(false)
     border-radius: .2em;
     line-height: 1;
     text-align: center;
+    user-select: none;
     color: #db8e30;
     background-color: #f3e4d8;
 }
@@ -62,7 +64,7 @@ const showRels = ref(false)
     margin-right: .8em;
 }
 
-.link-doc-rel.outter.editing {
+.editing .link-doc-rel {
     cursor: pointer;
     animation: .3s hop;
 }
@@ -73,9 +75,8 @@ const showRels = ref(false)
 
 .link-doc-rels {
     position: absolute;
+    z-index: 2;
     margin-left: -.2em;
     padding: .2em;
-    background-color: #fff;
-    border-radius: .3em;
 }
 </style>
