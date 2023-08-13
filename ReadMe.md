@@ -59,3 +59,7 @@ To run in develop mode:
 ```bash
 pnpm start:dev
 ```
+
+## Thanks
+
+- [Koishi](https://github.com/koishijs/koishi) dev group. They helped me very much on developing NyaDict (about TypeScript, CSS, Vue, etc.). Koishi is a cross-platform chatbot framework made with love and high technological capability. Highly Recommended.
