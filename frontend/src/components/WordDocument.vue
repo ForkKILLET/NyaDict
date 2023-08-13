@@ -110,7 +110,7 @@ const onTemplateCompositionEnd = (event: CompositionEvent) => {
 
 <style scoped>
 .meaning-doc {
-    margin-bottom: 1em;
+    margin-bottom: .5em;
 }
 
 .meaning-doc-text {
@@ -124,10 +124,6 @@ const onTemplateCompositionEnd = (event: CompositionEvent) => {
 
 .template-doc-content {
     display: flex;
-}
-
-.doc-list {
-    margin-left: 1em;
 }
 
 .word-mini-searcher {
