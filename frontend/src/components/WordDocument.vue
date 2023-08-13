@@ -36,8 +36,20 @@ const sharpStart = () => {
 }
 const sharpEnd = (word: IWord, model: { value: string }) => {
     showMiniSearcher.value = false
-    model.value += word.id
     templateInput.value!.focus()
+    const el = templateInput.value
+    if (el) {
+        const pos = el.selectionStart
+        if (pos !== null) {
+            if (model.value[pos - 1] === '#') {
+                const id = String(word.id)
+                model.value = model.value.slice(0, pos) + id + model.value.slice(pos)
+                nextTick(() => {
+                    el.selectionStart = el.selectionEnd = pos + id.length
+                })
+            }
+        }
+    }
 }
 const sharpCancel = () => {
     showMiniSearcher.value = false
