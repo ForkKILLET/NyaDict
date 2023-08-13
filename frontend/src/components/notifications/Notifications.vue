@@ -8,7 +8,12 @@ import ListTransitionGroup from '@comp/transitions/ListTransitionGroup.vue'
 <template>
     <ListTransitionGroup class="notis">
         <template v-for="noti, id of notif.notis">
-            <div v-if="noti" :key="noti.createTime">
+            <div
+                v-if="noti"
+                :key="noti.createTime"
+                class="noti-outter"
+                :class="noti.type"
+            >
                 <Noti
                     :noti="noti"
                     @click="notif.removeNoti(id)"
@@ -37,5 +42,9 @@ import ListTransitionGroup from '@comp/transitions/ListTransitionGroup.vue'
 
 .list-leave-active > .noti {
     animation-play-state: paused;
+}
+
+.noti-outter.charge.list-enter-from {
+    opacity: 1;
 }
 </style>
