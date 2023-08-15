@@ -159,8 +159,6 @@ export const useWord = defineStore('words', () => {
         word: IWord, wordId: number,
         wordDict?: Record<string, IWord>
     ) => {
-        debugger
-
         const segments = getTemplateSegement(doc.text)
         segments.forEach(seg => {
             if (typeof seg === 'object') {
@@ -205,7 +203,6 @@ export const useWord = defineStore('words', () => {
 
         for (const id in wordDict) {
             const word = wordDict[id]
-            debugger
             if (word.docs) updateGraphByWord(word, word.docs, false, wordDict)
         }
     }

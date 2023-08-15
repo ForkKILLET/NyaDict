@@ -79,7 +79,7 @@ defineExpose({
         <input
             v-model="search"
             ref="inputEl"
-            @keydown.esc="cancel"
+            @keydown.esc.prevent="cancel"
             @keydown.enter.prevent="submitActiveWord"
             @keydown.down="navigateActiveWord(+ 1)"
             @keydown.up="navigateActiveWord(- 1)"
