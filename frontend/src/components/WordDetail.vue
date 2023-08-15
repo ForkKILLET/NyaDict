@@ -1,15 +1,18 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+
 import { useWord } from '@store/words'
+
 import NyaDate from '@comp/NyaDate.vue'
 import LongPressButton from '@comp/LongPressButton.vue'
 import WordMemCalendar from '@comp/WordMemCalendar.vue'
 import NyaTab from '@comp/NyaTab.vue'
-import type { IWord } from '@type'
 import NyaConfirmInput from '@comp/NyaConfirmInput.vue'
 import WordDocumentList from '@comp/WordDocumentList.vue'
 import WordDocumentAdder from '@comp/WordDocumentAdder.vue'
 import WordLink from '@comp/WordLink.vue'
+
+import type { IWord, IWordDocumentWithoutId } from '@type'
 
 const wordStore = useWord()
 
@@ -21,6 +24,11 @@ const props = withDefaults(defineProps<{
 })
 
 const withdrawed = computed(() => ! wordStore.getById(props.word.id))
+
+const addDoc = (doc: IWordDocumentWithoutId) => {
+    const id = wordStore.addDoc(props.word.docs ??= [], doc)
+    wordStore.newlyAddedDocId = id
+}
 
 const wordDetailEl = ref<HTMLDivElement>()
 const editingEl = ref<HTMLInputElement>()
@@ -91,7 +99,7 @@ window.addEventListener('resize', () => {
             </template>
             <template #dict>
                 <div class="toolbar">
-                    <WordDocumentAdder @add-doc="doc => wordStore.addDoc(word.docs ??= [], doc)" />
+                    <WordDocumentAdder @add-doc="addDoc" />
                 </div>
 
                 <WordDocumentList

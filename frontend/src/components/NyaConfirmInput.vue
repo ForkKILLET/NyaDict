@@ -138,4 +138,7 @@ const submit = () => {
     right: 0;
     bottom: 100%;
 }
+.more > :deep(* + *) {
+    margin-left: .5em;
+}
 </style>

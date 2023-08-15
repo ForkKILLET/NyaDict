@@ -1,14 +1,19 @@
 <script setup lang="ts">
 import { computed, nextTick, ref } from 'vue'
-import { useWord } from '@store/words'
+
+import { useWord, getFirstWordTemplateSegment } from '@store/words'
+
 import NyaConfirmInput from '@comp/NyaConfirmInput.vue'
 import NyaTemplate from '@comp/NyaTemplate.vue'
 import WordDocumentList from '@comp/WordDocumentList.vue'
 import WordMiniSearcher from '@comp/WordMiniSearcher.vue'
 import WordLinkRelationship from '@comp/WordLinkRelationship.vue'
-import type { IWordDocument, IWord } from '@type'
+import LongPressButton from '@comp/LongPressButton.vue'
+
+import { addNoti } from '@/utils/notif'
+
 import { DocumentKind } from '@type'
-import { ITemplateDocument } from '@type'
+import type { IWordDocument, IWord, ITemplateDocument, ILinkDocument } from '@type'
 
 const props = defineProps<{
     word: IWord
@@ -71,6 +76,40 @@ const onTemplateUpdate = (doc: ITemplateDocument) => {
 const onTemplateWithdraw = (doc: ITemplateDocument) => {
     wordStore.updateGraphByDocReverse(doc, props.word, props.word.id)
 }
+
+const backlink = (doc: ILinkDocument) => {
+    const target = getFirstWordTemplateSegment(doc.text)
+    if (! target?.id) return
+
+    const targetWord = wordStore.getById(target.id)
+    if (! targetWord) return
+
+    const backlinkDoc = targetWord.docs?.find(doc => {
+        if (doc.kind !== DocumentKind.Link) return false
+        const target = getFirstWordTemplateSegment(doc.text)
+        if (target?.id !== props.word.id) return false
+        return true
+    })
+
+    if (backlinkDoc) addNoti({
+        content: 'バックリンクは既に存在します',
+        type: 'info',
+        duration: 2 * 1000
+    })
+
+    else {
+        wordStore.addDoc(targetWord.docs ??= [], {
+            kind: DocumentKind.Link,
+            text: '#' + props.word.id,
+            rel: doc.rel
+        })
+        addNoti({
+            content: 'バックリンクを作成しました',
+            type: 'success',
+            duration: 2 * 1000
+        })
+    }
+}
 </script>
 
 <template>
@@ -127,6 +166,16 @@ const onTemplateWithdraw = (doc: ITemplateDocument) => {
                         @keypress.enter="submit"
                         @keypress.#="sharpStart"
                         @compositionend="onTemplateCompositionEnd"
+                    />
+                </template>
+                <template #more>
+                    <LongPressButton
+                        v-if="doc.kind === DocumentKind.Link"
+                        @long-press="backlink(doc)"
+                        icon="link"
+                        color="#000"
+                        desc="バックリンク"
+                        :delay=".5"
                     />
                 </template>
             </NyaConfirmInput>

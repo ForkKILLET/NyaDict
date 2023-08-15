@@ -115,7 +115,6 @@ export const useWord = defineStore('words', () => {
 
     const addDoc = (docs: IWordDocument[], newDoc: IWordDocumentWithoutId) => {
         const id = ++ docMaxId.value 
-        newlyAddedDocId.value = id
         docs.push({
             ...newDoc,
             id
@@ -133,7 +132,7 @@ export const useWord = defineStore('words', () => {
         word: IWord, wordId: number,
         wordDict?: Record<string, IWord>
     ) => {
-        const segments = getTemplateSegement(doc.text)
+        const segments = getTemplateSegements(doc.text)
         segments.forEach(seg => {
             if (typeof seg === 'object') {
                 const id = seg.id
@@ -159,7 +158,7 @@ export const useWord = defineStore('words', () => {
         word: IWord, wordId: number,
         wordDict?: Record<string, IWord>
     ) => {
-        const segments = getTemplateSegement(doc.text)
+        const segments = getTemplateSegements(doc.text)
         segments.forEach(seg => {
             if (typeof seg === 'object') {
                 const id = seg.id
@@ -264,7 +263,11 @@ export const getCorrectnessCount = (correctness: ICorrect[]) => {
     }
 }
 
-export const getTemplateSegement = (template: string) => template
+export type TemplateSegment = WordSegment | TextSegment
+export type TextSegment = string
+export type WordSegment = { id: number | undefined, disp: string | undefined }
+
+export const getTemplateSegements = (template: string): TemplateSegment[] => template
     .split(/(#\d*\([^)]+?\)|#\d*)/)
     .map(seg => {
         if (seg[0] === '#') {
@@ -273,5 +276,8 @@ export const getTemplateSegement = (template: string) => template
         }
         return seg
     })
+
+export const getFirstWordTemplateSegment = (template: string) => getTemplateSegements(template)
+    .find((seg): seg is WordSegment => typeof seg === 'object')
 
 export const emptyGraph = (): IWordGraph => ({ edgesIn: [], edgesOut: [] })

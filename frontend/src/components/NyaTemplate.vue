@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import WordLink from '@comp/WordLink.vue'
-import { getTemplateSegement } from '@/stores/words'
+import { getTemplateSegements } from '@/stores/words'
 import type { IWord } from '@type'
 
 const props = defineProps<{
@@ -9,7 +9,7 @@ const props = defineProps<{
     word: IWord
 }>()
 
-const segments = computed(() => getTemplateSegement(props.text))
+const segments = computed(() => getTemplateSegements(props.text))
 </script>
 
 <template>
