@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { getRomaji, useWord } from '@store/words'
-import { filterN } from '@/utils'
 import { vOnClickOutside } from '@vueuse/components'
+
+import { getHiragana, useWord } from '@store/words'
+
+import { filterN } from '@/utils'
+import { strictToHiragana } from '@/utils/kana'
+
 import type { IWord } from '@type'
 
 const props = withDefaults(defineProps<{
@@ -22,10 +26,15 @@ const search = ref('')
 const filteredWords = computed(() => {
     const text = search.value
     if (! text) return []
+
+    const hiragana = strictToHiragana(text)
+
     return filterN(
         wordStore.words, props.maxResult,
         word => (
-            word.disp.startsWith(text) || word.sub.startsWith(text) || getRomaji(word).startsWith(text)
+            hiragana
+                ? getHiragana(word).startsWith(hiragana)
+                : word.disp.startsWith(text) || word.sub.startsWith(text)
         )
     )
 })

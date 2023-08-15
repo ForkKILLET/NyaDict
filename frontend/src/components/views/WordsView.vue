@@ -1,19 +1,24 @@
 <script setup lang="ts">
-import { computed, reactive, ref, toRefs, watch, type Ref, nextTick } from 'vue'
+import { computed, reactive, ref, toRefs, watch, nextTick, type Ref } from 'vue'
 import { useRoute } from 'vue-router'
+import { useDebounceFn } from '@vueuse/core'
+
 import {
-    emptyMem, getCorrectness, getYomikataIndex,
-    getRomaji, getLastTestTime, useWord
+    useWord, emptyMem,
+    getCorrectness, getYomikataIndex, getLastTestTime, getHiragana
 } from '@store/words'
 import { useTest } from '@store/test'
+
 import { isPortrait } from '@/utils/media'
 import { storeRef } from '@util/storage'
+import { strictToHiragana } from '@/utils/kana'
+
 import WordEditor from '@comp/WordEditor.vue'
 import WordList from '@comp/WordList.vue'
 import WordDetail from '@comp/WordDetail.vue'
-import type { IWord } from '@type'
-import { ITestRec } from '@type'
-import { useDebounceFn } from '@vueuse/core'
+
+import type { IWord, ITestRec } from '@type'
+import WordFilterTest from '../WordFilterTest.vue'
 
 const wordStore = useWord()
 const testStore = useTest()
@@ -48,6 +53,7 @@ const toolbarConfig = reactive<ToolbarConfigItem[]>([
 ])
 
 const { search, testId, testCorrectLevel } = toRefs(wordStore.filter)
+const searchHiragana = computed(() => strictToHiragana(search.value))
 
 const updateSearch = useDebounceFn((v: string) => {
     search.value = v
@@ -63,7 +69,8 @@ watch(testId, () => {
 
 const filteredWords = computed<IWord[]>(() => {
     let words = [...wordStore.words]
-    let recs: ITestRec[] = []
+    const recs: ITestRec[] = []
+
     if (testId.value !== null) {
         const test = testStore.getById(testId.value)
         if (! test) return []
@@ -74,10 +81,14 @@ const filteredWords = computed<IWord[]>(() => {
         })
     }
 
-    const text = search?.value
+    const text = search.value
+    const hiragana = searchHiragana.value
+    
     return words.filter((word, index) => (
-        ! text || word.disp.includes(text) || word.sub.includes(text) ||
-        getRomaji(word).includes(text)
+        ! text || (hiragana
+            ? getHiragana(word).includes(hiragana)
+            : word.disp.includes(text) || word.sub.includes(text)
+        )
     ) && (
         testId.value === null || recs[index].correct <= testCorrectLevel.value
     ))
@@ -186,34 +197,24 @@ watch(route, () => {
                         </span>
                     </div>
                     <div v-else-if="toolbarMode === 'filter'">
-                        <div class="filter-search">
-                            <input v-model="searchDebounced" class="card light" />
+                        <div class="filter-search card input light">
+                            <span v-if="testId" class="filter-test badge">
+                                テスト <span class="id">{{ testId }}</span>
+                                <WordFilterTest />
+                                <fa-icon
+                                    @click="testId = null"
+                                    icon="trash" class="button"
+                                />
+                            </span>
+
+                            <span v-if="searchHiragana" class="badge">ローマ字</span>
+
+                            <input v-model="searchDebounced" />
                             <fa-icon
                                 @click="search = ''"
                                 icon="times-circle" class="button"
                             />
                         </div>
-                        <span v-if="testId" class="filter-test badge">
-                            テスト <span class="id">{{ testId }}</span>
-                            <fa-icon
-                                @click="testCorrectLevel = (testCorrectLevel + 0.5) % 1.5"
-                                :icon="
-                                    testCorrectLevel === 1 ? 'check-circle' :
-                                    testCorrectLevel === 0 ? 'times-circle' :
-                                    'question-circle'
-                                "
-                                class="button no-hover"
-                                :class="
-                                    testCorrectLevel === 1 ? 'correct' :
-                                    testCorrectLevel === 0 ? 'wrong' :
-                                    'half-correct'
-                                "
-                            />
-                            <fa-icon
-                                @click="testId = null"
-                                icon="trash" class="button"
-                            />
-                        </span>
                     </div>
                 </div>
             </div>

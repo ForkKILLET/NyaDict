@@ -241,6 +241,8 @@ export const getRomaji = (word: IWord) => {
     return toRomaji(word.sub)
 }
 
+export const getHiragana = (word: IWord) => toHiragana(getRomaji(word))
+
 export const getYomikataIndex = (word: IWord) => (
     (isHiragana(word.sub[0])
         ? word.sub[0]

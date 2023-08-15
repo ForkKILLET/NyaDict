@@ -48,4 +48,3 @@ const signOut = () => {
     color: #db8e30;
 }
 </style>
-../utils/notif
