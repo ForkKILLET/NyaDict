@@ -21,7 +21,7 @@ const route = useRoute()
 </template>
 
 <style scoped>
-main {
+.topbar ~ main {
 	height: calc(100vh - 3.5rem);
     box-sizing: border-box;
 }

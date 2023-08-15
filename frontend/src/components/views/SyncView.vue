@@ -15,13 +15,11 @@ import ArchiveList from '@comp/ArchiveList.vue'
 .content {
     display: flex;
     flex-flow: column;
-    height: calc(100vh - 3.5rem);
     box-sizing: border-box;
 }
 
 .archive-list {
     flex: 1;
-    height: calc(100vh - 3.5rem);
     box-sizing: border-box;
     overflow: hidden;
 }
