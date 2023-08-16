@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, nextTick, ref } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
+import { storeToRefs } from 'pinia'
 
 import { useWord, getFirstWordTemplateSegment } from '@store/words'
 
@@ -25,6 +26,7 @@ const emit = defineEmits<{
 }>()
 
 const wordStore = useWord()
+const { newlyAddedDocId } = storeToRefs(wordStore)
 
 const lang = computed(() => 'lang' in props.doc
     ? (props.doc.lang ?? navigator.language)
@@ -32,10 +34,12 @@ const lang = computed(() => 'lang' in props.doc
 )
 
 const newlyAdded = ref(false)
-if (wordStore.newlyAddedDocId === props.doc.id) {
-    newlyAdded.value = true
-    wordStore.newlyAddedDocId = undefined
-}
+watch(newlyAddedDocId, id => {
+    if (id === props.doc.id) {
+        newlyAdded.value = true
+        newlyAddedDocId.value = undefined
+    }
+}, { immediate: true })
 
 const showMiniSearcher = ref(false)
 const miniSearcher = ref<InstanceType<typeof WordMiniSearcher>>()
@@ -81,7 +85,8 @@ const backlink = (doc: ILinkDocument) => {
     const target = getFirstWordTemplateSegment(doc.text)
     if (! target?.id) return
 
-    const targetWord = wordStore.getById(target.id)
+    const targetId = target.id
+    const targetWord = wordStore.getById(targetId)
     if (! targetWord) return
 
     const backlinkDoc = targetWord.docs?.find(doc => {
@@ -98,11 +103,13 @@ const backlink = (doc: ILinkDocument) => {
     })
 
     else {
-        wordStore.addDoc(targetWord.docs ??= [], {
+        const newDoc: Omit<ILinkDocument, 'id'> = {
             kind: DocumentKind.Link,
             text: '#' + props.word.id,
             rel: doc.rel
-        })
+        }
+        wordStore.addDoc(targetWord.docs ??= [], newDoc)
+        wordStore.updateGraphByDoc(newDoc, targetWord, targetId)
         addNoti({
             content: 'バックリンクを作成しました',
             type: 'success',

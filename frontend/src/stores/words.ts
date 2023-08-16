@@ -128,7 +128,7 @@ export const useWord = defineStore('words', () => {
     }
 
     const updateGraphByDoc = (
-        doc: ITemplateDocument,
+        doc: Omit<ITemplateDocument, 'id'>,
         word: IWord, wordId: number,
         wordDict?: Record<string, IWord>
     ) => {
