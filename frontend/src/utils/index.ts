@@ -58,6 +58,18 @@ export const filterN = <T>(items: T[], count: number, pred: (item: T) => boolean
     return filtered
 }
 
+export const intersect = <T>(a: T[], b: T[]): [T[], T[], T[]] => {
+    const i: T[] = [], a2: T[] = [], b2: T[] = []
+    a.forEach(item => {
+        if (b.includes(item)) i.push(item)
+        else a2.push(item)
+    })
+    b.forEach(item => {
+        if (! i.includes(item)) b2.push(item)
+    })
+    return [ i, a2, b2 ] 
+}
+
 export type Grade = 'top' | 'high' | 'medium' | 'low' | 'none'
 export const gradeColors: Record<Grade, string> = {
     top: '#39d353',

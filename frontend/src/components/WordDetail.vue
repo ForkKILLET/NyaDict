@@ -10,7 +10,7 @@ import NyaTab from '@comp/NyaTab.vue'
 import NyaConfirmInput from '@comp/NyaConfirmInput.vue'
 import WordDocumentList from '@comp/WordDocumentList.vue'
 import WordDocumentAdder from '@comp/WordDocumentAdder.vue'
-import WordLink from '@comp/WordLink.vue'
+import WordGraphList from '@comp/WordGraphList.vue'
 
 import type { IWord, IWordDocumentWithoutId } from '@type'
 
@@ -110,14 +110,7 @@ window.addEventListener('resize', () => {
                 />
             </template>
             <template #link>
-                <template v-if="word.graph">
-                    <div v-for="id of word.graph.edgesOut">
-                        <fa-icon icon="arrow-right" /> <WordLink :id="id" />
-                    </div>
-                    <div v-for="id of word.graph.edgesIn">
-                        <fa-icon icon="arrow-left" /> <WordLink :id="id" />
-                    </div>
-                </template>
+                <WordGraphList v-if="word.graph" :graph="word.graph" />
             </template>
         </NyaTab>
     </div>
