@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive, ref, toRefs, watch, nextTick, type Ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useDebounceFn } from '@vueuse/core'
 
 import {
@@ -16,9 +16,9 @@ import { strictToHiragana } from '@/utils/kana'
 import WordEditor from '@comp/WordEditor.vue'
 import WordList from '@comp/WordList.vue'
 import WordDetail from '@comp/WordDetail.vue'
+import WordFilterTest from '@comp/WordFilterTest.vue'
 
 import type { IWord, ITestRec } from '@type'
-import WordFilterTest from '../WordFilterTest.vue'
 
 const wordStore = useWord()
 const testStore = useTest()
@@ -141,27 +141,18 @@ const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
 
 const contentEl = ref<HTMLDivElement>()
 
-const gotoWord = (word: IWord) => {
-    currentWord.value = word
-    if (isPortrait.value) nextTick(() => {
-        contentEl.value?.scrollBy({ left: window.innerHeight, behavior: 'smooth' })
-    })
-}
-
+const router = useRouter()
 const route = useRoute()
-const currentWordBeforeQuerying = ref<IWord>()
+
+const gotoWord = (word: IWord) => {
+    router.replace(`/words?id=${word.id}`)
+}
 
 watch(route, () => {
     const { id } = route.query
     if (typeof id === 'string' && id) {
         const queryingWord = wordStore.getById(+ id)
-        if (queryingWord) {
-            currentWordBeforeQuerying.value = currentWord.value
-            currentWord.value = queryingWord
-        }
-    }
-    else if (currentWordBeforeQuerying.value) {
-        currentWord.value = currentWordBeforeQuerying.value
+        if (queryingWord) currentWord.value = queryingWord
     }
 }, { immediate: true })
 </script>

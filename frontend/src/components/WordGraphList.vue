@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import WordLink from '@comp/WordLink.vue';
+import { computed } from 'vue'
+
+import WordLink from '@comp/WordLink.vue'
 
 import { intersect } from '@/utils'
 
@@ -9,18 +11,21 @@ const props = defineProps<{
     graph: IWordGraph
 }>()
 
-const [ edgesInAndOut, edgesIn, edgesOut ] = intersect(props.graph.edgesIn, props.graph.edgesOut)
+const graph = computed(() => {
+    const [ edgesInAndOut, edgesIn, edgesOut ] = intersect(props.graph.edgesIn, props.graph.edgesOut)
+    return { edgesInAndOut, edgesIn, edgesOut }
+})
 </script>
 
 
 <template>
-    <div v-for="id of edgesInAndOut">
+    <div v-for="id of graph.edgesInAndOut">
         <fa-icon icon="arrows-left-right" /> <WordLink :id="id" />
     </div>
-    <div v-for="id of edgesOut">
+    <div v-for="id of graph.edgesOut">
         <fa-icon icon="arrow-right" /> <WordLink :id="id" />
     </div>
-    <div v-for="id of edgesIn">
+    <div v-for="id of graph.edgesIn">
         <fa-icon icon="arrow-left" /> <WordLink :id="id" />
     </div>
 </template>

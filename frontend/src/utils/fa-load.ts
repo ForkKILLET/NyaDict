@@ -23,4 +23,3 @@ library.add(...[
     faForward, faPlus, faChartLine, faCode, faEye, faBars, faGear, faListDots,
     faLink, faArrowsLeftRight
 ])
-
