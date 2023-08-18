@@ -195,7 +195,12 @@ watch(route, ({ path }) => {
                         size: selectedFile.size,
                         version: 'N/A'
                     }"
-                />
+                >
+                    <fa-icon
+                        @click="selectedFile = undefined"
+                        icon="trash" class="button"
+                    />
+                </ArchiveInfo>
 
                 <ArchiveInfo
                     :is-importing="true"

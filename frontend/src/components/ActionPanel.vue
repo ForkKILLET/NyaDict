@@ -40,7 +40,6 @@ const onSubmit = () => {
 }
 
 .panel {
-    margin-bottom: 1em;
     padding: 2em;
 }
 
@@ -64,5 +63,15 @@ h2 {
 
 .panel:deep(> .item) > svg:first-child {
     margin-right: .5em;
+}
+
+button {
+    line-height: 0;
+}
+
+button > svg.button {
+    width: 1em;
+    height: 1em;
+    padding: 0;
 }
 </style>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref, toRefs, watch, nextTick, type Ref } from 'vue'
+import { computed, reactive, ref, toRefs, watch, type Ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useDebounceFn } from '@vueuse/core'
 
@@ -9,7 +9,6 @@ import {
 } from '@store/words'
 import { useTest } from '@store/test'
 
-import { isPortrait } from '@/utils/media'
 import { storeRef } from '@util/storage'
 import { strictToHiragana } from '@/utils/kana'
 
