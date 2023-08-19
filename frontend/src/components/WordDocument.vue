@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, ref, watch } from 'vue'
-import { storeToRefs } from 'pinia'
+import { computed, nextTick, ref } from 'vue'
 
 import { useWord, getFirstWordTemplateSegment } from '@store/words'
 
@@ -26,7 +25,6 @@ const emit = defineEmits<{
 }>()
 
 const wordStore = useWord()
-const { newlyAddedDocId } = storeToRefs(wordStore)
 
 const lang = computed(() => 'lang' in props.doc
     ? (props.doc.lang ?? navigator.language)
@@ -34,12 +32,11 @@ const lang = computed(() => 'lang' in props.doc
 )
 
 const newlyAdded = ref(false)
-watch(newlyAddedDocId, id => {
-    if (id === props.doc.id) {
-        newlyAdded.value = true
-        newlyAddedDocId.value = undefined
-    }
-}, { immediate: true })
+console.log(props.doc, wordStore.newlyAddedDocId)
+if (wordStore.newlyAddedDocId === props.doc.id) {
+    newlyAdded.value = true
+    wordStore.newlyAddedDocId = undefined
+}
 
 const showMiniSearcher = ref(false)
 const miniSearcher = ref<InstanceType<typeof WordMiniSearcher>>()

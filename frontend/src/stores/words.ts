@@ -119,6 +119,7 @@ export const useWord = defineStore('words', () => {
             ...newDoc,
             id
         })
+        newlyAddedDocId.value = id
         return id
     }
 

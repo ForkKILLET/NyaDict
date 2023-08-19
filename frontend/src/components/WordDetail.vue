@@ -26,8 +26,7 @@ const props = withDefaults(defineProps<{
 const withdrawed = computed(() => ! wordStore.getById(props.word.id))
 
 const addDoc = (doc: IWordDocumentWithoutId) => {
-    const id = wordStore.addDoc(props.word.docs ??= [], doc)
-    wordStore.newlyAddedDocId = id
+    wordStore.addDoc(props.word.docs ??= [], doc)
 }
 
 const wordDetailEl = ref<HTMLDivElement>()

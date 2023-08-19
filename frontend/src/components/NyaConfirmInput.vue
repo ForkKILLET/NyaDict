@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, ref, toRefs, watch } from 'vue'
+import { ref, toRefs, watch } from 'vue'
 import { vOnClickOutside } from '@vueuse/components'
 import LongPressButton from '@comp/LongPressButton.vue'
 
@@ -29,12 +29,13 @@ const editMode = ref(props.editMode)
 const showMore = ref(false)
 const root = ref<HTMLDivElement>()
 
+const focus = () => {
+    const inputEl = root.value?.querySelector('input.input') as HTMLInputElement | undefined
+    inputEl?.focus()
+}
+
 const edit = () => {
     editMode.value = true
-    nextTick(() => {
-        const inputEl = root.value?.querySelector('inpua.input') as HTMLInputElement | undefined
-        inputEl?.focus()
-    })
 }
 
 const clear = () => {
@@ -46,6 +47,10 @@ const submit = () => {
     emit('update:modelValue', model.ref.value)
     clear()
 }
+
+watch(editMode, (mode) => {
+    if (mode) setTimeout(focus, 0)
+}, { immediate: true })
 </script>
 
 <template>
