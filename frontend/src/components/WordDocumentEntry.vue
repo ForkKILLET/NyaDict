@@ -17,7 +17,10 @@ const wordStore = useWord()
 
 
 const addDoc = (newDoc: IWordDocumentWithoutId) => {
-    if ('docs' in props.doc) wordStore.addDoc(props.doc.docs ??= [], newDoc)
+    if ('docs' in props.doc) {
+        const id = wordStore.addDoc(props.doc.docs ??= [], newDoc)
+        wordStore.newlyAddedDocId = id
+    }
 }
 </script>
 

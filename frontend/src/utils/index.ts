@@ -58,17 +58,29 @@ export const filterN = <T>(items: T[], count: number, pred: (item: T) => boolean
     return filtered
 }
 
-export const intersect = <T>(a: T[], b: T[]): [T[], T[], T[]] => {
+export type IsEqual<T> = (a: T, b: T) => boolean
+
+export const curry = <A, B extends any[], R>(f: (arg: A, ...rest: B) => R) =>
+    (arg: A) => (...rest: B): R => f(arg, ...rest)
+
+export const intersect = <T>(a: T[], b: T[], comp: IsEqual<T>): [T[], T[], T[]] => {
+    const equalTo = curry(comp)
     const i: T[] = [], a2: T[] = [], b2: T[] = []
     a.forEach(item => {
-        if (b.includes(item)) i.push(item)
+        if (b.some(equalTo(item))) i.push(item)
         else a2.push(item)
     })
     b.forEach(item => {
-        if (! i.includes(item)) b2.push(item)
+        if (! i.some(equalTo(item))) b2.push(item)
     })
     return [ i, a2, b2 ] 
 }
+
+export const dedup = <T>(items: T[], comp: IsEqual<T>): T[] => (
+    items.filter((a, index) => ! items.slice(0, index).some(b => comp(a, b)))
+)
+
+Object.assign(window, { dedup, intersect, curry })
 
 export type Grade = 'top' | 'high' | 'medium' | 'low' | 'none'
 export const gradeColors: Record<Grade, string> = {

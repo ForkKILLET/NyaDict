@@ -1,14 +1,14 @@
 import { ref, type Ref } from 'vue'
 import { defineStore } from 'pinia' 
 import { toHiragana, toRomaji, isHiragana} from 'wanakana'
-import { randomItem } from '@util'
 import { useArchive } from '@store/archive'
+import { randomItem } from '@util'
 import { IWord_Compress, compress_IWord } from '@/utils/compress'
-import { storeRef, type ArrayStore, storeArray, storeRefReactive } from '@/utils/storage'
+import { storeRef, storeArray, storeRefReactive, type ArrayStore } from '@/utils/storage'
 import type { Disposable } from '@/utils/disposable'
 import type {
     IMemory, ITestRec, IWord, ICorrect,
-    IWordDocumentWithoutId, IWordGraph, IWordDocument, ITemplateDocument
+    IWordDocumentWithoutId, IWordGraph, IWordDocument, IWordGraphEdge
 } from '@type'
 import { DocumentKind } from '@type'
 
@@ -119,7 +119,6 @@ export const useWord = defineStore('words', () => {
             ...newDoc,
             id
         })
-        newlyAddedDocId.value = id
         return id
     }
 
@@ -128,55 +127,39 @@ export const useWord = defineStore('words', () => {
         return rec
     }
 
-    const updateGraphByDoc = (
-        doc: Omit<ITemplateDocument, 'id'>,
-        word: IWord, wordId: number,
-        wordDict?: Record<string, IWord>
+    const updateGraphByTemplate = (
+        docId: number,
+        template: string,
+        word: IWord,
+        wordId: number,
+        reversed: boolean,
+        wordDict?: Record<string, IWord>,
     ) => {
-        const segments = getTemplateSegements(doc.text)
+        const segments = getTemplateSegements(template)
         segments.forEach(seg => {
             if (typeof seg === 'object') {
-                const id = seg.id
-                if (! id) return
+                const nowId = seg.id
+                if (! nowId) return
 
                 word.graph ??= emptyGraph()
 
-                const target = wordDict?.[id] ?? getById(id)
-                if (! target) return
-
-                target.graph ??= emptyGraph()
-                const { edgesIn } = target.graph
-                if (! edgesIn.includes(wordId)) edgesIn.push(wordId)
-
-                const { edgesOut } = word.graph
-                if (! edgesOut.includes(id)) edgesOut.push(id)
-            }
-        })
-    }
-
-    const updateGraphByDocReverse = (
-        doc: ITemplateDocument,
-        word: IWord, wordId: number,
-        wordDict?: Record<string, IWord>
-    ) => {
-        const segments = getTemplateSegements(doc.text)
-        segments.forEach(seg => {
-            if (typeof seg === 'object') {
-                const id = seg.id
-                if (! id) return
-
-                if (! word.graph) return
-
-                const target = wordDict?.[id] ?? getById(id)
-                if (target?.graph) {
+                const target = wordDict?.[nowId] ?? getById(nowId)
+                if (target) {
+                    target.graph ??= emptyGraph()
                     const { edgesIn } = target.graph
-                    const indexIn = edgesIn.indexOf(wordId)
-                    if (indexIn >= 0) edgesIn.splice(indexIn, 1)
+                    const nowEdge = newEdge(docId, wordId)
+                    const indexIn = edgesIn.findIndex(edge => isSameEdge(edge, nowEdge))
+                    if (indexIn >= 0 && reversed) edgesIn.splice(indexIn, 1)
+                    else if (indexIn < 0 && ! reversed) edgesIn.push(nowEdge)
                 }
 
-                const { edgesOut } = word.graph
-                const indexOut = edgesOut.indexOf(id)
-                if (indexOut >= 0) edgesOut.splice(indexOut, 1)
+                {
+                    const { edgesOut } = word.graph
+                    const nowEdge = newEdge(docId, nowId)
+                    const indexOut = edgesOut.findIndex(edge => isSameEdge(edge, nowEdge))
+                    if (indexOut >= 0 && reversed) edgesOut.splice(indexOut, 1)
+                    else if (indexOut < 0 && ! reversed) edgesOut.push(nowEdge)
+                }
             }
         })
     }
@@ -191,8 +174,7 @@ export const useWord = defineStore('words', () => {
 
         docs.forEach(doc => {
             if (doc.kind === DocumentKind.Link || doc.kind === DocumentKind.Sentence) {
-                if (! reversed) updateGraphByDoc(doc, word, wordId, wordDict)
-                else updateGraphByDocReverse(doc, word, wordId, wordDict)
+                updateGraphByTemplate(doc.id, doc.text, word, wordId, reversed, wordDict)
             }
             if ('docs' in doc) updateGraphByWord(word, doc.docs, reversed, wordDict)
         })
@@ -203,7 +185,10 @@ export const useWord = defineStore('words', () => {
 
         for (const id in wordDict) {
             const word = wordDict[id]
-            if (word.docs) updateGraphByWord(word, word.docs, false, wordDict)
+            delete word.graph
+            if (word.docs) {
+                updateGraphByWord(word, word.docs, false, wordDict)
+            }
         }
     }
 
@@ -213,7 +198,7 @@ export const useWord = defineStore('words', () => {
         words, filter,
         add, withdraw, restore,
         newlyAddedDocId, addDoc,
-        updateGraphs, updateGraphByDoc, updateGraphByDocReverse,
+        updateGraphs, updateGraphByTemplate,
         getById, pushTestRec, popTestRec, randomWord
     }
 })
@@ -272,7 +257,8 @@ export const getTemplateSegements = (template: string): TemplateSegment[] => tem
     .split(/(#\d*\([^)]+?\)|#\d*)/)
     .map(seg => {
         if (seg[0] === '#') {
-            const { id, disp } = seg.match(/#(?<id>\d+)?(\((?<disp>[^)]+?)\))?/)!.groups as { id?: string, disp?: string }
+            const { id, disp } = seg
+                .match(/#(?<id>\d+)?(\((?<disp>[^)]+?)\))?/)!.groups as { id?: string, disp?: string }
             return { id: id ? + id : undefined, disp }
         }
         return seg
@@ -282,3 +268,11 @@ export const getFirstWordTemplateSegment = (template: string) => getTemplateSege
     .find((seg): seg is WordSegment => typeof seg === 'object')
 
 export const emptyGraph = (): IWordGraph => ({ edgesIn: [], edgesOut: [] })
+
+export const isSameEdge = (e1: IWordGraphEdge, e2: IWordGraphEdge) => (
+    e1.sourceDoc === e2.sourceDoc && e1.targetWord === e2.targetWord
+)
+
+export const newEdge = (sourceDoc: number, targetWord: number): IWordGraphEdge => ({
+    sourceDoc, targetWord
+})

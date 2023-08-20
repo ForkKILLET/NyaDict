@@ -13,6 +13,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
+    (event: 'beforeUpdate:modelValue', value: string): void
     (event: 'update:modelValue', value: string): void
     (event: 'withdraw'): void
 }>()
@@ -44,6 +45,7 @@ const clear = () => {
 }
 
 const submit = () => {
+    emit('beforeUpdate:modelValue', props.modelValue)
     emit('update:modelValue', model.ref.value)
     clear()
 }

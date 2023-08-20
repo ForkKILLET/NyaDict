@@ -124,9 +124,10 @@ export const storeArray = <T extends object, U>(key: string, options: {
         return arr.length
     }
     const update = (index: number, value: T) => {
-        localStorage.setItem(`${key}#${index}`, JSON.stringify(
+        setStorage(
+            `${key}#${index}`,
             options.map ? options.map.serialize(value) : value
-        ))
+        )
         return reactiveArr[+ index] = value
     }
     const remove = (index: number) => {

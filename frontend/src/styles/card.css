@@ -75,6 +75,6 @@ button.card.active:hover,
 .inline.card {
     display: inline-block;
 }
-.inline.card:not(:last-of-type) {
+.inline.card:not(:last-child) {
     margin-right: 1em;
 }

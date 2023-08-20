@@ -54,8 +54,14 @@ export type ILinkDocument = IWordDocumentBase & {
 
 // @compress { "edgesIn": "I", "edgesOut": "O" }
 export type IWordGraph = {
-    edgesIn: number[]
-    edgesOut: number[]
+    edgesIn: IWordGraphEdge[]
+    edgesOut: IWordGraphEdge[]
+}
+
+// @compress
+export type IWordGraphEdge = {
+    sourceDoc: number
+    targetWord: number
 }
 
 // @compress { "testAfter": "TT", "createTime": "TC" }

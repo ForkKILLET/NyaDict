@@ -32,7 +32,6 @@ const lang = computed(() => 'lang' in props.doc
 )
 
 const newlyAdded = ref(false)
-console.log(props.doc, wordStore.newlyAddedDocId)
 if (wordStore.newlyAddedDocId === props.doc.id) {
     newlyAdded.value = true
     wordStore.newlyAddedDocId = undefined
@@ -71,11 +70,8 @@ const sharpCancel = () => {
 const onTemplateCompositionEnd = (event: CompositionEvent) => {
     if (event.data === '#') sharpStart()
 }
-const onTemplateUpdate = (doc: ITemplateDocument) => {
-    wordStore.updateGraphByDoc(doc, props.word, props.word.id)
-}
-const onTemplateWithdraw = (doc: ITemplateDocument) => {
-    wordStore.updateGraphByDocReverse(doc, props.word, props.word.id)
+const updateGraph = (doc: ITemplateDocument, reversed: boolean) => {
+    wordStore.updateGraphByTemplate(doc.id, doc.text, props.word, props.word.id, reversed)
 }
 
 const backlink = (doc: ILinkDocument) => {
@@ -105,8 +101,8 @@ const backlink = (doc: ILinkDocument) => {
             text: '#' + props.word.id,
             rel: doc.rel
         }
-        wordStore.addDoc(targetWord.docs ??= [], newDoc)
-        wordStore.updateGraphByDoc(newDoc, targetWord, targetId)
+        const newDocId = wordStore.addDoc(targetWord.docs ??= [], newDoc)
+        wordStore.updateGraphByTemplate(newDocId, newDoc.text, targetWord, targetId, false)
         addNoti({
             content: 'バックリンクを作成しました',
             type: 'success',
@@ -135,8 +131,9 @@ const backlink = (doc: ILinkDocument) => {
         <div>
             <NyaConfirmInput
                 v-model="doc.text"
-                @update:modelValue="onTemplateUpdate(doc)"
-                @withdraw="onTemplateWithdraw(doc); emit('withdraw')"
+                @before-update:modelValue="updateGraph(doc, true)"
+                @update:modelValue="updateGraph(doc, false)"
+                @withdraw="updateGraph(doc, true); emit('withdraw')"
                 :more="true"
                 :withdraw-when-empty="true"
                 :withdrawable="true"

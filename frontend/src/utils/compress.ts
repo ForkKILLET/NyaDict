@@ -1,4 +1,4 @@
-import type { IWord, IWordGraph, IMemory, ITestRec, ITest, IWordDocument, ICorrect, ITestMode } from '@type'
+import type { IWord, IWordGraph, IWordGraphEdge, IMemory, ITestRec, ITest, IWordDocument, ICorrect, ITestMode } from '@type'
 
 export type IWord_Compress = {
   I: number
@@ -27,17 +27,31 @@ export const compress_IWord = {
   })
 }
 export type IWordGraph_Compress = {
-  I: number[]
-  O: number[]
+  I: IWordGraphEdge_Compress[]
+  O: IWordGraphEdge_Compress[]
 }
 export const compress_IWordGraph = {
   serialize: ({ edgesIn: I, edgesOut: O }: IWordGraph): IWordGraph_Compress => ({
-    I,
-    O,
+    I: I.map(compress_IWordGraphEdge.serialize),
+    O: O.map(compress_IWordGraphEdge.serialize),
   }),
   deserialize: ({ I: edgesIn, O: edgesOut }: IWordGraph_Compress): IWordGraph => ({
-    edgesIn,
-    edgesOut,
+    edgesIn: edgesIn.map(compress_IWordGraphEdge.deserialize),
+    edgesOut: edgesOut.map(compress_IWordGraphEdge.deserialize),
+  })
+}
+export type IWordGraphEdge_Compress = {
+  S: number
+  T: number
+}
+export const compress_IWordGraphEdge = {
+  serialize: ({ sourceDoc: S, targetWord: T }: IWordGraphEdge): IWordGraphEdge_Compress => ({
+    S,
+    T,
+  }),
+  deserialize: ({ S: sourceDoc, T: targetWord }: IWordGraphEdge_Compress): IWordGraphEdge => ({
+    sourceDoc,
+    targetWord,
   })
 }
 export type IMemory_Compress = {
