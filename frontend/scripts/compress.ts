@@ -1,5 +1,4 @@
 import ts from 'typescript'
-import dedent from 'dedent'
 import minimist from 'minimist'
 import { writeFile } from 'fs/promises'
 
@@ -14,7 +13,7 @@ const error = (header: string, fmt: string, ...p: any[]) => {
     process.exit(1)
 }
 
-const tab2 = ' '.repeat(4)
+type CompressOption = { '@tag'?: string } & Record<string, string>
 
 type PropMap = Record<string, {
     newName: string
@@ -23,8 +22,13 @@ type PropMap = Record<string, {
 }>
 
 type TypeToCompress = {
+    kind: ts.TypeLiteralNode['kind']
     node: ts.TypeLiteralNode
     propMap: PropMap
+} | {
+    kind: ts.UnionTypeNode['kind']
+    node: ts.UnionTypeNode
+    tag: string
 }
 
 function compress(file: string, base: string): string {
@@ -41,7 +45,7 @@ function compress(file: string, base: string): string {
             const firstLine = text.split('\n')[0]
             const res = firstLine.match(compressMagicCommentRegExp)
             if (! res) return
-            const compressOption: Record<string, string> = JSON.parse(res[1].trim() || '{}')
+            const compressOption: CompressOption = JSON.parse(res[1].trim() || '{}')
 
             let typeName: string
             const propMap: PropMap = {}
@@ -52,8 +56,8 @@ function compress(file: string, base: string): string {
                     log('Found', '%o with %o', typeName, compressOption)
                 }
 
-                if (ts.isTypeLiteralNode(node)) {
-                    const typeDef: TypeToCompress = { node, propMap }
+                else if (ts.isTypeLiteralNode(node)) {
+                    const typeDef: TypeToCompress = { node, propMap, kind: node.kind }
                     typeDefs[typeName] = typeDef
                     imports.add(typeName)
 
@@ -83,6 +87,16 @@ function compress(file: string, base: string): string {
                         }
                     })
                 }
+
+                else if (ts.isUnionTypeNode(node)) {
+                    const tag = compressOption['@tag']
+                    if (! tag || typeof tag !== 'string') error('Syntax', '%o need @tag option', typeName)
+                    else log('', 'union %o @tag %o', typeName, tag)
+
+                    const typeDef: TypeToCompress = { node, tag, kind: node.kind }
+                    typeDefs[typeName] = typeDef
+                    imports.add(typeName)
+                }
             })
         }
     })
@@ -90,70 +104,130 @@ function compress(file: string, base: string): string {
     for (const typeName in typeDefs) {
         log('Generating', typeName)
 
-        let serInputs = []
-        let deserInputs = []
-        let serOutputs = []
-        let deserOutputs = []
-        let compressTypes = [] 
+
+        let compressTypes: string[] = []
+        let typeCode = ''
+        let serCode = ''
+        let deserCode = ''
 
         const typeDef = typeDefs[typeName]
-        for (const propName in typeDef.propMap) {
-            const { newName, question, typeNode } = typeDef.propMap[propName]
-            const typeText = typeNode.getText(f)
-            const questionMark = question ? '?' : ''
-            const refOutput = (de: boolean) => {
-                const name = de ? propName : newName
-                const inner = `compress_${typeText}.${de ? 'de' : ''}serialize(${name})`
-                return question ? `${name} ? ${inner} : undefined` : inner
-            }
 
-            log('Map', '%o%s: %s -> %o', propName, questionMark, typeText, newName)
+        if (typeDef.kind === ts.SyntaxKind.TypeLiteral) {
+            let serInputs: string[] = []
+            let deserInputs: string[] = []
+            let serOutputs: string[] = []
+            let deserOutputs: string[] = []
 
-            serInputs.push(`${propName}: ${newName}`)
-            deserInputs.push(`${newName}: ${propName}`)
-            
-            if (ts.isTypeReferenceNode(typeNode)) {
-                imports.add(typeText)
-                if (typeText in typeDefs) {
-                    compressTypes.push(`${newName}${questionMark}: ${typeText}_Compress`)
-                    serOutputs.push(`${newName}: ${refOutput(false)}`)
-                    deserOutputs.push(`${propName}: ${refOutput(true)}`)
-                    continue
+            for (const propName in typeDef.propMap) {
+                const { newName, question, typeNode } = typeDef.propMap[propName]
+                const typeText = typeNode.getText(f)
+                const questionMark = question ? '?' : ''
+                const refOutput = (de: boolean) => {
+                    const name = de ? propName : newName
+                    const inner = `compress_${typeText}.${de ? 'de' : ''}serialize(${name})`
+                    return question ? `${name} ? ${inner} : undefined` : inner
                 }
-            }
 
-            if (ts.isArrayTypeNode(typeNode)) {
-                const eleTypeNode = typeNode.elementType
-                const eleTypeText = eleTypeNode.getText(f)
-                if (ts.isTypeReferenceNode(eleTypeNode)) {
-                    imports.add(eleTypeText)
-                    if (eleTypeText in typeDefs) {
-                        compressTypes.push(`${newName}${questionMark}: ${eleTypeText}_Compress[]`)
-                        serOutputs.push(`${newName}: ${newName}${questionMark}.map(compress_${eleTypeText}.serialize)`)
-                        deserOutputs.push(`${propName}: ${propName}${questionMark}.map(compress_${eleTypeText}.deserialize)`)
+                log('Map', '%o%s: %s -> %o', propName, questionMark, typeText, newName)
+
+                serInputs.push(`${propName}: ${newName}`)
+                deserInputs.push(`${newName}: ${propName}`)
+                
+                if (ts.isTypeReferenceNode(typeNode)) {
+                    imports.add(typeText.split('.')[0])
+                    if (typeText in typeDefs) {
+                        compressTypes.push(`${newName}${questionMark}: ${typeText}_Compress`)
+                        serOutputs.push(`${newName}: ${refOutput(false)}`)
+                        deserOutputs.push(`${propName}: ${refOutput(true)}`)
                         continue
                     }
                 }
+
+                if (ts.isArrayTypeNode(typeNode)) {
+                    const eleTypeNode = typeNode.elementType
+                    const eleTypeText = eleTypeNode.getText(f)
+                    if (ts.isTypeReferenceNode(eleTypeNode)) {
+                        imports.add(eleTypeText)
+                        if (eleTypeText in typeDefs) {
+                            compressTypes.push(`${newName}${questionMark}: ${eleTypeText}_Compress[]`)
+                            serOutputs.push(`${newName}: ${newName}${questionMark}.map(compress_${eleTypeText}.serialize)`)
+                            deserOutputs.push(`${propName}: ${propName}${questionMark}.map(compress_${eleTypeText}.deserialize)`)
+                            continue
+                        }
+                    }
+                }
+
+                compressTypes.push(`${newName}${questionMark}: ${typeText}`)
+                serOutputs.push(newName)
+                deserOutputs.push(propName)
             }
 
-            compressTypes.push(`${newName}${questionMark}: ${typeText}`)
-            serOutputs.push(newName)
-            deserOutputs.push(propName)
+            typeCode = `{${compressTypes.map(ln => '\n  ' + ln).join('')}\n}`
+            serCode = `({ ${serInputs.join(', ')} }: ${typeName}): ${typeName}_Compress => ({${
+                serOutputs.map(ln => '\n    ' + ln + ',').join('')
+            }\n  })`
+            deserCode = `({ ${deserInputs.join(', ')} }: ${typeName}_Compress): ${typeName} => ({${
+                deserOutputs.map(ln => '\n    ' + ln + ',').join('')
+            }\n  })`
         }
 
-        const code = dedent`export type ${typeName}_Compress = {${compressTypes.map(ln => '\n          ' + ln).join('')}
+        else if (typeDef.kind === ts.SyntaxKind.UnionType) {
+            let branches: { branchTypeText: string, tagTypeText: string }[] = []
+
+            const tagName = typeDef.tag
+            let newTagName: string
+
+            typeDef.node.forEachChild(branch => {
+                let branchIndex = 0
+                if (ts.isTypeReferenceNode(branch)) {
+                    const branchTypeText = branch.getText(f)
+                    const branchTypeDef = typeDefs[branchTypeText]
+                    
+                    if (branchTypeDef.kind === ts.SyntaxKind.TypeLiteral) {
+                        const tagProp = branchTypeDef.propMap[tagName]
+                        if (newTagName === undefined) newTagName = tagProp.newName
+                        else if (newTagName !== tagProp.newName) error('Conflict', 'union %o @tag %o -> %o & %o', typeName, tagName, newTagName, tagProp.newName)
+
+                        const tagTypeText = tagProp.typeNode.getText(f)
+                        branches.push({ branchTypeText, tagTypeText })
+                    }
+
+                    branchIndex ++
+                }
+            })
+
+            typeCode = branches.map(branch => `${branch.branchTypeText}_Compress`).join(' | ')
+            serCode = `(union: ${typeName}): ${typeName}_Compress => {${
+                branches
+                    .map(({ branchTypeText, tagTypeText }, index) =>
+                        `\n    ${index ? 'else ' : ''}if (union.${tagName} === ${tagTypeText}) return compress_${branchTypeText}.serialize(union)`
+                    )
+                    .join('')
+            }\n    else return undefined as never\n  }`
+            deserCode = `(union: ${typeName}_Compress): ${typeName} => {${
+                branches
+                    .map(({ branchTypeText, tagTypeText }, index) =>
+                        `\n    ${index ? 'else ' : ''}if (union.${newTagName} === ${tagTypeText}) return compress_${branchTypeText}.deserialize(union)`
+                    )
+                    .join('')
+            }\n    else return undefined as never\n  }`
         }
-        export const compress_${typeName} = {
-          serialize: ({ ${serInputs.join(', ')} }: ${typeName}): ${typeName}_Compress => ({${serOutputs.map(ln => '\n            ' + ln + ',').join('')}
-          }),
-          deserialize: ({ ${deserInputs.join(', ')} }: ${typeName}_Compress): ${typeName} => ({${deserOutputs.map(ln => '\n            ' + ln + ',').join('')}
-          })
-        }`
+
+        const code = `export type ${typeName}_Compress = ${typeCode}\n`
+            + `export const compress_${typeName} = {\n`
+            + `  serialize: ${serCode},\n`
+            + `  deserialize: ${deserCode}\n`
+            + `}\n`
 
         codes.push(code)
     }
 
-    return `import type { ${[...imports].join(', ')} } from '${base}'\n\n` + codes.join('\n') + '\n'
+    const importsCode = `import {\n`
+        + [...imports].sort().map(ln => `  ${ln},`).join('\n')
+        + `\n} from '${base}'\n`
+
+    return importsCode + '\n'
+        + codes.join('\n') + '\n'
 }
 
 const { input, base, output } = minimist(process.argv.slice(2), {

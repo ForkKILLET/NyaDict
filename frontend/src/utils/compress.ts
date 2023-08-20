@@ -1,11 +1,26 @@
-import type { IWord, IWordGraph, IWordGraphEdge, IMemory, ITestRec, ITest, IWordDocument, ICorrect, ITestMode } from '@type'
+import {
+  DocumentKind,
+  ICorrect,
+  ILinkDocument,
+  IMeaningDocument,
+  IMemory,
+  ISentenceDocument,
+  ITest,
+  ITestMode,
+  ITestRec,
+  IWord,
+  IWordDocument,
+  IWordGraph,
+  IWordGraphEdge,
+  LinkDocumentRelationship,
+} from '@type'
 
 export type IWord_Compress = {
   I: number
   D: string
   S: string
   M: IMemory_Compress
-  d?: IWordDocument[]
+  d?: IWordDocument_Compress[]
   G?: IWordGraph_Compress
 }
 export const compress_IWord = {
@@ -14,7 +29,7 @@ export const compress_IWord = {
     D,
     S,
     M: compress_IMemory.serialize(M),
-    d,
+    d: d?.map(compress_IWordDocument.serialize),
     G: G ? compress_IWordGraph.serialize(G) : undefined,
   }),
   deserialize: ({ I: id, D: disp, S: sub, M: mem, d: docs, G: graph }: IWord_Compress): IWord => ({
@@ -22,10 +37,96 @@ export const compress_IWord = {
     disp,
     sub,
     mem: compress_IMemory.deserialize(mem),
-    docs,
+    docs: docs?.map(compress_IWordDocument.deserialize),
     graph: graph ? compress_IWordGraph.deserialize(graph) : undefined,
   })
 }
+
+export type IWordDocument_Compress = IMeaningDocument_Compress | ISentenceDocument_Compress | ILinkDocument_Compress
+export const compress_IWordDocument = {
+  serialize: (union: IWordDocument): IWordDocument_Compress => {
+    if (union.kind === DocumentKind.Meaning) return compress_IMeaningDocument.serialize(union)
+    else if (union.kind === DocumentKind.Sentence) return compress_ISentenceDocument.serialize(union)
+    else if (union.kind === DocumentKind.Link) return compress_ILinkDocument.serialize(union)
+    else return undefined as never
+  },
+  deserialize: (union: IWordDocument_Compress): IWordDocument => {
+    if (union.K === DocumentKind.Meaning) return compress_IMeaningDocument.deserialize(union)
+    else if (union.K === DocumentKind.Sentence) return compress_ISentenceDocument.deserialize(union)
+    else if (union.K === DocumentKind.Link) return compress_ILinkDocument.deserialize(union)
+    else return undefined as never
+  }
+}
+
+export type IMeaningDocument_Compress = {
+  I: number
+  K: DocumentKind.Meaning
+  L?: string
+  T: string
+  D: IWordDocument_Compress[]
+}
+export const compress_IMeaningDocument = {
+  serialize: ({ id: I, kind: K, lang: L, text: T, docs: D }: IMeaningDocument): IMeaningDocument_Compress => ({
+    I,
+    K,
+    L,
+    T,
+    D: D.map(compress_IWordDocument.serialize),
+  }),
+  deserialize: ({ I: id, K: kind, L: lang, T: text, D: docs }: IMeaningDocument_Compress): IMeaningDocument => ({
+    id,
+    kind,
+    lang,
+    text,
+    docs: docs.map(compress_IWordDocument.deserialize),
+  })
+}
+
+export type ISentenceDocument_Compress = {
+  I: number
+  K: DocumentKind.Sentence
+  L?: string
+  T: string
+  t: string
+}
+export const compress_ISentenceDocument = {
+  serialize: ({ id: I, kind: K, lang: L, text: T, tran: t }: ISentenceDocument): ISentenceDocument_Compress => ({
+    I,
+    K,
+    L,
+    T,
+    t,
+  }),
+  deserialize: ({ I: id, K: kind, L: lang, T: text, t: tran }: ISentenceDocument_Compress): ISentenceDocument => ({
+    id,
+    kind,
+    lang,
+    text,
+    tran,
+  })
+}
+
+export type ILinkDocument_Compress = {
+  I: number
+  K: DocumentKind.Link
+  T: string
+  R: LinkDocumentRelationship
+}
+export const compress_ILinkDocument = {
+  serialize: ({ id: I, kind: K, text: T, rel: R }: ILinkDocument): ILinkDocument_Compress => ({
+    I,
+    K,
+    T,
+    R,
+  }),
+  deserialize: ({ I: id, K: kind, T: text, R: rel }: ILinkDocument_Compress): ILinkDocument => ({
+    id,
+    kind,
+    text,
+    rel,
+  })
+}
+
 export type IWordGraph_Compress = {
   I: IWordGraphEdge_Compress[]
   O: IWordGraphEdge_Compress[]
@@ -40,6 +141,7 @@ export const compress_IWordGraph = {
     edgesOut: edgesOut.map(compress_IWordGraphEdge.deserialize),
   })
 }
+
 export type IWordGraphEdge_Compress = {
   S: number
   T: number
@@ -54,6 +156,7 @@ export const compress_IWordGraphEdge = {
     targetWord,
   })
 }
+
 export type IMemory_Compress = {
   E: number
   TT: number
@@ -83,6 +186,7 @@ export const compress_IMemory = {
     testRec: testRec.map(compress_ITestRec.deserialize),
   })
 }
+
 export type ITestRec_Compress = {
   T: number
   C: ICorrect
@@ -103,6 +207,7 @@ export const compress_ITestRec = {
     oldEasiness,
   })
 }
+
 export type ITest_Compress = {
   I: number
   TC: number

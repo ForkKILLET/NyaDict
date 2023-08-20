@@ -1,4 +1,4 @@
-import type { DistributiveOmit } from "@type/tool"
+import type { DistributiveOmit } from '@type/tool'
 
 // @compress { "docs": "d" }
 export type IWord = {
@@ -10,7 +10,9 @@ export type IWord = {
     graph?: IWordGraph
 }
 
+// @compress { "@tag": "kind" }
 export type IWordDocument = IMeaningDocument | ISentenceDocument | ILinkDocument
+
 export type IWordDocumentWithoutId = DistributiveOmit<IWordDocument, 'id'>
 export type ITemplateDocument = ISentenceDocument | ILinkDocument
 
@@ -28,25 +30,27 @@ export enum LinkDocumentRelationship {
     Other = -1
 }
 
-export type IWordDocumentBase = {
+// @compress
+export type IMeaningDocument = {
     id: number
-}
-
-export type IMeaningDocument = IWordDocumentBase & {
     kind: DocumentKind.Meaning
     lang?: string
     text: string
     docs: IWordDocument[]
 }
 
-export type ISentenceDocument = IWordDocumentBase & {
+// @compress { "tran": "t" }
+export type ISentenceDocument = {
+    id: number
     kind: DocumentKind.Sentence
     lang?: string
     text: string
     tran: string
 }
 
-export type ILinkDocument = IWordDocumentBase & {
+// @compress
+export type ILinkDocument = {
+    id: number
     kind: DocumentKind.Link
     text: string
     rel: LinkDocumentRelationship
