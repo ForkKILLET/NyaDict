@@ -10,5 +10,8 @@ const wordStore = useWord()
 </script>
 
 <template>
-    <RouterLink :to="`/words?id=${id}`">{{ disp ?? wordStore.getById(id)?.disp }}</RouterLink>
+    <RouterLink
+        :to="`/words?id=${id}`"
+        class="word-link"
+    >{{ disp ?? wordStore.getById(id)?.disp }}</RouterLink>
 </template>

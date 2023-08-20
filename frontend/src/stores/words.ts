@@ -263,6 +263,7 @@ export const getTemplateSegements = (template: string): TemplateSegment[] => tem
         }
         return seg
     })
+    .filter(seg => seg)
 
 export const getFirstWordTemplateSegment = (template: string) => getTemplateSegements(template)
     .find((seg): seg is WordSegment => typeof seg === 'object')
