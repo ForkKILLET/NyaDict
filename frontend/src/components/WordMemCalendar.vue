@@ -4,6 +4,7 @@ import dayjs from 'dayjs'
 import type { IMemMode, IMemory } from '@type'
 import WordMemBrief from '@comp/WordMemBrief.vue'
 import Calendar from '@comp/charts/Calendar.vue'
+import NyaDate from './NyaDate.vue'
 
 const props = defineProps<{
     mem: IMemory
@@ -48,7 +49,8 @@ const data = computed(() => {
         else if (kinds[date] !== state) kinds[date] = 'both'
     }
     return dates.map(date => ({
-        kind: kinds[date]
+        kind: kinds[date],
+        value: date
     }))
 })
 </script>
@@ -81,12 +83,21 @@ const data = computed(() => {
                 wrong: '#ec4e1e',
                 both: 'linear-gradient(-45deg, #95e35d 50%, #ec4e1e 50%)'
             }"
-        />
+        >
+            <template #current="{ value }">
+                <NyaDate v-if="value" :date="value" />
+                <div v-else class="no-date"></div>
+            </template>
+        </Calendar>
     </div>
 </template>
 
 <style scoped>
 .calendar-modes {
     white-space: nowrap;
+}
+
+.no-date {
+    height: 1em;
 }
 </style>
