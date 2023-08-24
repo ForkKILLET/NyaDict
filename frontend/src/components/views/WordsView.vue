@@ -11,6 +11,7 @@ import { useTest } from '@store/test'
 
 import { storeRef } from '@util/storage'
 import { strictToHiragana } from '@/utils/kana'
+import { isPortrait } from '@util/media'
 
 import WordEditor from '@comp/WordEditor.vue'
 import WordList from '@comp/WordList.vue'
@@ -145,6 +146,10 @@ const route = useRoute()
 
 const gotoWord = (word: IWord) => {
     router.replace(`/words?id=${word.id}`)
+    if (isPortrait.value) setTimeout(() => contentEl.value?.scrollBy({
+        left: window.innerWidth,
+        behavior: 'smooth'
+    }), 0)
 }
 
 watch(route, () => {
