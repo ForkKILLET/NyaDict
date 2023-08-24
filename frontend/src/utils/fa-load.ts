@@ -8,7 +8,7 @@ import {
     faRightFromBracket, faLock, faTrash, faTrashRestore, faGift, faSpinner,
     faCloud, faCloudArrowDown, faCloudArrowUp, faInfoCircle, faCircleQuestion,
     faForward, faPlus, faChartLine, faCode, faEye, faBars, faGear, faListDots,
-    faLink, faArrowsLeftRight
+    faLink, faArrowsLeftRight, faTriangleExclamation
 } from '@fortawesome/free-solid-svg-icons'
 
 
@@ -21,5 +21,5 @@ library.add(...[
     faRightFromBracket, faLock, faTrash, faTrashRestore, faGift, faSpinner,
     faCloud, faCloudArrowUp, faCloudArrowDown, faInfoCircle, faCircleQuestion,
     faForward, faPlus, faChartLine, faCode, faEye, faBars, faGear, faListDots,
-    faLink, faArrowsLeftRight
+    faLink, faArrowsLeftRight, faTriangleExclamation
 ])

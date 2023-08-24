@@ -43,9 +43,9 @@ const dataWithAttr = computed<
             <circle
                 v-for="{ attrs, color } of dataWithAttr"
                 cx="10" cy="10" r="10"
+                fill="transparent"
                 stroke-width="10"
                 :stroke="color"
-                fill="transparent"
                 v-bind="attrs"
             ></circle>
         </svg>

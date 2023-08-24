@@ -19,6 +19,7 @@
     "axios": "^1.4.0",
     "d3-interpolate": "^3.0.1",
     "dayjs": "^1.11.9",
+    "json5": "^2.2.3",
     "jwt-decode": "^3.1.2",
     "normalize.css": "^8.0.1",
     "pinia": "^2.1.6",

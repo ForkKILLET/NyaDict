@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import type { IArchiveInfo } from '@type'
+import { ARCHIVE_VERSION } from '@store/archive'
+
 import NyaDate from '@comp/NyaDate.vue'
 import LongPressButton from '@comp/LongPressButton.vue'
 import NyaConfirmInput from '@comp/NyaConfirmInput.vue'
+
+import type { IArchiveInfo } from '@type'
 
 type INoInfoReason = 'noAccount' | 'noRemote' | 'noLocal'
 
@@ -75,7 +78,12 @@ const noInfoReasons: Record<INoInfoReason, string> = {
                 </div>
                 <div>
                     <fa-icon icon="code" :fixed-width="true" />
-                    <span>v<span class="number">{{ info.version }}</span></span>
+                    <span>
+                        v<span class="number">{{ info.version }}</span>
+                        <span class="" v-if="info && info.version !== ARCHIVE_VERSION">
+                            &nbsp;<fa-icon icon="triangle-exclamation" />
+                        </span>
+                    </span>
                 </div>
             </div>
             <div class="archive-info-action">
@@ -160,7 +168,7 @@ const noInfoReasons: Record<INoInfoReason, string> = {
     left: 100%;
     top: 0;
     z-index: -1;
-    padding-top: 1em;
+    padding-top: .5em;
 }
 
 .archive-labels:deep(> div) {
@@ -168,6 +176,7 @@ const noInfoReasons: Record<INoInfoReason, string> = {
     padding: .2em .5em;
     border-radius: 0 .5em .5em 0;
     box-shadow: 0 0 .4em #faad704d;
+    margin-top: .5em;
 }
 
 .importing-mask {

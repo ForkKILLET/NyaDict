@@ -1,8 +1,13 @@
-import { watch, toValue, shallowReactive, computed, type WritableComputedRef, UnwrapRef } from 'vue'
+import {
+    watch, toValue, shallowReactive, computed,
+    type WritableComputedRef, type UnwrapRef
+} from 'vue'
 import { defineStore } from 'pinia'
 import { storeRef, storeReactive } from '@/utils/storage'
-import type { IArchiveInfo, IArchiveData, IPortableArchive } from '@/types'
 import { kDispose } from '@/utils/disposable'
+import type { IArchiveInfo, IArchiveData, IPortableArchive } from '@/types'
+
+export const ARCHIVE_VERSION = '2'
 
 export const useArchive = defineStore('archives', () => {
     const currentId = storeRef('archiveId', '0')
@@ -58,7 +63,7 @@ export const useArchive = defineStore('archives', () => {
     }
 
     const importArchive = (id: string, portable: IPortableArchive) => {
-        if (portable._info?.version !== '2') return
+        if (portable._info?.version !== ARCHIVE_VERSION) return
         archiveInfo[id] = portable._info
         delete portable['_info']
 

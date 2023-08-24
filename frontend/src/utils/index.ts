@@ -1,12 +1,3 @@
-export const tryJSON = (json: string | null | undefined) => {
-    if (json) {
-        try {
-            return JSON.parse(json)
-        }
-        catch {}
-    }
-}
-
 export const random = (a: number, b?: number) => {
     if (b === undefined) return (Math.random() * 1e6 | 0) % a
     return (Math.random() * 1e6 | 0) % (b - a) + a

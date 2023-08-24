@@ -1,7 +1,7 @@
 import { ref, type Ref } from 'vue'
 import { defineStore } from 'pinia' 
 import { toHiragana, toRomaji, isHiragana} from 'wanakana'
-import { useArchive } from '@store/archive'
+import { ARCHIVE_VERSION, useArchive } from '@store/archive'
 import { randomItem } from '@util'
 import { IWord_Compress, compress_IWord } from '@/utils/compress'
 import { storeRef, storeArray, storeRefReactive, type ArrayStore } from '@/utils/storage'
@@ -40,7 +40,7 @@ export const useWord = defineStore('words', () => {
                 accessTime: Date.now(),
                 size: 0,
                 wordCount: 1,
-                version: '2'
+                version: ARCHIVE_VERSION
             }
         },
         map: compress_IWord

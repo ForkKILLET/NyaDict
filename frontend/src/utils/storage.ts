@@ -1,13 +1,14 @@
 import { reactive, ref, watch, type Ref, type WatchStopHandle } from 'vue'
-import { tryJSON } from '@util'
+import JSON5 from 'json5'
+
 import { kDispose, type Disposable } from '@util/disposable'
 
 export const getStorage = <T>(key: string): T | undefined => {
-    return tryJSON(localStorage.getItem(key))
+    return json5TryParse(localStorage.getItem(key))
 }
 
 export const setStorage = <T>(key: string, value: T): void => {
-    localStorage.setItem(key, JSON.stringify(value))
+    localStorage.setItem(key, json5Stringify(value))
 }
 
 export const initStorage = <T>(key: string, defaultValue: T): T => {
@@ -111,7 +112,7 @@ export const storeArray = <T extends object, U>(key: string, options: {
         for (let i = 0; i < length; i ++) {
             const str = localStorage.getItem(`${key}#${i}`)
             if (str === null) continue
-            const value = JSON.parse(str)
+            const value = json5Parse(str)
             arr[i] = options.map ? options.map.deserialize(value) : value
         }
     }
@@ -156,4 +157,14 @@ export const storeArray = <T extends object, U>(key: string, options: {
             watchStopHandles.forEach(stop => stop())
         }
     })
+}
+
+export const json5Stringify = (value: any): string => JSON5.stringify(value, { quote: `'` })
+export const json5Parse = (json: string): any => JSON5.parse(json)
+export const json5TryParse = (json: string | undefined | null): any | undefined => {
+    if (! json) return
+    try {
+        return json5Parse(json)
+    }
+    catch {}
 }

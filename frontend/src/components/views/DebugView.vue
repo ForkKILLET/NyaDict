@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+
 import { useWord } from '@store/words'
 import { useArchive } from '@store/archive'
-import LongPressButton from '@comp/LongPressButton.vue'
+
+import { json5Parse, json5Stringify } from '@util/storage'
 import * as notif from '@util/notif'
+
+import LongPressButton from '@comp/LongPressButton.vue'
 
 const archiveStore = useArchive()
 const wordStore = useWord()
@@ -21,11 +25,11 @@ const genGraph = () => {
 
         <button
             class="inline card deep"
-            @click="json = JSON.stringify(archiveStore.exportArchive())"
+            @click="json = json5Stringify(archiveStore.exportArchive())"
         >load</button>
         <button
             class="inline card deep"
-            @click="archiveStore.importArchive(archiveStore.currentId, JSON.parse(json))"
+            @click="archiveStore.importArchive(archiveStore.currentId, json5Parse(json))"
         >save</button>
     </div>
 

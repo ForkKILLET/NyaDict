@@ -119,6 +119,9 @@ importers:
       dayjs:
         specifier: ^1.11.9
         version: 1.11.9
+      json5:
+        specifier: ^2.2.3
+        version: 2.2.3
       jwt-decode:
         specifier: ^3.1.2
         version: 3.1.2
@@ -2828,7 +2831,6 @@ packages:
     resolution: {integrity: sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg==}
     engines: {node: '>=6'}
     hasBin: true
-    dev: true
 
   /jsonc-parser@3.2.0:
     resolution: {integrity: sha512-gfFQZrcTc8CnKXp6Y4/CBT3fTc0OVuDofpre4aEeEpSBPV5X5v4+Vmx+8snU7RLPrNHPKSgLxGo9YuQzz20o+w==}

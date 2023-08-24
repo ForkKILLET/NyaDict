@@ -2,13 +2,18 @@
 import { storeToRefs } from 'pinia'
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
+
 import { useAuth } from '@store/auth'
-import { useArchive } from '@store/archive'
-import { downloadURL, tryJSON } from '@util'
+import { useArchive, ARCHIVE_VERSION } from '@store/archive'
+
+import { downloadURL } from '@util'
 import { api } from '@util/api'
+import { json5Stringify, json5TryParse } from '@/utils/storage'
 import { addNoti, handleResp } from '@util/notif'
+
 import ArchiveInfo from '@comp/ArchiveInfo.vue'
 import LongPressButton from '@comp/LongPressButton.vue'
+
 import type { IArchiveInfo, IPortableArchive } from '@type'
 import type {
     IRemoteArchiveInfo, IArchiveGetMineResp, IArchiveUploadResp, IArchiveDownloadResp
@@ -41,7 +46,7 @@ const blobs: Record<string, Blob> = {}
  
 const makeBlob = (id: string) => {
     blobs[id] = new Blob([
-        jsons[id] = JSON.stringify(archiveStore.exportArchive(id))
+        jsons[id] = json5Stringify(archiveStore.exportArchive(id))
     ])
     archiveInfo.value[id].size = blobs[id].size
 }
@@ -79,8 +84,8 @@ const onSelectFile = (event: Event) => {
 const imports = async (id?: string) => {
     const file = selectedFile.value!
     const newJSON = await file.text()
-    const newData: IPortableArchive = tryJSON(newJSON)
-    if (newData?._info?.version !== '2') return
+    const newData: IPortableArchive = json5TryParse(newJSON)
+    if (newData?._info?.version !== ARCHIVE_VERSION) return
 
     selectedFile.value = undefined
 
@@ -91,10 +96,6 @@ const imports = async (id?: string) => {
     }
 
     archiveStore.importArchive(id, newData)
-}
-
-for (const id in archiveInfo.value) {
-    makeBlob(id)
 }
 
 const getRemoteInfo = async () => {
@@ -145,14 +146,14 @@ const download = async (id: string) => {
     if (! resp) return
 
     archiveInfo.value[resp.idPerUser] = {
-        version: '2',
+        version: resp.version,
         title: resp.title,
         size: resp.size,
         wordCount: resp.wordCount,
         accessTime: + new Date(resp.accessTime)
     }
 
-    const newData = tryJSON(resp.content) as IPortableArchive
+    const newData = json5TryParse(resp.content) as IPortableArchive
     if (! newData) return
     archiveStore.importArchive(id, newData)
 
@@ -165,8 +166,11 @@ const download = async (id: string) => {
 
 const route = useRoute()
 watch(route, ({ path }) => {
-    if (path === '/sync' && jwtPayload.value) {
-        getRemoteInfo()
+    if (path === '/sync') {
+        if (jwtPayload.value) getRemoteInfo()
+        for (const id in archiveInfo.value) {
+            makeBlob(id)
+        }
     }
 }, { immediate: true })
 </script>
