@@ -18,7 +18,6 @@ import { ITest } from '@type'
 const wordStore = useWord()
 const testStore = useTest()
 
-const interpolate = interpolateRgb('#ec4e1e', '#95e35d')
 
 const data = {
     createWord: () => {
@@ -45,6 +44,8 @@ const data = {
         const maxEasiness = + data[0].name
         const minEasiness = + data.at(-1)!.name
         const deltaEasiness = maxEasiness - minEasiness
+
+        const interpolate = interpolateRgb('#000', '#95e35d')
         data.forEach(item => {
             item.color = interpolate(+ item.name / deltaEasiness)
         })
