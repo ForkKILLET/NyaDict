@@ -56,7 +56,12 @@ watch(editMode, (mode) => {
 </script>
 
 <template>
-    <div class="nya-confirm-input" ref="root" :class="{ withdrawable }">
+    <div
+        ref="root"
+        class="nya-confirm-input"
+        :class="{ withdrawable }"
+        @keydown.escape="editMode && clear()"
+    >
         <template v-if="! editMode">
             <slot name="content">
                 <span class="content">{{ modelValue }}</span>
