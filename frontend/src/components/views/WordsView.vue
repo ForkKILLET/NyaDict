@@ -19,6 +19,7 @@ import WordDetail from '@comp/WordDetail.vue'
 import WordFilterTest from '@comp/WordFilterTest.vue'
 
 import type { IWord, ITestRec } from '@type'
+import { isRomaji } from 'wanakana'
 
 const wordStore = useWord()
 const testStore = useTest()
@@ -202,7 +203,10 @@ watch(route, () => {
                                 />
                             </span>
 
-                            <span v-if="searchHiragana" class="badge">ローマ字</span>
+                            <span
+                                v-if="search && searchHiragana && isRomaji(search)"
+                                class="badge"
+                            >ローマ字</span>
 
                             <input v-model="searchDebounced" />
                             <fa-icon
