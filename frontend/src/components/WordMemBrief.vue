@@ -11,7 +11,7 @@ const props = withDefaults(defineProps<{
     showCount: boolean
     showRing: boolean
 }>(), {
-    memMode: MemMode.Both
+    memMode: MemMode.All
 })
 
 const correctWrong = computed<{
@@ -20,7 +20,7 @@ const correctWrong = computed<{
     wrong: number
 }>(() => props.mem.testRec
     .reduce((acc, rec) => {
-        if (props.memMode === MemMode.Both || props.memMode === rec.mode as number as MemMode) {
+        if (props.memMode === MemMode.All || props.memMode === rec.mode as number as MemMode) {
             const { correct } = rec
             if (correct === 1) acc.correct ++
             else if (correct === 0) acc.wrong ++

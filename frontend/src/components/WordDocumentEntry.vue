@@ -7,6 +7,7 @@ import type { IWord, IWordDocument, IWordDocumentWithoutId } from '@type'
 const props = defineProps<{
     doc: IWordDocument
     word: IWord
+    hideSelf?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -35,6 +36,7 @@ const addDoc = (newDoc: IWordDocumentWithoutId) => {
             :key="doc.id"
             :word="word"
             :doc="doc"
+            :hide-self="hideSelf"
         />
     </div>
 </template>

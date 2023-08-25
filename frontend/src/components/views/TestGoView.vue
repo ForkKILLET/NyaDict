@@ -10,6 +10,8 @@ import Correctness from '@comp/Correctness.vue'
 import WordDetail from '@comp/WordDetail.vue'
 import type { ICorrect } from '@type'
 import { TestMode } from '@type'
+import { DocumentKind } from '@type'
+import WordDocument from '../WordDocument.vue'
 
 const router = useRouter()
 
@@ -128,22 +130,30 @@ const endTest = () => {
             </p>
         </div>
         <div v-else-if="! showAnswer" class="test-area scroll-y">
-            <div>
-                <span class="question">
-                    <template v-if="ongoingTest.mode === TestMode.Disp">{{ currentWord!.disp }}</template>
-                    <template v-else-if="ongoingTest.mode === TestMode.Sub">{{ currentWord!.sub }}</template>
-                </span>
+            <div class="question">
+                <span v-if="ongoingTest.mode === TestMode.Disp">{{ currentWord!.disp }}</span>
+                <span v-else-if="ongoingTest.mode === TestMode.Sub">{{ currentWord!.sub }}</span>
+                <template v-else-if="ongoingTest.mode === TestMode.Meaning">
+                    <WordDocument
+                        v-for="doc of currentWord!.docs!.filter(doc => doc.kind === DocumentKind.Meaning)"
+                        :word="currentWord!"
+                        :doc="doc"
+                        :hide-self="true"
+                    />
+                </template>
             </div>
             <p>
                 <button
                     class="inline w3 card"
                     @click="showAnswer = true"
-                >答案を見る</button>
+                >
+                    <fa-icon icon="eye" />
+                </button>
             </p>
         </div>
         <div v-else class="test-area scroll-y">
-            <div>
-                <Word class="answer inline" :word="currentWord!" />
+            <div class="answer">
+                <Word class="inline" :word="currentWord!" />
             </div>
             <p class="choose-correctness">
                 <button
@@ -184,13 +194,15 @@ const endTest = () => {
 
 .test-area {
     height: 100%;
+    width: 80%;
+    min-width: min(calc(100vw - 3em), 30em);
     margin: 1.5rem -1em 0 -1em;
     padding: 1em;
 }
 
-.test-area > div:first-child {
-    height: 12em;
-    flex-shrink: 0;
+.question, .answer {
+    min-height: 6em;
+    margin-bottom: 6em;
 }
 
 .test-area > p {
@@ -219,9 +231,13 @@ const endTest = () => {
     font-size: 1.3em;
 }
 
-.question {
+.question > span {
     font-family: var(--ja-serif);
     font-size: 3em;
+}
+
+.question > .meaning-doc:first-child {
+    margin-top: 2em;
 }
 
 .choose-correctness {
@@ -238,8 +254,6 @@ const endTest = () => {
 }
 
 .word-detail {
-    width: 80%;
-    min-width: min(calc(100vw - 3em), 30em);
     margin: 1em 0;
     text-align: left;
 }

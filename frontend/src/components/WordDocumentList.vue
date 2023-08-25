@@ -5,6 +5,7 @@ import type { IWord, IWordDocument } from '@type'
 defineProps<{
     node: { docs?: IWordDocument[] }
     word: IWord
+    hideSelf?: boolean
 }>()
 </script>
 
@@ -15,6 +16,7 @@ defineProps<{
             @withdraw="node.docs?.splice(index, 1)"
             :word="word"
             :doc="doc"
+            :hide-self="hideSelf"
         />
     </div>
 </template>

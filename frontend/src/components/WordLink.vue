@@ -27,5 +27,8 @@ const wordStore = useWord()
 .word-link.self.hidden {
     color: transparent;
     user-select: none;
+    text-decoration-style: solid;
+    text-decoration-color: #db8e30;
+    pointer-events: none;
 }
 </style>

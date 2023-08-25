@@ -9,7 +9,7 @@ import { addNoti } from '@util/notif'
 
 import NyaCheckbox from '@comp/NyaCheckbox.vue'
 
-import { TestMode } from '@type'
+import { TestMode, DocumentKind } from '@type'
 
 const router = useRouter()
 
@@ -29,6 +29,10 @@ const preferUntested = ref(false)
 const testableWords = computed(() => {
     const now = Date.now()
     return wordStore.words.filter(word => {
+        if (
+            testMode.value === TestMode.Meaning &&
+            ! word.docs?.filter(doc => doc.kind === DocumentKind.Meaning).length
+        ) return false
         const { testAfter } = word.mem
         return ! testAfter || testAfter < now
     })

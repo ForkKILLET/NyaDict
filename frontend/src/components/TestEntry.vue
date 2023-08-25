@@ -28,10 +28,15 @@ const showInWordsView = () => {
     router.push('/words')
 }
 
-const currentWordText = computed(() => wordStore
-    .getById(props.test.wordIds[props.test.currentIndex])
-    ?.[props.test.mode === TestMode.Disp ? 'disp' : 'sub']
-)
+const currentWordText = computed(() => {
+    const word = wordStore.getById(props.test.wordIds[props.test.currentIndex])
+    if (! word) return
+    
+    const { mode } = props.test
+    if (mode === TestMode.Disp) return word.disp
+    else if (mode === TestMode.Sub) return word.sub
+    else return ''
+})
 </script>
 
 <template>

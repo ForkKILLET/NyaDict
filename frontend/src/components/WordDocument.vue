@@ -18,6 +18,7 @@ import type { IWordDocument, IWord, ITemplateDocument, ILinkDocument } from '@ty
 const props = defineProps<{
     word: IWord
     doc: IWordDocument
+    hideSelf?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -125,7 +126,11 @@ const backlink = (doc: ILinkDocument) => {
             />
         </div>
 
-        <WordDocumentList :word="word" :node="doc" />
+        <WordDocumentList
+            :word="word"
+            :node="doc"
+            :hide-self="hideSelf"
+        />
     </div>
     <div v-else-if="doc.kind === DocumentKind.Sentence || doc.kind === DocumentKind.Link" class="template-doc">
         <div>
@@ -138,6 +143,7 @@ const backlink = (doc: ILinkDocument) => {
                 :withdraw-when-empty="true"
                 :withdrawable="true"
                 :edit-mode="newlyAdded"
+                :disabled="hideSelf"
             >
                 <template #content>
                     <div class="template-doc-content">
@@ -145,7 +151,11 @@ const backlink = (doc: ILinkDocument) => {
                             v-if="doc.kind === DocumentKind.Link"
                             :rel="doc.rel"
                         />
-                        <NyaTemplate :text="doc.text" :word="word" />
+                        <NyaTemplate
+                            :text="doc.text"
+                            :word="word"
+                            :hide-self="hideSelf"
+                        />
                     </div>
                 </template>
                 <template #input="{ model, submit }">

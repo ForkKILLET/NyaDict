@@ -16,7 +16,7 @@ export type IWordDocument = IMeaningDocument | ISentenceDocument | ILinkDocument
 export type IWordDocumentWithoutId = DistributiveOmit<IWordDocument, 'id'>
 export type ITemplateDocument = ISentenceDocument | ILinkDocument
 
-export enum DocumentKind {
+export const enum DocumentKind {
     Meaning,
     Sentence,
     Link
@@ -102,6 +102,13 @@ export enum TestMode {
     Meaning
 }
 
+export enum MemMode {
+    All = - 1,
+    Disp = TestMode.Disp,
+    Sub = TestMode.Sub,
+    Meaning = TestMode.Meaning,
+}
+
 // @compress { "accessTime": "TA", "createTime": "TC", "currentIndex": "IC", "maxIndex": "IM", "lockTime": "TL" }
 export type ITest = {
     id: number
@@ -116,12 +123,6 @@ export type ITest = {
     locked: boolean
     lockTime?: number
     docIds?: number[]
-}
-
-export enum MemMode {
-    Disp,
-    Sub,
-    Both = -1
 }
 
 export type IArchiveVersion = '2' | '3' | string
