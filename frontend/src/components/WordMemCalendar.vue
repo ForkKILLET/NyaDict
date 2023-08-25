@@ -12,11 +12,12 @@ const props = defineProps<{
     mem: IMemory
 }>()
 
-const calendarMode = ref(MemMode.Both)
+const calendarMode = ref(MemMode.All)
 const calendarModeInfo: Record<MemMode, string> = {
     [MemMode.Disp]: '書き方',
     [MemMode.Sub]: '読み方',
-    [MemMode.Both]: '合計'
+    [MemMode.Meaning]: '解釈',
+    [MemMode.All]: '合計'
 }
 
 type DayState = 'none' | 'idle' | 'correct' | 'wrong' | 'both' | 'half-correct'
@@ -44,7 +45,7 @@ const data = computed(() => {
         dates.push(date)
     }
     for (const rec of props.mem.testRec) {
-        if (calendarMode.value !== MemMode.Both && calendarMode.value !== rec.mode as number as MemMode) continue
+        if (calendarMode.value !== MemMode.All && calendarMode.value !== rec.mode as number as MemMode) continue
 
         const date = + dayjs(rec.time).startOf('d')
         const state = rec.correct === 1 ? 'correct' : rec.correct === 0 ? 'wrong' : 'half-correct'
