@@ -7,7 +7,7 @@ import { storeRef, storeReactive } from '@util/storage'
 import { kDispose } from '@util/disposable'
 import type { IArchiveInfo, IArchiveData, IPortableArchive } from '@type'
 
-export const ARCHIVE_VERSION = '2'
+export const ARCHIVE_VERSION = '3'
 
 export const useArchive = defineStore('archives', () => {
     const currentId = storeRef('archiveId', '0')

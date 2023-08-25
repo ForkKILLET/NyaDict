@@ -7,6 +7,7 @@ import type { IWord } from '@type'
 const props = defineProps<{
     text: string
     word: IWord
+    hideSelf?: boolean
 }>()
 
 const segments = computed(() => getTemplateSegements(props.text))
@@ -20,17 +21,13 @@ const segments = computed(() => getTemplateSegements(props.text))
                 v-else
                 :id="seg.id ?? word.id"
                 :disp="seg.disp"
-                :class="{ self: ! seg.id }"
+                :self="! seg.id"
             />
         </template>
     </span>
 </template>
 
 <style scoped>
-.word-link.self {
-    text-decoration: underline wavy;
-}
-
 .word-link + .word-link {
     margin-left: .2em;
 }

@@ -4,6 +4,8 @@ import { useWord } from '@store/words'
 defineProps<{
     id: number
     disp?: string
+    self?: boolean
+    hideSelf?: boolean
 }>()
 
 const wordStore = useWord()
@@ -13,5 +15,17 @@ const wordStore = useWord()
     <RouterLink
         :to="`/words?id=${id}`"
         class="word-link"
+        :class="{ self, hidden: self && hideSelf }"
     >{{ disp ?? wordStore.getById(id)?.disp }}</RouterLink>
 </template>
+
+<style scoped>
+.word-link.self {
+    text-decoration: underline wavy;
+}
+
+.word-link.self.hidden {
+    color: transparent;
+    user-select: none;
+}
+</style>

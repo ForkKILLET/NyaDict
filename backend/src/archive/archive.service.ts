@@ -17,6 +17,7 @@ export class ArchiveService {
           accessTime: new Date(),
         },
         update: {
+          version: data.version,
           title: data.title,
           wordCount: data.wordCount,
           public: data.public,

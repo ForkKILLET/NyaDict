@@ -1,23 +1,28 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
+
 import { useWord } from '@store/words'
 import { useTest } from '@store/test'
-import NyaCheckbox from '@comp/NyaCheckbox.vue'
+
 import { addNoti } from '@util/notif'
-import type { ITestMode } from '@type'
+
+import NyaCheckbox from '@comp/NyaCheckbox.vue'
+
+import { TestMode } from '@type'
 
 const router = useRouter()
 
 const wordStore = useWord()
 const testStore = useTest()
 
-const testModeInfo: Record<ITestMode, string> = {
-    disp: '書き方',
-    sub: '読み方'
+const testModeInfo: Record<TestMode, string> = {
+    [TestMode.Disp]: '書き方',
+    [TestMode.Sub]: '読み方',
+    [TestMode.Meaning]: '解釈'
 }
 
-const testMode = ref<ITestMode | null>(null)
+const testMode = ref<TestMode | null>(null)
 const testSize = ref(20)
 const preferUntested = ref(false)
 
@@ -30,7 +35,7 @@ const testableWords = computed(() => {
 })
 
 const ableToCreateTest = computed(() => (
-    !! testMode.value &&
+    testMode.value !== null &&
     0 < testSize.value && testSize.value <= testableWords.value.length
 ))
 
@@ -38,7 +43,7 @@ const createTest = () => {
     if (! ableToCreateTest.value) {
         addNoti({
             type: 'error',
-            content: ! testMode.value
+            content: testMode.value === null
                 ? 'テスト・モードを選んでください'
                 : '単語数を正く入力してください',
             duration: 2 * 1000
@@ -62,8 +67,8 @@ const createTest = () => {
             <p>テスト・モード</p>
             <button v-for="info, mode in testModeInfo"
                 class="inline w1 card test-mode"
-                :class="{ active: testMode === mode }"
-                @click="testMode = mode"
+                :class="{ active: testMode === + mode }"
+                @click="testMode = + mode"
             >
                 {{ info }}
             </button>

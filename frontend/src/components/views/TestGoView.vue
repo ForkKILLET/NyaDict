@@ -9,6 +9,7 @@ import Word from '@comp/Word.vue'
 import Correctness from '@comp/Correctness.vue'
 import WordDetail from '@comp/WordDetail.vue'
 import type { ICorrect } from '@type'
+import { TestMode } from '@type'
 
 const router = useRouter()
 
@@ -45,7 +46,8 @@ const nextWord = (correct: ICorrect) => {
     const { recId, newEasiness } = wordStore.pushTestRec(word, {
         time: Date.now(),
         correct,
-        mode: test.mode
+        mode: test.mode,
+        testId: test.id
     })
     test.correctness[test.currentIndex] = correct
     test.recIds[test.currentIndex] = recId
@@ -127,7 +129,10 @@ const endTest = () => {
         </div>
         <div v-else-if="! showAnswer" class="test-area scroll-y">
             <div>
-                <span class="question">{{ currentWord![ongoingTest.mode] }}</span>
+                <span class="question">
+                    <template v-if="ongoingTest.mode === TestMode.Disp">{{ currentWord!.disp }}</template>
+                    <template v-else-if="ongoingTest.mode === TestMode.Sub">{{ currentWord!.sub }}</template>
+                </span>
             </div>
             <p>
                 <button

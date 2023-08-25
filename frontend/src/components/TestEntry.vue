@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
+
 import { useTest } from '@store/test'
-import { useRouter } from 'vue-router';
+import { useWord } from '@store/words'
+
 import NyaDate from '@comp/NyaDate.vue'
-import type { ITest } from '@type'
-import { useWord } from '@store/words';
-import { computed } from 'vue';
+
+import { TestMode, type ITest } from '@type'
 
 const props = defineProps<{
     test: ITest
@@ -27,7 +30,7 @@ const showInWordsView = () => {
 
 const currentWordText = computed(() => wordStore
     .getById(props.test.wordIds[props.test.currentIndex])
-    ?.[props.test.mode]
+    ?.[props.test.mode === TestMode.Disp ? 'disp' : 'sub']
 )
 </script>
 

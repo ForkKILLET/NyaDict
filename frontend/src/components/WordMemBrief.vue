@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { IMemMode, IMemory } from '@type'
+import { MemMode, type IMemory } from '@type'
 import Correctness from '@comp/Correctness.vue'
 
 const props = withDefaults(defineProps<{
     mem: IMemory
-    memMode?: IMemMode
+    memMode?: MemMode
     showAcc?: boolean
     showEasiness?: boolean
     showCount: boolean
     showRing: boolean
 }>(), {
-    memMode: 'both'
+    memMode: MemMode.Both
 })
 
 const correctWrong = computed<{
@@ -20,7 +20,7 @@ const correctWrong = computed<{
     wrong: number
 }>(() => props.mem.testRec
     .reduce((acc, rec) => {
-        if (props.memMode === 'both' || props.memMode === rec.mode) {
+        if (props.memMode === MemMode.Both || props.memMode === rec.mode as number as MemMode) {
             const { correct } = rec
             if (correct === 1) acc.correct ++
             else if (correct === 0) acc.wrong ++

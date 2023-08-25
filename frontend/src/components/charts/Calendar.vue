@@ -100,7 +100,7 @@ const currentValue = ref<T | undefined>()
 .calendar-day.current {
     outline: 2px solid #db8e3090;
 }
-.current-message {
+.current-message, .current-message * {
     font-size: smaller;
 }
 </style>

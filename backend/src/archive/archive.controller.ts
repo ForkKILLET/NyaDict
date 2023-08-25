@@ -8,7 +8,7 @@ export class ArchiveController {
   constructor(private readonly archiveService: ArchiveService) {}
 
   @Post('upload')
-  createArchive(
+  uploadArchive(
     @Body() upsertedArchiveDto: UpsertArchiveDto,
     @Req() req: FastifyRequest,
   ) {
@@ -21,7 +21,7 @@ export class ArchiveController {
   }
 
   @Get('mine/:id')
-  getArchiveById(@Req() req: FastifyRequest, @Param('id') id: string) {
+  getMyArchiveById(@Req() req: FastifyRequest, @Param('id') id: string) {
     return this.archiveService.findByIdPerUser(req.user.sub, id);
   }
 }

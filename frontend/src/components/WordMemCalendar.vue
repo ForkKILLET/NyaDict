@@ -1,20 +1,22 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import dayjs from 'dayjs'
-import type { IMemMode, IMemory } from '@type'
+
 import WordMemBrief from '@comp/WordMemBrief.vue'
 import Calendar from '@comp/charts/Calendar.vue'
-import NyaDate from './NyaDate.vue'
+import NyaDate from '@comp/NyaDate.vue'
+
+import { MemMode, type IMemory, type ITestRec } from '@type'
 
 const props = defineProps<{
     mem: IMemory
 }>()
 
-const calendarMode = ref<IMemMode>('both')
-const calendarModeInfo: Record<IMemMode, string> = {
-    disp: '書き方',
-    sub: '読み方',
-    both: '合計'
+const calendarMode = ref(MemMode.Both)
+const calendarModeInfo: Record<MemMode, string> = {
+    [MemMode.Disp]: '書き方',
+    [MemMode.Sub]: '読み方',
+    [MemMode.Both]: '合計'
 }
 
 type DayState = 'none' | 'idle' | 'correct' | 'wrong' | 'both' | 'half-correct'
@@ -31,26 +33,32 @@ const startDate = computed(() => {
 const data = computed(() => {
     const today = dayjs()
     const dates = []
-    const kinds: Record<number, DayState> = {}
+    const data: Record<number, { state: DayState, recs: ITestRec[] }> = {}
     for (
         let day = startDate.value;
         ! day.isAfter(today, 'd');
         day = day.add(1, 'd')
     ) {
         const date = + day.startOf('d')
-        kinds[date] = day.isBefore(createDay.value) ? 'none' : 'idle'
+        data[date] = { state: day.isBefore(createDay.value) ? 'none' : 'idle', recs: [] }
         dates.push(date)
     }
     for (const rec of props.mem.testRec) {
-        if (calendarMode.value !== 'both' && rec.mode !== calendarMode.value) continue
+        if (calendarMode.value !== MemMode.Both && calendarMode.value !== rec.mode as number as MemMode) continue
+
         const date = + dayjs(rec.time).startOf('d')
         const state = rec.correct === 1 ? 'correct' : rec.correct === 0 ? 'wrong' : 'half-correct'
-        if (kinds[date] === 'idle') kinds[date] = state
-        else if (kinds[date] !== state) kinds[date] = 'both'
+        const item = data[date]
+        item.recs.push(rec)
+        if (item.state === 'idle') item.state = state
+        else if (item.state !== state) item.state = 'both'
     }
     return dates.map(date => ({
-        kind: kinds[date],
-        value: date
+        kind: data[date].state,
+        value: {
+            date,
+            recs: data[date].recs
+        }
     }))
 })
 </script>
@@ -60,9 +68,9 @@ const data = computed(() => {
         <div class="calendar-modes">
             <span
                 v-for="modeInfo, mode in calendarModeInfo"
-                @click="calendarMode = mode"
+                @click="calendarMode = + mode"
                 class="badge"
-                :class="{ active: calendarMode === mode }"
+                :class="{ active: calendarMode === + mode }"
             >{{ modeInfo }}</span>
         </div>
         <WordMemBrief
@@ -85,8 +93,14 @@ const data = computed(() => {
             }"
         >
             <template #current="{ value }">
-                <NyaDate v-if="value" :date="value" />
-                <div v-else class="no-date"></div>
+                <template v-if="value">
+                    <NyaDate :date="value.date" />
+
+                    <template v-for="rec of value.recs">
+                        <span class="rec-id id" v-if="rec.testId !== undefined">{{ rec.testId }}</span>
+                    </template>
+                </template>
+                <div v-else class="no-current"></div>
             </template>
         </Calendar>
     </div>
@@ -97,7 +111,11 @@ const data = computed(() => {
     white-space: nowrap;
 }
 
-.no-date {
+.no-current {
     height: 1em;
+}
+
+.rec-id {
+    margin-left: .3em;
 }
 </style>

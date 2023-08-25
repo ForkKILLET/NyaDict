@@ -81,12 +81,13 @@ export type IMemory = {
 
 export type ICorrect = 0 | 0.5 | 1
 
-// @compress { "oldEasiness": "E" }
+// @compress { "oldEasiness": "E", "testId": "t" }
 export type ITestRec = {
     time: number
     correct: ICorrect
-    mode: ITestMode
+    mode: TestMode
     oldEasiness: number
+    testId?: number
 }
 
 export type IWordFilter = {
@@ -95,14 +96,18 @@ export type IWordFilter = {
     testCorrectLevel: number
 }
 
-export type ITestMode = 'disp' | 'sub'
+export enum TestMode {
+    Disp,
+    Sub,
+    Meaning
+}
 
 // @compress { "accessTime": "TA", "createTime": "TC", "currentIndex": "IC", "maxIndex": "IM", "lockTime": "TL" }
 export type ITest = {
     id: number
     createTime: number
     accessTime: number
-    mode: ITestMode
+    mode: TestMode
     wordIds: number[]
     currentIndex: number
     maxIndex: number
@@ -110,12 +115,19 @@ export type ITest = {
     recIds: number[]
     locked: boolean
     lockTime?: number
+    docIds?: number[]
 }
 
-export type IMemMode = 'disp' | 'sub' | 'both'
+export enum MemMode {
+    Disp,
+    Sub,
+    Both = -1
+}
+
+export type IArchiveVersion = '2' | '3' | string
 
 export type IArchiveInfo = {
-    version: '2' | string
+    version: IArchiveVersion
     remoteId?: string
     title: string
     accessTime: number

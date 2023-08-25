@@ -6,13 +6,13 @@ import {
   IMemory,
   ISentenceDocument,
   ITest,
-  ITestMode,
   ITestRec,
   IWord,
   IWordDocument,
   IWordGraph,
   IWordGraphEdge,
   LinkDocumentRelationship,
+  TestMode,
 } from '@type'
 
 export type IWord_Compress = {
@@ -190,21 +190,24 @@ export const compress_IMemory = {
 export type ITestRec_Compress = {
   T: number
   C: ICorrect
-  M: ITestMode
+  M: TestMode
   E: number
+  t?: number
 }
 export const compress_ITestRec = {
-  serialize: ({ time: T, correct: C, mode: M, oldEasiness: E }: ITestRec): ITestRec_Compress => ({
+  serialize: ({ time: T, correct: C, mode: M, oldEasiness: E, testId: t }: ITestRec): ITestRec_Compress => ({
     T,
     C,
     M,
     E,
+    t,
   }),
-  deserialize: ({ T: time, C: correct, M: mode, E: oldEasiness }: ITestRec_Compress): ITestRec => ({
+  deserialize: ({ T: time, C: correct, M: mode, E: oldEasiness, t: testId }: ITestRec_Compress): ITestRec => ({
     time,
     correct,
     mode,
     oldEasiness,
+    testId,
   })
 }
 
@@ -212,7 +215,7 @@ export type ITest_Compress = {
   I: number
   TC: number
   TA: number
-  M: ITestMode
+  M: TestMode
   W: number[]
   IC: number
   IM: number
@@ -220,9 +223,10 @@ export type ITest_Compress = {
   R: number[]
   L: boolean
   TL?: number
+  D?: number[]
 }
 export const compress_ITest = {
-  serialize: ({ id: I, createTime: TC, accessTime: TA, mode: M, wordIds: W, currentIndex: IC, maxIndex: IM, correctness: C, recIds: R, locked: L, lockTime: TL }: ITest): ITest_Compress => ({
+  serialize: ({ id: I, createTime: TC, accessTime: TA, mode: M, wordIds: W, currentIndex: IC, maxIndex: IM, correctness: C, recIds: R, locked: L, lockTime: TL, docIds: D }: ITest): ITest_Compress => ({
     I,
     TC,
     TA,
@@ -234,8 +238,9 @@ export const compress_ITest = {
     R,
     L,
     TL,
+    D,
   }),
-  deserialize: ({ I: id, TC: createTime, TA: accessTime, M: mode, W: wordIds, IC: currentIndex, IM: maxIndex, C: correctness, R: recIds, L: locked, TL: lockTime }: ITest_Compress): ITest => ({
+  deserialize: ({ I: id, TC: createTime, TA: accessTime, M: mode, W: wordIds, IC: currentIndex, IM: maxIndex, C: correctness, R: recIds, L: locked, TL: lockTime, D: docIds }: ITest_Compress): ITest => ({
     id,
     createTime,
     accessTime,
@@ -247,5 +252,7 @@ export const compress_ITest = {
     recIds,
     locked,
     lockTime,
+    docIds,
   })
 }
+

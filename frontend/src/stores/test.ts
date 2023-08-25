@@ -3,7 +3,7 @@ import { computed, ref, type Ref } from 'vue'
 import { useArchive } from '@store/archive'
 import { storeArray, type ArrayStore, storeRef } from '@util/storage'
 import { groupBy, sample } from '@util'
-import type { ITest, ITestMode, IWord } from '@type'
+import type { ITest, TestMode, IWord } from '@type'
 import type { Disposable } from '@util/disposable'
 import { type ITest_Compress, compress_ITest } from '@util/compress'
 
@@ -33,7 +33,7 @@ export const useTest = defineStore('test', () => {
     const create = (testableWords: IWord[], {
         mode, size, preferUntested
     }: {
-        mode: ITestMode
+        mode: TestMode
         size: number
         preferUntested?: boolean
     }) => {

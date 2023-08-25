@@ -1,3 +1,5 @@
+import type { IArchiveVersion } from '@type'
+
 export type IAuthPayload = {
     name: string
 }
@@ -29,7 +31,7 @@ export type ISignUpResp = NyaResp<{
 
 export type IRemoteArchiveInfo = {
     id: string
-    version: '2' | string
+    version: IArchiveVersion
     owner: string
     idPerUser: string
     title: string

@@ -10,7 +10,6 @@
 .id {
     color: #8358f9;
     font-family: serif;
-    font-size: 1rem;
 }
 .id::before {
     content: '#';
