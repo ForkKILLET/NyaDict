@@ -10,7 +10,7 @@ import WordMiniSearcher from '@comp/WordMiniSearcher.vue'
 import WordLinkRelationship from '@comp/WordLinkRelationship.vue'
 import LongPressButton from '@comp/LongPressButton.vue'
 
-import { addNoti } from '@/utils/notif'
+import { addNoti } from '@util/notif'
 
 import { DocumentKind } from '@type'
 import type { IWordDocument, IWord, ITemplateDocument, ILinkDocument } from '@type'

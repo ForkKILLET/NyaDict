@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { addNoti, removeNoti } from '@/utils/notif'
+import { addNoti, removeNoti } from '@util/notif'
 
 const props = defineProps<{
     delay: number

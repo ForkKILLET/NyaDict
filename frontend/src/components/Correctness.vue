@@ -31,7 +31,7 @@ const arc = getArc(2 * Math.PI * 8)
                     cx="10" cy="10" r="8"
                     fill="transparent" stroke="#eee" stroke-width="3"
                 ></circle>
-                <template v-if="total">
+                <g class="segments" v-if="total">
                     <circle
                         cx="10" cy="10" r="8"
                         fill="transparent" stroke="#95e35d" stroke-width="3"
@@ -47,7 +47,7 @@ const arc = getArc(2 * Math.PI * 8)
                         fill="transparent" stroke="#ec4e1e" stroke-width="3"
                         v-bind="arc(wrong / total)"
                     ></circle>
-                </template>
+                </g>
             </svg>
         </span>
         <span class="count" :class="{ hide: ! showCount }">

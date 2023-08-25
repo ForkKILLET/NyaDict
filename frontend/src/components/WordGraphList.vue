@@ -1,23 +1,23 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
+import { isSameTargetEdge } from '@store/words'
+import { dedup, intersect } from '@util'
+
 import WordLink from '@comp/WordLink.vue'
 
-import { dedup, intersect } from '@/utils'
-
-import type { IWordGraph, IWordGraphEdge } from '@type'
+import type { IWordGraph } from '@type'
 
 const props = defineProps<{
     graph: IWordGraph
 }>()
 
-const isSameTarget = (a: IWordGraphEdge, b: IWordGraphEdge) => a.targetWord === b.targetWord
 
 const graph = computed(() => {
     const [ edgesInAndOut, edgesIn, edgesOut ] = intersect(
-        dedup(props.graph.edgesIn, isSameTarget),
-        dedup(props.graph.edgesOut, isSameTarget),
-        isSameTarget
+        dedup(props.graph.edgesIn, isSameTargetEdge),
+        dedup(props.graph.edgesOut, isSameTargetEdge),
+        isSameTargetEdge
     )
     return { edgesInAndOut, edgesIn, edgesOut }
 })

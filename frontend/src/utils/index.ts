@@ -71,8 +71,6 @@ export const dedup = <T>(items: T[], comp: IsEqual<T>): T[] => (
     items.filter((a, index) => ! items.slice(0, index).some(b => comp(a, b)))
 )
 
-Object.assign(window, { dedup, intersect, curry })
-
 export type Grade = 'top' | 'high' | 'medium' | 'low' | 'none'
 export const gradeColors: Record<Grade, string> = {
     top: '#39d353',
@@ -99,3 +97,18 @@ export const downloadURL = (url: string, filename: string) => {
 }
 
 export const randomColor = () => '#' + ('000000' + Math.random().toString(16).replace('.', '')).slice(- 6)
+
+export type Point = {
+    readonly clientX: number
+    readonly clientY: number
+}
+
+export const getEventPoint = (event: MouseEvent | TouchEvent): Point => {
+    if (! window.TouchEvent) return event as MouseEvent
+    return event instanceof TouchEvent
+        ? [
+            ...event.targetTouches,
+            ...event.changedTouches,
+        ][0]
+        : event
+}

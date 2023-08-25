@@ -1,7 +1,7 @@
 {
   "name": "nyadict-frontend",
   "private": true,
-  "version": "0.14.4",
+  "version": "0.15.0",
   "type": "module",
   "scripts": {
     "dev": "vite --port 1635",
@@ -17,6 +17,7 @@
     "@vueuse/components": "^10.3.0",
     "@vueuse/core": "^10.3.0",
     "axios": "^1.4.0",
+    "d3-force": "^3.0.0",
     "d3-interpolate": "^3.0.1",
     "dayjs": "^1.11.9",
     "json5": "^2.2.3",
@@ -28,6 +29,7 @@
     "wanakana": "^5.1.0"
   },
   "devDependencies": {
+    "@types/d3-force": "^3.0.5",
     "@types/d3-interpolate": "^3.0.1",
     "@types/wanakana": "^4.0.3",
     "@vitejs/plugin-vue": "^4.2.3",

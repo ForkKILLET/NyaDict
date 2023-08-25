@@ -4,8 +4,8 @@ import { useArchive } from '@store/archive'
 import { storeArray, type ArrayStore, storeRef } from '@util/storage'
 import { groupBy, sample } from '@util'
 import type { ITest, ITestMode, IWord } from '@type'
-import type { Disposable } from '@/utils/disposable'
-import { type ITest_Compress, compress_ITest } from '@/utils/compress'
+import type { Disposable } from '@util/disposable'
+import { type ITest_Compress, compress_ITest } from '@util/compress'
 
 declare module '@type' {
     interface IArchiveData {

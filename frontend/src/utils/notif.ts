@@ -1,6 +1,6 @@
 import { reactive, type CSSProperties } from 'vue'
 import type { NyaResp } from '@type/network'
-import type { DistributiveOmit } from '@/types/tool'
+import type { DistributiveOmit } from '@type/tool'
 
 export type NotiType = 'error' | 'success' | 'info' | 'pending' | 'charge'
 

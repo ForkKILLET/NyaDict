@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { interpolateRgb } from 'd3-interpolate'
+import * as d3 from 'd3-interpolate'
 import dayjs from 'dayjs'
 import { getCorrectnessCount, useWord } from '@store/words'
 import {
     useTest,
     getRelativeTestTime, relativeTestTimeColors, type RelativeTestTime
 } from '@store/test'
-import { gradeColors } from '@/utils'
-import { getDecimalHour } from '@/utils/date'
+import { gradeColors } from '@util'
+import { getDecimalHour } from '@util/date'
 import NyaDate from '@comp/NyaDate.vue'
 import StatisticsItem from '@comp/StatisticsItem.vue'
 import Calendar, { getCalendarData } from '@comp/charts/Calendar.vue'
@@ -17,7 +17,6 @@ import { ITest } from '@type'
 
 const wordStore = useWord()
 const testStore = useTest()
-
 
 const data = {
     createWord: () => {
@@ -45,7 +44,7 @@ const data = {
         const minEasiness = + data.at(-1)!.name
         const deltaEasiness = maxEasiness - minEasiness
 
-        const interpolate = interpolateRgb('#000', '#95e35d')
+        const interpolate = d3.interpolateRgb('#000', '#95e35d')
         data.forEach(item => {
             item.color = interpolate(+ item.name / deltaEasiness)
         })

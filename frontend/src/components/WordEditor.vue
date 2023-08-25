@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { isHiragana } from 'wanakana'
-import { addNoti } from '@/utils/notif'
+import { addNoti } from '@util/notif'
 import type { IWord } from '@type'
 
 const props = defineProps<{

@@ -3,9 +3,9 @@ import {
     type WritableComputedRef, type UnwrapRef
 } from 'vue'
 import { defineStore } from 'pinia'
-import { storeRef, storeReactive } from '@/utils/storage'
-import { kDispose } from '@/utils/disposable'
-import type { IArchiveInfo, IArchiveData, IPortableArchive } from '@/types'
+import { storeRef, storeReactive } from '@util/storage'
+import { kDispose } from '@util/disposable'
+import type { IArchiveInfo, IArchiveData, IPortableArchive } from '@type'
 
 export const ARCHIVE_VERSION = '2'
 

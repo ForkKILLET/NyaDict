@@ -1,6 +1,6 @@
 <script lang="ts">
 import dayjs from 'dayjs'
-import { gradeBy } from '@/utils'
+import { gradeBy } from '@util'
 
 export const getCalendarData = <T>(source: T[], getDate: (item: T) => number) => {
     const today = dayjs()

@@ -9,7 +9,7 @@ defineProps<{
 }>()
 
 const emit = defineEmits<{
-    (event: 'goto-word', word: IWord): void
+    (event: 'goto-word', wordId: number): void
 }>()
 </script>
 
@@ -17,7 +17,7 @@ const emit = defineEmits<{
     <div class="word-entry">
         <Word :word="word" :class="{ barber: active }">
             <fa-icon
-                @click="emit('goto-word', word)"
+                @click="emit('goto-word', word.id)"
                 icon="arrow-circle-right" class="button"
             />
         </Word>

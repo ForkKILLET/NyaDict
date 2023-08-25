@@ -4,8 +4,8 @@ import { vOnClickOutside } from '@vueuse/components'
 
 import { getHiragana, useWord } from '@store/words'
 
-import { filterN } from '@/utils'
-import { strictToHiragana } from '@/utils/kana'
+import { filterN } from '@util'
+import { strictToHiragana } from '@util/kana'
 
 import type { IWord } from '@type'
 

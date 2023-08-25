@@ -10,7 +10,7 @@ import {
 import { useTest } from '@store/test'
 
 import { storeRef } from '@util/storage'
-import { strictToHiragana } from '@/utils/kana'
+import { strictToHiragana } from '@util/kana'
 import { isPortrait } from '@util/media'
 
 import WordEditor from '@comp/WordEditor.vue'
@@ -144,8 +144,8 @@ const contentEl = ref<HTMLDivElement>()
 const router = useRouter()
 const route = useRoute()
 
-const gotoWord = (word: IWord) => {
-    router.replace(`/words?id=${word.id}`)
+const gotoWord = (wordId: number) => {
+    router.replace(`/words?id=${wordId}`)
     if (isPortrait.value) setTimeout(() => contentEl.value?.scrollBy({
         left: window.innerWidth,
         behavior: 'smooth'
@@ -223,6 +223,7 @@ watch(route, () => {
         <WordDetail
             v-if="currentWord"
             :word="currentWord"
+            @goto-word="gotoWord"
             class="right scroll-y"
         />
     </div>

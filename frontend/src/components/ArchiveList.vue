@@ -8,7 +8,7 @@ import { useArchive, ARCHIVE_VERSION } from '@store/archive'
 
 import { downloadURL } from '@util'
 import { api } from '@util/api'
-import { json5Stringify, json5TryParse } from '@/utils/storage'
+import { json5Stringify, json5TryParse } from '@util/storage'
 import { addNoti, handleResp } from '@util/notif'
 
 import ArchiveInfo from '@comp/ArchiveInfo.vue'

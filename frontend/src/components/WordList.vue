@@ -9,7 +9,7 @@ defineProps<{
 }>()
 
 const emit = defineEmits<{
-    (event: 'goto-word', word: IWord): void
+    (event: 'goto-word', wordId: number): void
 }>()
 </script>
 
@@ -23,7 +23,7 @@ const emit = defineEmits<{
                 :key="word.id"
                 :word="word"
                 :active="activeWordId === word.id"
-                @goto-word="(word: IWord) => emit('goto-word', word)"
+                @goto-word="wordId => emit('goto-word', wordId)"
             />
         </template>
     </NyaList>

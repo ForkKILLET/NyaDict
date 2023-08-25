@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import { useWord } from '@store/words'
 import { useTest } from '@store/test'
 import NyaCheckbox from '@comp/NyaCheckbox.vue'
-import { addNoti } from '@/utils/notif'
+import { addNoti } from '@util/notif'
 import type { ITestMode } from '@type'
 
 const router = useRouter()

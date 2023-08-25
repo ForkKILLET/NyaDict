@@ -2,10 +2,12 @@ import { ref, type Ref } from 'vue'
 import { defineStore } from 'pinia' 
 import { toHiragana, toRomaji, isHiragana} from 'wanakana'
 import { ARCHIVE_VERSION, useArchive } from '@store/archive'
+
 import { randomItem } from '@util'
-import { IWord_Compress, compress_IWord } from '@/utils/compress'
-import { storeRef, storeArray, storeRefReactive, type ArrayStore } from '@/utils/storage'
-import type { Disposable } from '@/utils/disposable'
+import { IWord_Compress, compress_IWord } from '@util/compress'
+import { storeRef, storeArray, storeRefReactive, type ArrayStore } from '@util/storage'
+import type { Disposable } from '@util/disposable'
+
 import type {
     IMemory, ITestRec, IWord, ICorrect,
     IWordDocumentWithoutId, IWordGraph, IWordDocument, IWordGraphEdge
@@ -195,7 +197,7 @@ export const useWord = defineStore('words', () => {
     const randomWord = () => randomItem(words.value)
 
     return {
-        words, filter,
+        words, filter, getWordDict,
         add, withdraw, restore,
         newlyAddedDocId, addDoc,
         updateGraphs, updateGraphByTemplate,
@@ -273,6 +275,8 @@ export const emptyGraph = (): IWordGraph => ({ edgesIn: [], edgesOut: [] })
 export const isSameEdge = (e1: IWordGraphEdge, e2: IWordGraphEdge) => (
     e1.sourceDoc === e2.sourceDoc && e1.targetWord === e2.targetWord
 )
+
+export const isSameTargetEdge = (a: IWordGraphEdge, b: IWordGraphEdge) => a.targetWord === b.targetWord
 
 export const newEdge = (sourceDoc: number, targetWord: number): IWordGraphEdge => ({
     sourceDoc, targetWord

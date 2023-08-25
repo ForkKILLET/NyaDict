@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import WordLink from '@comp/WordLink.vue'
-import { getTemplateSegements } from '@/stores/words'
+import { getTemplateSegements } from '@store/words'
 import type { IWord } from '@type'
 
 const props = defineProps<{

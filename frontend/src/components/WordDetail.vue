@@ -13,8 +13,7 @@ import WordDocumentAdder from '@comp/WordDocumentAdder.vue'
 import WordGraphList from '@comp/WordGraphList.vue'
 
 import type { IWord, IWordDocumentWithoutId } from '@type'
-
-const wordStore = useWord()
+import WordGraphChart from './WordGraphChart.vue'
 
 const props = withDefaults(defineProps<{
     word: IWord
@@ -22,6 +21,12 @@ const props = withDefaults(defineProps<{
 }>(), {
     zenMode: true
 })
+
+const emit = defineEmits<{
+    (event: 'goto-word', wordId: number): void
+}>()
+
+const wordStore = useWord()
 
 const withdrawed = computed(() => ! wordStore.getById(props.word.id))
 
@@ -110,7 +115,14 @@ window.addEventListener('resize', () => {
                 />
             </template>
             <template #link>
-                <WordGraphList v-if="word.graph" :graph="word.graph" />
+                <WordGraphList
+                    v-if="word.graph"
+                    :graph="word.graph"
+                />
+                <WordGraphChart
+                    :word="word"
+                    @goto-word="wordId => emit('goto-word', wordId)"
+                />
             </template>
         </NyaTab>
     </div>
@@ -150,5 +162,10 @@ window.addEventListener('resize', () => {
 
 .nya-tab[data-tab=link] > div > svg {
     margin-right: .5em;
+}
+
+.word-graph-chart {
+    max-width: 100vw;
+    height: 50vh;
 }
 </style>
