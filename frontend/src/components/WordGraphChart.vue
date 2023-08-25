@@ -63,14 +63,14 @@ const graph = computed(() => {
         )
         
         const visitEdge = (direction: 'in' | 'out' | 'twoway') => ({ targetWord }: IWordGraphEdge) => {
-            if (! visitedNodes[targetWord]) {
-                const nextNode = visit(wordDict[targetWord])
-                edges.push({
-                    source: direction === 'in' ? nextNode : node,
-                    target: direction === 'in' ? node : nextNode,
-                    twoWay: direction === 'twoway'
-                })
-            }
+            const nextNode = visitedNodes[targetWord]
+                ? nodes.find(node => node.word.id === targetWord)!
+                : visit(wordDict[targetWord])
+            edges.push({
+                source: direction === 'in' ? nextNode : node,
+                target: direction === 'in' ? node : nextNode,
+                twoWay: direction === 'twoway'
+            })
         }
 
         edgesIn.forEach(visitEdge('in'))
@@ -100,8 +100,8 @@ const simulation = d3
     .forceSimulation(graph.value.nodes)
     .force('link', forceLink)
     .force('charge', d3.forceManyBody().strength(- 200))
-    .force('x', d3.forceX().strength(.05))
-    .force('y', d3.forceY().strength(.05))
+    .force('x', d3.forceX().strength(.01))
+    .force('y', d3.forceY().strength(.01))
     .stop()
 
 const ticks = 1000
