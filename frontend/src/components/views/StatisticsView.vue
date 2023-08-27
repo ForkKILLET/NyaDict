@@ -46,7 +46,7 @@ const data = {
 
         const interpolate = d3.interpolateRgb('#000', '#95e35d')
         data.forEach(item => {
-            item.color = interpolate(+ item.name / deltaEasiness)
+            item.color = interpolate((+ item.name / deltaEasiness) ** 0.8)
         })
         return { data }
     },
