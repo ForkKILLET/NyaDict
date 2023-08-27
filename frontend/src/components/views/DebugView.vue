@@ -40,7 +40,7 @@ const genGraph = () => {
         >noti</button>
         <LongPressButton
             icon="eye"
-            color="#000"
+            color="var(--color-fg)"
             desc="test"
             :delay="2"
         />
@@ -57,8 +57,8 @@ const genGraph = () => {
 <style scoped>
 textarea {
     border: none;
-    background-color: #000;
-    color: #fff;
+    background-color: var(--color-fg);
+    color: var(--color-bg);
     width: 100%;
     height: 50vh;
     margin-bottom: 1em;

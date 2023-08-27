@@ -17,7 +17,7 @@ const onSubmit = () => {
             <h2>{{ title }}</h2>
             <slot></slot>
             <div>
-                <button @click="onSubmit" class="card inline light">
+                <button @click="onSubmit" class="card square inline light">
                     <fa-icon
                         :icon="pending ? 'spinner' : 'arrow-right'"
                         :spin="pending"
@@ -67,11 +67,5 @@ h2 {
 
 button {
     line-height: 0;
-}
-
-button > svg.button {
-    width: 1em;
-    height: 1em;
-    padding: 0;
 }
 </style>

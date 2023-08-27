@@ -28,7 +28,7 @@ const wordStore = useWord()
     color: transparent;
     user-select: none;
     text-decoration-style: solid;
-    text-decoration-color: #db8e30;
+    text-decoration-color: var(--color-ui);
     pointer-events: none;
 }
 </style>

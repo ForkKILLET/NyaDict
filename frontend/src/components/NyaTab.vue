@@ -28,17 +28,18 @@ const activeTabName = ref<string>(props.tabs[0].name)
 <style scoped>
 .nya-tab-header {
     margin-bottom: 1em;
+    user-select: none;
 }
 
 .nya-tab-header > span.active {
-    color: #db8e30;
-    background: #f3e4d8;
+    color: var(--color-ui);
+    background: var(--color-ui-bg-alt);
 }
 
 .nya-tab-header > span {
     padding: 0 .5em;
     border-radius: .3em .3em 0 0;
-    border-bottom: 2px solid #db8e30;
+    border-bottom: 2px solid var(--color-ui);
     font-size: 1.3em;
     font-weight: bold;
     transition: .3s color;
@@ -46,6 +47,6 @@ const activeTabName = ref<string>(props.tabs[0].name)
 }
 
 .nya-tab-header > span:hover {
-    color: #db8e30;
+    color: var(--color-ui);
 }
 </style>

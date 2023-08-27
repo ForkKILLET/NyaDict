@@ -20,7 +20,10 @@ const typeIcons: Record<Exclude<NotiType, 'charge'>, string> = {
 <template>
     <div
         class="inline noti"
-        :style="{ '--duration': noti.duration + 'ms', ...noti.style }"
+        :style="{
+            '--duration': noti.duration ? noti.duration + 'ms' : undefined,
+            ...noti.style
+        }"
         :class="noti.type"
     >
         <fa-icon
@@ -44,8 +47,8 @@ const typeIcons: Record<Exclude<NotiType, 'charge'>, string> = {
     padding: .5em 1em;
     margin: .5em 0;
     border-radius: .8rem;
-    background-color: #fff;
-    box-shadow: 0 0 .4em #00000016;
+    background-color: var(--color-bg);
+    box-shadow: 0 0 .4em var(--color-shad-bg);
     transition: .5s opacity;
     cursor: pointer;
     overflow: hidden;
@@ -82,7 +85,7 @@ const typeIcons: Record<Exclude<NotiType, 'charge'>, string> = {
 
 .noti-lasting-inner {
     height: 100%;
-    background-color: #8358f9;
+    background-color: var(--color-order);
     animation: var(--duration) linear forwards noti-progress;
 }
 
@@ -94,23 +97,23 @@ const typeIcons: Record<Exclude<NotiType, 'charge'>, string> = {
     margin-right: .5em;
 }
 .info .noti-type {
-    color: #8358f9;
+    color: var(--color-order);
 }
 .error .noti-type {
-    color: #ec4e1e;
+    color: var(--color-wrong);
 }
 .success .noti-type {
-    color: #95e35d;
+    color: var(--color-correct);
 }
 
 .charge {
     width: 10em;
     max-width: 80%;
-    color: #fff;
-    background-color: #000;
+    color: var(--color-bg);
+    background-color: var(--color-fg);
 
     background-repeat: no-repeat;
-    background-image: linear-gradient(#8358f9 0%, #8358f9 100%);
+    background-image: linear-gradient(var(--color-order) 0%, var(--color-order) 100%);
     animation:
         var(--duration) linear forwards noti-charge,
         .3s hop var(--duration);

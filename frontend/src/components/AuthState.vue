@@ -45,6 +45,6 @@ const signOut = () => {
 }
 
 .username {
-    color: #db8e30;
+    color: var(--color-ui);
 }
 </style>

@@ -46,7 +46,7 @@ const noInfoReasons: Record<INoInfoReason, string> = {
                     <LongPressButton
                         @long-press="emit('upload-here')"
                         icon="file-import"
-                        color="#000"
+                        color="var(--color-fg)"
                         desc="アップロード"
                         :delay=".5"
                     />
@@ -110,7 +110,7 @@ const noInfoReasons: Record<INoInfoReason, string> = {
 .archive-info.message {
     justify-content: space-around;
     align-items: center;
-    color: #db8e30;
+    color: var(--color-ui);
 }
 
 .archive-info-content {
@@ -134,13 +134,13 @@ const noInfoReasons: Record<INoInfoReason, string> = {
     flex: 1;
     justify-content: space-between;
     align-items: center;
-    color: #db8e30;
+    color: var(--color-ui);
     font-weight: bold;
 }
 
 .archive-info-title > .nya-confirm-input:deep(> input) {
     width: 100%;
-    color: #db8e30;
+    color: var(--color-ui);
     font-weight: bold;
     font-family: inherit;
 }
@@ -172,7 +172,7 @@ const noInfoReasons: Record<INoInfoReason, string> = {
 }
 
 .archive-labels:deep(> div) {
-    background-color: #f9e9dc;
+    background-color: var(--color-ui-bg-alt);
     padding: .2em .5em;
     border-radius: 0 .5em .5em 0;
     box-shadow: 0 0 .4em #faad704d;

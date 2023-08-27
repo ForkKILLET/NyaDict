@@ -44,9 +44,9 @@ const data = {
         const minEasiness = + data.at(-1)!.name
         const deltaEasiness = maxEasiness - minEasiness
 
-        const interpolate = d3.interpolateRgb('#000', '#95e35d')
+        const interpolate = d3.interpolateRgb('#000', 'var(--color-correct)')
         data.forEach(item => {
-            item.color = interpolate((+ item.name / deltaEasiness) ** 0.8)
+            item.color = interpolate((+ item.name / deltaEasiness) ** 0.6)
         })
         return { data }
     },
@@ -88,8 +88,8 @@ const data = {
                     name: '',
                     startPos: getDecimalHour(dayjs(test.createTime)) / 24,
                     endPos: getDecimalHour(dayjs(test.lockTime)) / 24,
-                    startColor: '#ec4e1e',
-                    endColor: '#8358f9',
+                    startColor: 'var(--color-wrong)',
+                    endColor: 'var(--color-order)',
                 },
                 point: {
                     pos: 1 - acc,

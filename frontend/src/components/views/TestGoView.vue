@@ -59,7 +59,7 @@ const nextWord = (correct: ICorrect) => {
         content: newEasiness.toFixed(2),
         type: 'info',
         style: {
-            color: correct === 1 ? '#95e35d' : '#ec4e1e'
+            color: correct === 1 ? 'var(--color-correct)' : 'var(--color-wrong)'
         },
         duration: 1 * 1000
     })
@@ -219,12 +219,12 @@ const endTest = () => {
 .test-progress-bar {
     width: 100vw;
     height: 10px;
-    background-color: #eee;
+    background-color: var(--color-chart-bg);
 }
 
 .test-progress-inner {
     height: 10px;
-    background-color: #8358f9;
+    background-color: var(--color-order);
 }
 
 .answer :deep(.word-disp), .answer :deep(.word-sub) {

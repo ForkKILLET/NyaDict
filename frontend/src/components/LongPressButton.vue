@@ -57,7 +57,7 @@ const onLongPressEnd = () => {
 <style scoped>
 @keyframes longpress {
     to {
-        color: #fff;
+        color: var(--color-bg);
         background-color: var(--color);
     }
 }
@@ -69,7 +69,7 @@ const onLongPressEnd = () => {
     height: 1rem;
     line-height: 1;
     color: var(--color);
-    background-color: #f2f2f2a0;
+    background-color: var(--color-transparent);
     border-radius: 1rem;
     cursor: pointer;
 }

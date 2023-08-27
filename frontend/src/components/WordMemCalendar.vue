@@ -87,10 +87,10 @@ const data = computed(() => {
             :data="data"
             :colors="{
                 idle: '#aaa',
-                correct: '#95e35d',
-                'half-correct': '#db8e30',
-                wrong: '#ec4e1e',
-                both: 'linear-gradient(-45deg, #95e35d 50%, #ec4e1e 50%)'
+                correct: 'var(--color-correct)',
+                'half-correct': 'var(--color-half-correct)',
+                wrong: 'var(--color-wrong)',
+                both: 'linear-gradient(-45deg, var(--color-correct) 50%, var(--color-wrong) 50%)'
             }"
         >
             <template #current="{ value }">

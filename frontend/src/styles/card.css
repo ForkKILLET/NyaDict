@@ -1,15 +1,15 @@
 .card {
     box-sizing: border-box;
     padding: .8em;
-    background-color: #fffaf6;
+    background-color: var(--color-ui-bg);
     border-radius: .8em;
     box-shadow: 0 0 .4em #faad704d;
 }
 .card.light {
-    background-color: #fff;
+    background-color: var(--color-bg);
 }
 .card.deep {
-    background-color: #ffe0c8;
+    background-color: var(--color-ui-bg-deep);
     box-shadow: 0 0 .4em #dbc7b84d;
 }
 
@@ -25,17 +25,17 @@ input.card, .input.card {
     padding: .5em .8em;
     border-radius: .8em;
 
-    color: #db8e30;
-    background-color: #fffaf6;
+    color: var(--color-ui);
+    background-color: var(--color-ui-bg);
     box-shadow: 0 0 .4em #faad704d;
     transition: .5s color, .5s background-color, .5s box-shadow;
 }
 input.card:focus, .input.card:focus-within {
-    background-color: #fff;
+    background-color: var(--color-bg);
     box-shadow: 0 0 .4em #faae70ef;
 }
 input.card.up, .input.card.up {
-    background-color: #fff;
+    background-color: var(--color-bg);
 }
 
 .input.card input {
@@ -45,13 +45,13 @@ input.card.up, .input.card.up {
 button.card, .checkbox.card {
     user-select: none;
     cursor: pointer;
-    color: #db8e30;
+    color: var(--color-ui);
     transition: .5s color, .5s background-color, .5s box-shadow;
 }
 button.card:enabled:hover, button.card:enabled:active,
 .card.checkbox:hover {
-    color: #f7b96e;
-    background-color: #fff;
+    color: var(--color-ui-act);
+    background-color: var(--color-bg);
     box-shadow: 0 0 .4em #faae70ef;
 }
 button.card:disabled {
@@ -61,15 +61,24 @@ button.card:disabled > * {
     color: #aaa;
 }
 
+button.card.square {
+    line-height: 0;
+}
+button.card.square > svg {
+    width: 1em;
+    height: 1em;
+    padding: 0;
+}
+
 .card.active,
 .checkbox-label > input:enabled:checked + .card.checkbox {
-    color: #fff;
-    background-color: #db8e30;
+    color: var(--color-bg);
+    background-color: var(--color-ui);
 }
 button.card.active:hover,
 .checkbox-label > input:enabled:checked + .card.checkbox:hover {
-    background-color: #f7b96e;
-    color: #fff;
+    background-color: var(--color-ui-act);
+    color: var(--color-bg);
 }
 
 .inline.card {

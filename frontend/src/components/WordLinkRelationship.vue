@@ -56,8 +56,8 @@ const showRels = ref(false)
     line-height: 1;
     text-align: center;
     user-select: none;
-    color: #db8e30;
-    background-color: #f3e4d8;
+    color: var(--color-ui);
+    background-color: var(--color-ui-bg-alt);
 }
 
 .link-doc-rel.outter {

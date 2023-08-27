@@ -1,5 +1,6 @@
 <script lang="ts">
 import dayjs from 'dayjs'
+
 import { gradeBy } from '@util'
 
 export const getCalendarData = <T>(source: T[], getDate: (item: T) => number) => {
@@ -69,7 +70,7 @@ const currentValue = ref<T | undefined>()
                 v-for="{ kind, value }, index of data"
                 class="calendar-day"
                 @mouseover="currentIndex = index; currentValue = value"
-                :style="{ background: colors[kind] ?? '#eee' }"
+                :style="{ background: colors[kind] ?? 'var(--color-correct)' }"
                 :class="{ current: index === currentIndex }"
             ></div>
         </div>

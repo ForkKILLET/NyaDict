@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 
+import { useTheme } from '@store/theme'
+
 import Topbar from '@comp/Topbar.vue'
 import Notifications from '@comp/notifications/Notifications.vue'
 
 const route = useRoute()
-
+useTheme()
 </script>
 
 <template>

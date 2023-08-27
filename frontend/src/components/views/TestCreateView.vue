@@ -70,7 +70,7 @@ const createTest = () => {
         <div>
             <p>テスト・モード</p>
             <button v-for="info, mode in testModeInfo"
-                class="inline w1 card test-mode"
+                class="inline w1 card"
                 :class="{ active: testMode === + mode }"
                 @click="testMode = + mode"
             >

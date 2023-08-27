@@ -85,7 +85,7 @@ const addDoc = (kind: DocumentKind) => {
     left: -.5em;
     z-index: 1;
 
-    background-color: white;
+    background-color: var(--color-bg);
     border-radius: .3em;
 }
 

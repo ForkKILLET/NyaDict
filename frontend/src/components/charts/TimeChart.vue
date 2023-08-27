@@ -105,11 +105,11 @@ const currentValue = ref<T | undefined>()
     width: .1em;
     height: 100%;
     padding: 1em 0;
-    background-color: #000;
+    background-color: var(--color-fg);
     transition: .3s background-color;
 }
 
 .bar.current > .axis {
-    background-color: #f4a23e;
+    background-color: var(--color-ui-act);
 }
 </style>

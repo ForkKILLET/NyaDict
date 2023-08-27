@@ -116,11 +116,11 @@ input.card.light {
     padding: 0 .3em;
     border-radius: .5em;
     line-height: 1.5;
-    color: #db8e30;
+    color: var(--color-ui);
     transition: .3s background-color;
 }
 
 .word-mini-item:hover, .word-mini-item.active {
-    background-color: #fffaf6;
+    background-color: var(--color-ui-bg);
 }
 </style>

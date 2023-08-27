@@ -94,14 +94,12 @@ const { width, height } = useElementSize(root)
 const forceLink = d3
     .forceLink<ISimulationNode, IEdge>(graph.value.edges)
     .id(node => node.word.id)
-    .distance(150)
+    .distance(130)
 
 const simulation = d3
     .forceSimulation(graph.value.nodes)
     .force('link', forceLink)
     .force('charge', d3.forceManyBody().strength(- 200))
-    .force('x', d3.forceX().strength(.01))
-    .force('y', d3.forceY().strength(.01))
     .stop()
 
 const ticks = 1000
@@ -236,15 +234,15 @@ useEventListener('touchend', onDragEnd)
 }
 
 .node.center circle {
-    fill: #db8e30;
+    fill: var(--color-ui);
 }
 
 .node:hover circle {
-    stroke: #db8e30;
+    stroke: var(--color-ui);
 }
 
 .edge :deep(line) {
     stroke-width: 2;
-    stroke: #000;
+    stroke: var(--color-fg);
 }
 </style>

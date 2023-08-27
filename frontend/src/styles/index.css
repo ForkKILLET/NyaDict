@@ -10,9 +10,9 @@
     -moz-osx-font-smoothing: grayscale;
     -webkit-text-size-adjust: 100%;
 
-    color-scheme: light;
-    color: #213547;
-    background-color: #ffffff;
+    color-scheme: light dark;
+    color: var(--color-fg);
+    background-color: var(--color-bg);
 
     --ja-serif: 'Noto Serif CJK JP', serif;
 }
@@ -36,17 +36,17 @@ a {
     display: inline-block;
     user-select: none;
     font-weight: 500;
-    color: #db8e30;
+    color: var(--color-ui);
     text-decoration: inherit;
     transition: .3s color;
 }
 a:not(.no-animation):hover {
-    color: #f4a23e;
+    color: var(--color-ui-act);
     animation: .3s hop;
 }
 
 em {
-    color: #db8e30;
+    color: var(--color-ui);
 }
 
 body {
@@ -66,7 +66,7 @@ h1 {
 
 h2 {
     font-size: 1.6em;
-    color: #db8e30;
+    color: var(--color-ui);
 }
 h2::before {
     content: '♯ ';
@@ -87,7 +87,7 @@ input {
 
 svg.button {
     font-size: 1rem;
-    color: #db8e30;
+    color: var(--color-ui);
     padding: 0 .4rem;
     transition: .3s color;
 }

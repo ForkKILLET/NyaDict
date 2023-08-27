@@ -25,26 +25,25 @@ const arc = getArc(2 * Math.PI * 8)
             <svg width="1em" height="1em" viewBox="0 0 20 20">
                 <circle
                     cx="10" cy="10" r="7"
-                    fill="transparent"
                 ></circle>
                 <circle
                     cx="10" cy="10" r="8"
-                    fill="transparent" stroke="#eee" stroke-width="3"
+                    stroke="#eee" stroke-width="3"
                 ></circle>
                 <g class="segments" v-if="total">
                     <circle
                         cx="10" cy="10" r="8"
-                        fill="transparent" stroke="#95e35d" stroke-width="3"
+                        stroke="var(--color-correct)" stroke-width="3"
                         v-bind="arc(correct / total)"
                     ></circle>
                     <circle
                         cx="10" cy="10" r="8"
-                        fill="transparent" stroke="#db8e30" stroke-width="3"
+                        stroke="var(--color-half-correct)" stroke-width="3"
                         v-bind="arc(halfCorrect / total)"
                     ></circle>
                     <circle
                         cx="10" cy="10" r="8"
-                        fill="transparent" stroke="#ec4e1e" stroke-width="3"
+                        stroke="var(--color-wrong)" stroke-width="3"
                         v-bind="arc(wrong / total)"
                     ></circle>
                 </g>
@@ -101,6 +100,10 @@ const arc = getArc(2 * Math.PI * 8)
     vertical-align: baseline;
 }
 
+.ring circle {
+    fill: transparent;
+}
+
 .count.hide {
     display: none;
     position: absolute;
@@ -109,7 +112,7 @@ const arc = getArc(2 * Math.PI * 8)
 
     padding: .2em;
     border-radius: .5em;
-    background: #fff;
+    background: var(--color-bg);
     box-shadow: 0 0 .4em #faad704d;
 }
 

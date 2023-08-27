@@ -240,14 +240,14 @@ watch(route, ({ path }) => {
                     <LongPressButton
                         @long-press="upload(id)"
                         icon="cloud-arrow-up"
-                        color="#000"
+                        color="var(--color-fg)"
                         desc="アップロード"
                         :delay=".5"
                     />
                     <LongPressButton
                         @long-press="withdraw(id)"
                         icon="trash"
-                        color="#ec4e1e"
+                        color="var(--color-wrong)"
                         desc="削除"
                         :delay="1.5"
                     />
@@ -264,7 +264,7 @@ watch(route, ({ path }) => {
                         <LongPressButton 
                             @long-press="download(id)"
                             icon="cloud-arrow-down"
-                            color="#000"
+                            color="var(--color-fg)"
                             desc="ダウンロード"
                             :delay=".5"
                         />

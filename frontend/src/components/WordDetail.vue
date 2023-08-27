@@ -71,7 +71,7 @@ window.addEventListener('resize', () => {
                 v-if="! withdrawed"
                 @long-press="wordStore.withdraw(word.id)"
                 icon="trash"
-                color="#ec4e1e"
+                color="var(--color-wrong)"
                 desc="削除"
                 :delay="1.5"
             />
@@ -79,7 +79,7 @@ window.addEventListener('resize', () => {
                 v-else
                 @long-press="wordStore.restore(word)"
                 icon="trash-restore"
-                color="#db8e30"
+                color="var(--color-ui)"
                 desc="削除取り消し"
                 :delay=".5"
             />

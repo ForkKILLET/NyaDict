@@ -54,8 +54,8 @@ const a = computed(() => {
 
 <style scoped>
 .arrow path {
-    fill: #000;
+    fill: var(--color-fg);
     stroke-width: 2;
-    stroke: #000;
+    stroke: var(--color-fg);
 }
 </style>

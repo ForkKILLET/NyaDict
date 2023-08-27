@@ -184,7 +184,7 @@ const backlink = (doc: ILinkDocument) => {
                         v-if="doc.kind === DocumentKind.Link"
                         @long-press="backlink(doc)"
                         icon="link"
-                        color="#000"
+                        color="var(--color-fg)"
                         desc="バックリンク"
                         :delay=".5"
                     />

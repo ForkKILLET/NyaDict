@@ -62,8 +62,8 @@ const pages = computed(() => {
     padding: .2em;
     border-radius: .3em;
     text-align: center;
-    background-color: #fffaf6;
-    color: #db8e30;
+    background-color: var(--color-ui-bg);
+    color: var(--color-ui);
     user-select: none;
     cursor: pointer;
     transition: .3s color, .3s background-color;
@@ -78,12 +78,12 @@ const pages = computed(() => {
     margin-right: 0;
 }
 .page-button.active {
-    color: #fff;
-    background-color: #db8e30;
+    color: var(--color-bg);
+    background-color: var(--color-ui);
 }
 .page-button:not(.disabled):hover {
-    color: #f7b96e;
-    background-color: #db8e30;
+    color: var(--color-ui-act);
+    background-color: var(--color-ui);
 }
 .page-button.disabled {
     color: #aaa;

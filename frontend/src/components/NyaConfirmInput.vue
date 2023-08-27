@@ -88,7 +88,7 @@ watch(editMode, (mode) => {
                         v-if="withdrawable"
                         @long-press="emit('withdraw')"
                         icon="trash"
-                        color="#ec4e1e"
+                        color="var(--color-wrong)"
                         desc="削除"
                         :delay="1.5"
                     />

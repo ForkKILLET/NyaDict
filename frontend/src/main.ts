@@ -8,6 +8,7 @@ import '@util/fa-load'
 
 import 'normalize.css'
 import '@style/index.css'
+import '@style/color.css'
 import '@style/atom.css'
 import '@style/transition.css'
 import '@style/animation.css'

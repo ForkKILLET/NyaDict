@@ -1,14 +1,14 @@
 .number {
-    color: #b5c113;
+    color: var(--color-num);
     font-family: serif;
 }
 
 .order {
-    color: #8358f9;
+    color: var(--color-order);
 }
 
 .id {
-    color: #8358f9;
+    color: var(--color-order);
     font-family: serif;
 }
 .id::before {
@@ -16,19 +16,19 @@
 }
 
 .correct, svg.button.correct {
-    color: #95e35d;
+    color: var(--color-correct);
 }
 .half-correct, svg.button.half-correct {
-    color: #db8e30;
+    color: var(--color-half-correct);
 }
 .wrong, svg.button.wrong {
-    color: #ec4e1e;
+    color: var(--color-wrong);
 }
 
 .glowing {
     padding: .8em;
     border-radius: .5em;
-    background: #fffaf6;
+    background: var(--color-ui-bg);
     box-shadow: 0 0 .2em #ffe6d14d;
 }
 
@@ -38,7 +38,7 @@
     padding: .2em .3em;
     border-radius: .4em;
     line-height: 1.1;
-    color: #db8e30;
+    color: var(--color-ui);
     box-shadow: 0 0 .4em #faad704d;
     cursor: pointer;
     user-select: none;
@@ -47,15 +47,15 @@
     transition: .3s color, .3s background-color;
 }
 .badge.active {
-    color: #fff;
-    background-color: #db8e30;
+    color: var(--color-bg);
+    background-color: var(--color-ui);
 }
 .badge:hover {
-    color: #f7b96e;
-    background-color: #fff;
+    color: var(--color-ui-act);
+    background-color: var(--color-bg);
 }
 .badge.active:hover {
-    background-color: #db8e30;
+    background-color: var(--color-ui);
 }
 
 @keyframes barber {
@@ -69,8 +69,8 @@
 .barber {
     background-image: linear-gradient(
         -45deg,
-        #fff 0, #fff 25%, #fffaf6 25%, #fffaf6 50%,
-        #fff 50%, #fff 75%, #fffaf6 75%, #fffaf6 100%
+        var(--color-bg) 0, var(--color-bg) 25%, var(--color-ui-bg) 25%, var(--color-ui-bg) 50%,
+        var(--color-bg) 50%, var(--color-bg) 75%, var(--color-ui-bg) 75%, var(--color-ui-bg) 100%
     );
     background-size: 25px 25px;
 

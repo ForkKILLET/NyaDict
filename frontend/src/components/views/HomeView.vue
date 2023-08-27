@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { version } from '@/../package.json'
+import { routes } from '@/routes'
 </script>
 
 <template>
@@ -10,11 +11,15 @@ import { version } from '@/../package.json'
                 <span class="version">{{ version }}</span>
             </a>
         </h1>
+        
         <p class="links">
-            <span><fa-icon icon="book" /> <RouterLink to="/words">単語</RouterLink></span> &middot;
-            <span><fa-icon icon="vial" /> <RouterLink to="/test">テスト</RouterLink></span> &middot;
-            <span><fa-icon icon="chart-line" /> <RouterLink to="/statistics">統計</RouterLink></span> &middot;
-            <span><fa-icon icon="rotate" /> <RouterLink to="/sync">同期</RouterLink></span>
+            <template v-for="route, index of routes.filter(route => route.display)">
+                <template v-if="index">・</template>
+                <span v-if="route.display">
+                    <fa-icon :icon="route.display.icon" />{{' '}}
+                    <RouterLink :to="route.path">{{ route.display.info }}</RouterLink>
+                </span>
+            </template>
         </p>
     </div>
 </template>
@@ -43,7 +48,7 @@ h1 {
     border-radius: .3rem;
     font-size: .8rem;
     font-weight: normal;
-    color: #fff;
-    background-color: #8358f9;
+    color: var(--color-bg);
+    background-color: var(--color-order);
 }
 </style>

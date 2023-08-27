@@ -108,8 +108,8 @@ const onCompositionEnd = (event: CompositionEvent) => {
 .word-disp, .word-sub {
     display: inline-block;
     border-radius: .4em;
-    background-color: #ffffff;
-    box-shadow: 0 0 .2em #f3aa6d4d inset;
+    background-color: var(--color-bg);
+    box-shadow: 0 0 .2em var(--color-shad-ui) inset;
 }
 
 input {

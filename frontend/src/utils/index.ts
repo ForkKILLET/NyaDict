@@ -77,7 +77,7 @@ export const gradeColors: Record<Grade, string> = {
     high: '#26a641',
     medium: '#006d32',
     low: '#0e4429',
-    none: '#eee'
+    none: 'var(--color-chart-bg)'
 }  
 export const gradeBy = (x: number, base: number): Grade => {
     if (x >= base * .9) return 'top'
