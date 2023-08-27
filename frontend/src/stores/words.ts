@@ -93,7 +93,10 @@ export const useWord = defineStore('words', () => {
     }
 
     const pushTestRec = (word: IWord, rec: Omit<ITestRec, 'oldEasiness'>) => {
-        word.mem.testRec.push({
+        const { testRec } = word.mem
+        const repetitions = testRec.length
+
+        testRec.push({
             ...rec,
             oldEasiness: word.mem.easiness
         })
@@ -101,14 +104,18 @@ export const useWord = defineStore('words', () => {
         else if (rec.correct === 0) word.mem.wrongCount ++
         else word.mem.halfCorrectCount ++
 
-        // Note: SRS algorithm here
+        // SRS algorithm here
         const origEasiness = word.mem.easiness ?? 0
-        word.mem.easiness = Math.max(Math.min(origEasiness + (rec.correct - 0.6) * 0.5, 3), 0)
-        const interval = baseInterval * word.mem.easiness + 0.25
+        word.mem.easiness = Math.max(Math.min(origEasiness + (rec.correct - 0.8) * 0.5, 3), 0)
+        const interval = rec.correct
+            ? repetitions
+                ? baseInterval * (1.3 + word.mem.easiness)
+                : 1
+            : 1
         word.mem.testAfter = Date.now() + interval * 24 * 3600 * 1000
 
         return {
-            recId: word.mem.testRec.length - 1,
+            recId: repetitions,
             newEasiness: word.mem.easiness
         }
     }
