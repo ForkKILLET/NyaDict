@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { useElementSize, useEventListener } from '@vueuse/core'
 import * as d3 from 'd3-force'
 
@@ -15,10 +16,6 @@ import type { IWord, IWordGraphEdge } from '@type'
 
 const props = defineProps<{
     word: IWord
-}>()
-
-const emit = defineEmits<{
-    (event: 'goto-word', wordId: number): void
 }>()
 
 type INode = {
@@ -147,6 +144,8 @@ const onDragMove = (event: MouseEvent | TouchEvent) => {
     node.lastY = point.clientY
 }
 
+const router = useRouter()
+
 const onDragEnd = (event: MouseEvent | TouchEvent) => {
     const point = getEventPoint(event)
 
@@ -159,7 +158,7 @@ const onDragEnd = (event: MouseEvent | TouchEvent) => {
     draggingNode.value = null
 
     if (node.startX === point.clientX && node.startY === point.clientY) {
-        emit('goto-word', node.word.id)
+        router.replace(`/words?id=${node.word.id}`)
     }
 }
 

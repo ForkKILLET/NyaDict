@@ -227,7 +227,6 @@ watch(route, () => {
         <WordDetail
             v-if="currentWord"
             :word="currentWord"
-            @goto-word="gotoWord"
             class="right scroll-y"
         />
     </div>

@@ -22,10 +22,6 @@ const props = withDefaults(defineProps<{
     zenMode: true
 })
 
-const emit = defineEmits<{
-    (event: 'goto-word', wordId: number): void
-}>()
-
 const wordStore = useWord()
 
 const withdrawed = computed(() => ! wordStore.getById(props.word.id))
@@ -121,7 +117,6 @@ window.addEventListener('resize', () => {
                 />
                 <WordGraphChart
                     :word="word"
-                    @goto-word="wordId => emit('goto-word', wordId)"
                 />
             </template>
         </NyaTab>
