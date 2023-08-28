@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { version } from '@/../package.json'
 import { routes } from '@/routes'
+
+import { isPortrait } from '@util/media'
 </script>
 
 <template>
@@ -14,7 +16,10 @@ import { routes } from '@/routes'
         
         <p class="links">
             <template v-for="route, index of routes.filter(route => route.display)">
-                <template v-if="index">・</template>
+                <template v-if="index">
+                    <br v-if="isPortrait && index % 4 === 0" />
+                    <template v-else>・</template>
+                </template>
                 <span v-if="route.display">
                     <fa-icon :icon="route.display.icon" />{{' '}}
                     <RouterLink :to="route.path">{{ route.display.info }}</RouterLink>
@@ -31,6 +36,7 @@ import { routes } from '@/routes'
     height: 100vh;
     align-items: center;
     justify-content: center;
+    text-align: center;
 }
 
 .links > * {

@@ -87,28 +87,4 @@ export const gradeBy = (x: number, base: number): Grade => {
     return 'none'
 }
 
-export const downloadURL = (url: string, filename: string) => {
-    const anchor = document.createElement('a')
-    anchor.href = url
-    anchor.download = filename
-    document.body.appendChild(anchor)
-    anchor.click()
-    document.body.removeChild(anchor)
-}
-
 export const randomColor = () => '#' + ('000000' + Math.random().toString(16).replace('.', '')).slice(- 6)
-
-export type Point = {
-    readonly clientX: number
-    readonly clientY: number
-}
-
-export const getEventPoint = (event: MouseEvent | TouchEvent): Point => {
-    if (! window.TouchEvent) return event as MouseEvent
-    return event instanceof TouchEvent
-        ? [
-            ...event.targetTouches,
-            ...event.changedTouches,
-        ][0]
-        : event
-}

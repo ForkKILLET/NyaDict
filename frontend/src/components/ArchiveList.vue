@@ -6,7 +6,7 @@ import { useRoute } from 'vue-router'
 import { useAuth } from '@store/auth'
 import { useArchive, ARCHIVE_VERSION } from '@store/archive'
 
-import { downloadURL } from '@util'
+import { downloadURL } from '@util/dom'
 import { api } from '@util/api'
 import { json5Stringify, json5TryParse } from '@util/storage'
 import { addNoti, handleResp } from '@util/notif'

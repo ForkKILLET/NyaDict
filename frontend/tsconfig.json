@@ -23,14 +23,14 @@
     /* Alias */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
       "@comp/*": ["./src/components/*"],
       "@type/*": ["./src/types/*"],
       "@type": ["./src/types/index.ts"],
       "@store/*": ["./src/stores/*"],
       "@util/*": ["./src/utils/*"],
       "@util": ["./src/utils/index.ts"],
-      "@style/*": ["./src/styles/*"]
+      "@style/*": ["./src/styles/*"],
+      "@/*": ["./src/*"]
     }
   },
   "include": [ "src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue" ],

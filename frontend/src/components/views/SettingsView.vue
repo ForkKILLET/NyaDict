@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { addNoti } from '@/utils/notif'
+import { addNoti } from '@util/notif'
 import { useTheme, themes, type ITheme } from '@store/theme'
 
 const themeStore = useTheme()

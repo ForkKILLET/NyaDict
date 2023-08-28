@@ -70,7 +70,7 @@ const currentValue = ref<T | undefined>()
                 v-for="{ kind, value }, index of data"
                 class="calendar-day"
                 @mouseover="currentIndex = index; currentValue = value"
-                :style="{ background: colors[kind] ?? 'var(--color-correct)' }"
+                :style="{ background: colors[kind] ?? 'var(--color-chart-bg)' }"
                 :class="{ current: index === currentIndex }"
             ></div>
         </div>

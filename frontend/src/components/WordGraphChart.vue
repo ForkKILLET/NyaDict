@@ -4,7 +4,9 @@ import { useElementSize, useEventListener } from '@vueuse/core'
 import * as d3 from 'd3-force'
 
 import { isSameTargetEdge, useWord } from '@store/words'
-import { dedup, intersect, getEventPoint } from '@util'
+
+import { dedup, intersect } from '@util'
+import { getEventPoint } from '@util/dom'
 
 import EllipsisText from '@comp/charts/EllipsisText.vue'
 import Arrow from '@comp/charts/Arrow.vue'

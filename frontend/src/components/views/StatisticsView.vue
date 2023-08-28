@@ -14,6 +14,7 @@ import Calendar, { getCalendarData } from '@comp/charts/Calendar.vue'
 import PieChart, { type PieData } from '@comp/charts/PieChart.vue'
 import TimeChart, { BarData } from '@comp/charts/TimeChart.vue'
 import { ITest } from '@type'
+import { useCssVar } from '@vueuse/core'
 
 const wordStore = useWord()
 const testStore = useTest()
@@ -44,9 +45,10 @@ const data = {
         const minEasiness = + data.at(-1)!.name
         const deltaEasiness = maxEasiness - minEasiness
 
-        const interpolate = d3.interpolateRgb('#000', 'var(--color-correct)')
+        const correctColor = useCssVar('--color-correct')
+        const interpolate = d3.interpolateRgb('#000', correctColor.value)
         data.forEach(item => {
-            item.color = interpolate((+ item.name / deltaEasiness) ** 0.6)
+            item.color = interpolate((+ item.name / deltaEasiness) ** 0.8)
         })
         return { data }
     },
