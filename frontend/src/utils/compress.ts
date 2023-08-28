@@ -61,22 +61,19 @@ export const compress_IWordDocument = {
 export type IMeaningDocument_Compress = {
   I: number
   K: DocumentKind.Meaning
-  L?: string
   T: string
   D: IWordDocument_Compress[]
 }
 export const compress_IMeaningDocument = {
-  serialize: ({ id: I, kind: K, lang: L, text: T, docs: D }: IMeaningDocument): IMeaningDocument_Compress => ({
+  serialize: ({ id: I, kind: K, text: T, docs: D }: IMeaningDocument): IMeaningDocument_Compress => ({
     I,
     K,
-    L,
     T,
     D: D.map(compress_IWordDocument.serialize),
   }),
-  deserialize: ({ I: id, K: kind, L: lang, T: text, D: docs }: IMeaningDocument_Compress): IMeaningDocument => ({
+  deserialize: ({ I: id, K: kind, T: text, D: docs }: IMeaningDocument_Compress): IMeaningDocument => ({
     id,
     kind,
-    lang,
     text,
     docs: docs.map(compress_IWordDocument.deserialize),
   })

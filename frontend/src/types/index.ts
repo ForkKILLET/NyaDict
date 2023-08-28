@@ -34,7 +34,6 @@ export enum LinkDocumentRelationship {
 export type IMeaningDocument = {
     id: number
     kind: DocumentKind.Meaning
-    lang?: string
     text: string
     docs: IWordDocument[]
 }

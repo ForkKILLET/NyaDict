@@ -27,10 +27,7 @@ const emit = defineEmits<{
 
 const wordStore = useWord()
 
-const lang = computed(() => 'lang' in props.doc
-    ? (props.doc.lang ?? navigator.language)
-    : undefined
-)
+const lang = computed(() => navigator.language)
 
 const newlyAdded = ref(false)
 if (wordStore.newlyAddedDocId === props.doc.id) {
