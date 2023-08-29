@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-import { useWord } from '@store/words'
+import { emptyMem, useWord } from '@store/words'
 import { ARCHIVE_VERSION, useArchive } from '@store/archive'
 
 import { json5Parse, json5Stringify, json5TryParse } from '@util/storage'
@@ -11,7 +11,9 @@ import LongPressButton from '@comp/LongPressButton.vue'
 
 const archiveStore = useArchive()
 const wordStore = useWord()
+
 const json = ref('')
+const wordsText = ref('')
 
 const genGraph = () => {
     wordStore.updateGraphs()
@@ -46,44 +48,75 @@ const optimizeArchive = () => {
         duration: 2 * 1000
     })
 }
+
+const addManyWords = () => {
+    const words = wordsText.value
+        .trim()
+        .split('\n')
+        .filter(ln => ln)
+        .map(ln => {
+            const [ disp, sub ] = ln.split(/\s+|\s*,\s*/)
+            return { disp, sub, mem: emptyMem() }
+        })
+
+    words.forEach(word => {
+        wordStore.add(word)
+    })
+
+    notif.addNoti({
+        type: 'success',
+        content: `単語を${words.length}個作成しました。`,
+        duration: 2 * 1000
+    })
+}
 </script>
 
 <template>
-    <div>
-        <textarea v-model="json" spellcheck="false"></textarea>
+    <div class="content">
+        <div>
+            <textarea v-model="json" spellcheck="false"></textarea>
 
-        <button
-            class="inline card deep"
-            @click="json = json5Stringify(archiveStore.exportArchive(), '&quot;')"
-        >load</button>
-        <button
-            class="inline card deep"
-            @click="archiveStore.importArchive(archiveStore.currentId, json5Parse(json))"
-        >save</button>
-        <button
-            class="inline card deep"
-            @click="optimizeArchive"
-        >optimize / fix</button>
-    </div>
+            <button
+                class="inline card deep"
+                @click="json = json5Stringify(archiveStore.exportArchive(), '&quot;')"
+            >load</button>
+            <button
+                class="inline card deep"
+                @click="archiveStore.importArchive(archiveStore.currentId, json5Parse(json))"
+            >save</button>
+            <button
+                class="inline card deep"
+                @click="optimizeArchive"
+            >optimize / fix</button>
+        </div>
 
-    <div>
-        <button
-            class="inline card deep"
-            @click="notif.addNoti({ content: '' + Math.random(), type: 'info' })"
-        >noti</button>
-        <LongPressButton
-            icon="eye"
-            color="var(--color-fg)"
-            desc="test"
-            :delay="2"
-        />
-    </div>
+        <div>
+            <textarea v-model="wordsText"></textarea>
+            <button
+                class="inline card deep"
+                @click="addManyWords"
+            >add many words</button>
+        </div>
 
-    <div>
-        <button
-            class="inline card deep"
-            @click="genGraph"
-        >gen graph</button>
+        <div>
+            <button
+                class="inline card deep"
+                @click="notif.addNoti({ content: '' + Math.random(), type: 'info' })"
+            >noti</button>
+            <LongPressButton
+                icon="eye"
+                color="var(--color-fg)"
+                desc="test"
+                :delay="2"
+            />
+        </div>
+
+        <div>
+            <button
+                class="inline card deep"
+                @click="genGraph"
+            >gen graph</button>
+        </div>
     </div>
 </template>
 
@@ -99,5 +132,9 @@ textarea {
 
 div + div {
     margin-top: 1em;
+}
+
+.content {
+    padding: 1em;
 }
 </style>
