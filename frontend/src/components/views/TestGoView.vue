@@ -34,15 +34,22 @@ const testCompleted = computed(() => ongoingTest.value!.currentIndex === testSiz
 const nextWord = (correct: ICorrect) => {
     showAnswer.value = false
 
-    const word = currentWord.value!
     const test = ongoingTest.value!
+    const word = currentWord.value
 
     if (test.currentIndex < test.maxIndex) {
-        const { oldEasiness } = wordStore.popTestRec(word)!
-        word.mem.easiness = oldEasiness
+        if (word) {
+            const { oldEasiness } = wordStore.popTestRec(word)!
+            word.mem.easiness = oldEasiness
+        }
     }
     else {
         test.maxIndex ++
+    }
+
+    if (! word) {
+        test.currentIndex ++
+        return
     }
 
     const { recId, newEasiness } = wordStore.pushTestRec(word, {
@@ -129,14 +136,14 @@ const endTest = () => {
                 </button>
             </p>
         </div>
-        <div v-else-if="! showAnswer" class="test-area scroll-y">
+        <div v-else-if="! showAnswer && currentWord" class="test-area scroll-y">
             <div class="question">
-                <span v-if="ongoingTest.mode === TestMode.Disp">{{ currentWord!.disp }}</span>
-                <span v-else-if="ongoingTest.mode === TestMode.Sub">{{ currentWord!.sub }}</span>
+                <span v-if="ongoingTest.mode === TestMode.Disp">{{ currentWord.disp }}</span>
+                <span v-else-if="ongoingTest.mode === TestMode.Sub">{{ currentWord.sub }}</span>
                 <template v-else-if="ongoingTest.mode === TestMode.Meaning">
                     <WordDocument
-                        v-for="doc of currentWord!.docs!.filter(doc => doc.kind === DocumentKind.Meaning)"
-                        :word="currentWord!"
+                        v-for="doc of currentWord.docs!.filter(doc => doc.kind === DocumentKind.Meaning)"
+                        :word="currentWord"
                         :doc="doc"
                         :hide-self="true"
                     />
@@ -151,9 +158,9 @@ const endTest = () => {
                 </button>
             </p>
         </div>
-        <div v-else class="test-area scroll-y">
+        <div v-else-if="currentWord" class="test-area scroll-y">
             <div class="answer">
-                <Word class="inline" :word="currentWord!" />
+                <Word class="inline" :word="currentWord" />
             </div>
             <p class="choose-correctness">
                 <button
@@ -175,11 +182,17 @@ const endTest = () => {
                     <fa-icon icon="times-circle" class="wrong" />
                 </button>
             </p>
-            <WordDetail :word="currentWord!" />
+            <WordDetail :word="currentWord" />
+        </div>
+        <div v-else>
+            <p>単語は見つかりません。</p>
+            <button class="inline w1 card" @click="nextWord(1)">
+                <fa-icon icon="arrow-right" />
+            </button>
         </div>
     </div>
     <div v-else>
-        x
+        <p>今テストしていません。</p>
     </div>
 </template>
 
