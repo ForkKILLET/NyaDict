@@ -10,7 +10,7 @@ import type { IArchiveInfo } from '@type'
 type INoInfoReason = 'noAccount' | 'noRemote' | 'noLocal'
 
 defineProps<{
-    info?: IArchiveInfo
+    info?: Omit<IArchiveInfo, 'version'> & { version?: string }
     id?: string
     active?: boolean
     remote?: boolean
@@ -79,8 +79,8 @@ const noInfoReasons: Record<INoInfoReason, string> = {
                 <div>
                     <fa-icon icon="code" :fixed-width="true" />
                     <span>
-                        v<span class="number">{{ info.version }}</span>
-                        <span class="" v-if="info && info.version !== ARCHIVE_VERSION">
+                        v<span class="number">{{ info.version ?? '?' }}</span>
+                        <span v-if="info?.version && info.version !== ARCHIVE_VERSION">
                             &nbsp;<fa-icon icon="triangle-exclamation" />
                         </span>
                     </span>

@@ -53,7 +53,7 @@ export const storeArray = <T extends object, U>(key: string, options: {
         deserialize: (mappedValue: U) => T
     }
 } = {}): Ref<ArrayStore<T>> & Disposable => {
-    const lengthKey = `${key}#length`
+    const lengthKey = `${key}$length`
 
     const arr: ArrayStore<T> = Object.assign(Array<T>(length), {
         set: (index: number, value: T) => update(index, value),
@@ -110,7 +110,7 @@ export const storeArray = <T extends object, U>(key: string, options: {
         length ??= 0
 
         for (let i = 0; i < length; i ++) {
-            const str = localStorage.getItem(`${key}#${i}`)
+            const str = localStorage.getItem(`${key}$${i}`)
             if (str === null) continue
             const value = json5Parse(str)
             arr[i] = options.map ? options.map.deserialize(value) : value
@@ -126,14 +126,14 @@ export const storeArray = <T extends object, U>(key: string, options: {
     }
     const update = (index: number, value: T) => {
         setStorage(
-            `${key}#${index}`,
+            `${key}$${index}`,
             options.map ? options.map.serialize(value) : value
         )
         return reactiveArr[+ index] = value
     }
     const remove = (index: number) => {
         unwatchIndex(index)
-        localStorage.removeItem(`${key}#${index}`)
+        localStorage.removeItem(`${key}$${index}`)
         return delete reactiveArr[+ index]
     }
 
@@ -159,7 +159,7 @@ export const storeArray = <T extends object, U>(key: string, options: {
     })
 }
 
-export const json5Stringify = (value: any): string => JSON5.stringify(value, { quote: `'` })
+export const json5Stringify = (value: any, quote = `'`): string => JSON5.stringify(value, { quote })
 export const json5Parse = (json: string): any => JSON5.parse(json)
 export const json5TryParse = (json: string | undefined | null): any | undefined => {
     if (! json) return

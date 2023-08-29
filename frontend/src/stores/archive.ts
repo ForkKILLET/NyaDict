@@ -5,9 +5,9 @@ import {
 import { defineStore } from 'pinia'
 import { storeRef, storeReactive } from '@util/storage'
 import { kDispose } from '@util/disposable'
-import type { IArchiveInfo, IArchiveData, IPortableArchive } from '@type'
+import type { IArchiveInfo, IArchiveData, IPortableArchive, IArchiveVersion } from '@type'
 
-export const ARCHIVE_VERSION = '3'
+export const ARCHIVE_VERSION: IArchiveVersion = '3.1'
 
 export const useArchive = defineStore('archives', () => {
     const currentId = storeRef('archiveId', '0')
@@ -50,8 +50,14 @@ export const useArchive = defineStore('archives', () => {
         const prefix = id + ':'
         const prefixLen = prefix.length
         const json: any = {}
-        for (const key in localStorage) {
-            if (key.startsWith(prefix)) json[key.slice(prefixLen)] = localStorage[key]
+        const { length } = localStorage
+
+        for (let i = 0; i < length; i ++) {
+            const key = localStorage.key(i)
+            if (! key?.startsWith(prefix)) continue
+
+            const value = localStorage[key]
+            json[key.slice(prefixLen)] = value
         }
         return Object.assign(json, { _info: toValue(archiveInfo[id]) })
     }

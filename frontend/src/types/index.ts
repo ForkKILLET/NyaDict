@@ -124,7 +124,7 @@ export type ITest = {
     docIds?: number[]
 }
 
-export type IArchiveVersion = '2' | '3' | string
+export type IArchiveVersion = '2' | '3' | '3.1'
 
 export type IArchiveInfo = {
     version: IArchiveVersion

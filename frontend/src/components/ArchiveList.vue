@@ -46,7 +46,7 @@ const blobs: Record<string, Blob> = {}
  
 const makeBlob = (id: string) => {
     blobs[id] = new Blob([
-        jsons[id] = json5Stringify(archiveStore.exportArchive(id))
+        jsons[id] = json5Stringify(archiveStore.exportArchive(id), '"')
     ])
     archiveInfo.value[id].size = blobs[id].size
 }
@@ -197,7 +197,6 @@ watch(route, ({ path }) => {
                         title: selectedTitle!,
                         accessTime: selectedFile.lastModified,
                         size: selectedFile.size,
-                        version: 'N/A'
                     }"
                 >
                     <fa-icon
