@@ -18,6 +18,7 @@ import WordGraphChart from './WordGraphChart.vue'
 const props = withDefaults(defineProps<{
     word: IWord
     zenMode?: boolean
+    container?: HTMLElement | null
 }>(), {
     zenMode: true
 })
@@ -32,10 +33,11 @@ const addDoc = (doc: IWordDocumentWithoutId) => {
 }
 
 const wordDetailEl = ref<HTMLDivElement>()
+const scrollEl = computed(() => props.container ?? wordDetailEl.value)
 const editingEl = ref<HTMLInputElement>()
 const onFocus = ({ target: el }: FocusEvent) => {
     if (! props.zenMode) return
-    if (! wordDetailEl.value) return
+    if (! scrollEl.value) return
     if (! (el && el instanceof HTMLInputElement)) return
     if (el.parentElement?.classList.contains('word-mini-searcher')) return
 
@@ -44,7 +46,7 @@ const onFocus = ({ target: el }: FocusEvent) => {
 }
 const setCenter = (el: HTMLElement) => {
     const delta = el.getBoundingClientRect().y - window.innerHeight / 2
-    wordDetailEl.value?.scrollBy({ top: delta, behavior: 'smooth' })
+    scrollEl.value?.scrollBy({ top: delta, behavior: 'smooth' })
 }
 
 window.addEventListener('resize', () => {

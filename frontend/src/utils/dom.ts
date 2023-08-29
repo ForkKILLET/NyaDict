@@ -21,3 +21,5 @@ export const getEventPoint = (event: MouseEvent | TouchEvent): Point => {
         ][0]
         : event
 }
+
+export const getMainEl = () => document.querySelector('main')

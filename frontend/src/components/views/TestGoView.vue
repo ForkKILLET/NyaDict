@@ -2,16 +2,19 @@
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
+
 import { useTest } from '@store/test'
 import { getCorrectnessCount, useWord } from '@store/words'
+
 import { addNoti, removeNoti } from '@util/notif'
+import { getMainEl } from '@util/dom'
+
 import Word from '@comp/Word.vue'
 import Correctness from '@comp/Correctness.vue'
 import WordDetail from '@comp/WordDetail.vue'
-import type { ICorrect } from '@type'
-import { TestMode } from '@type'
-import { DocumentKind } from '@type'
-import WordDocument from '../WordDocument.vue'
+import WordDocument from '@comp/WordDocument.vue'
+
+import { DocumentKind, TestMode, type ICorrect } from '@type'
 
 const router = useRouter()
 
@@ -182,7 +185,10 @@ const endTest = () => {
                     <fa-icon icon="times-circle" class="wrong" />
                 </button>
             </p>
-            <WordDetail :word="currentWord" />
+            <WordDetail
+                :word="currentWord"
+                :container="getMainEl()"
+            />
         </div>
         <div v-else>
             <p>単語は見つかりません。</p>
