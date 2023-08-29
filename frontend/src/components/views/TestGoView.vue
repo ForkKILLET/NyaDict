@@ -83,7 +83,7 @@ const navigateTestedWord = (delta: number) => {
     if (nextIndex < 0 || nextIndex > test.maxIndex) return
     test.currentIndex = nextIndex
 
-    showAnswer.value = false
+    showAnswer.value = test.currentIndex < test.maxIndex
 }
 
 const endTest = () => {
