@@ -24,7 +24,7 @@ const pages = computed(() => {
         startPage = 1
     }
     else if (endPage > props.pageCount) {
-        startPage = Math.max(0, props.pageCount - len)
+        startPage = Math.max(1, props.pageCount - len)
         endPage = props.pageCount
     }
     return range(startPage, endPage + 1)
