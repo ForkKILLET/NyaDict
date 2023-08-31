@@ -6,10 +6,19 @@ NyaDict 是一个面向日语单词记忆的开源网络词典。
 
 体验：[icelava.top/NyaDict/](https://icelava.top/NyaDict/)
 
-
 ## 背景
 
 todo
+
+## 路线图
+
+请看我们[在 Notion 上的开发计划](https://humdrum-zinc-834.notion.site/c268c269ef4c4a94b4bf121983055819?v=0135f3f33c5b4e949f2c8a97174e4201&pvs=4)。
+
+<details>
+  <summary>开发日志视频</summary>
+
+  - [#1](https://www.bilibili.com/video/BV1Pj411q7gN)
+</details>
 
 ## 部署
 

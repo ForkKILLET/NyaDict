@@ -10,6 +10,16 @@ Demo: [icelava.top/NyaDict/](https://icelava.top/NyaDict/)
 
 todo
 
+## Road Map
+
+See our [dev plan on Notion (Chinese)](https://humdrum-zinc-834.notion.site/c268c269ef4c4a94b4bf121983055819?v=0135f3f33c5b4e949f2c8a97174e4201&pvs=4).
+
+<details>
+  <summary>Dev log videoes (Chinese)</summary>
+
+  - [#1](https://www.bilibili.com/video/BV1Pj411q7gN)
+</details>
+
 ## Deployment
 
 The main function of NyaDict is supplied by the frontend. The backend is only for data synchronizing.
