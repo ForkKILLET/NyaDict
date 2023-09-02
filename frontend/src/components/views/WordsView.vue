@@ -137,7 +137,7 @@ const onSortMethodClick = (method: SortMethod) => {
 
 const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
     const id = wordStore.add({ ...word, mem: emptyMem() })
-    currentWord.value = wordStore.getById(id)
+    gotoWord(id)
 }
 
 const contentEl = ref<HTMLDivElement>()
