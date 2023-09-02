@@ -22,16 +22,20 @@ type INode = {
     word: IWord
 }
 
-type ISimulationNode = INode & d3.SimulationNodeDatum & {
-    lastX?: number
-    lastY?: number
-    startX?: number
-    startY?: number
+type IDragTargetInfo = {
+    lastX: number
+    lastY: number
+    startX: number
+    startY: number
 }
 
-type IDefiniteSimulationNode = {
-    [K in keyof ISimulationNode]-?: Exclude<ISimulationNode[K], null>
-}
+type ISimulationNode = INode & d3.SimulationNodeDatum & { type: 'node' } & Partial<IDragTargetInfo>
+
+type IView = {
+    type: 'view'
+} & Partial<IDragTargetInfo>
+
+type IDragTarget = ISimulationNode | IView
 
 type IEdge = {
     source: ISimulationNode
@@ -48,7 +52,7 @@ const graph = computed(() => {
     const edges: IEdge[] = []
 
     const visit = (now: IWord) => {
-        const node: ISimulationNode = { word: now }
+        const node: ISimulationNode = { type: 'node', word: now }
         nodes.push(node)
         visitedNodes[now.id] = true
 
@@ -101,14 +105,14 @@ const simulation = d3
     .force('charge', d3.forceManyBody().strength(- 200))
     .stop()
 
-const ticks = 1000
-const alphaMin = 0.001
+const TICKS = 1000
+const ALPHA_MIN = 0.001
 
 onMounted(() => {
     simulation
         .alpha(1)
-        .alphaMin(alphaMin)
-        .alphaDecay(1 - Math.pow(alphaMin, 1 / ticks))
+        .alphaMin(ALPHA_MIN)
+        .alphaDecay(1 - Math.pow(ALPHA_MIN, 1 / TICKS))
         .restart()
 })
 
@@ -120,48 +124,73 @@ watch(graph, () => {
         .restart()
 })
 
-const draggingNode = ref<ISimulationNode | null>(null)
+const dragTarget = ref<IDragTarget | null>(null)
+const viewboxOffset = ref<{ dx: number, dy: number }>({ dx: 0, dy: 0 })
 
-const onDragStart = (node: ISimulationNode, event: MouseEvent | TouchEvent) => {
-    draggingNode.value = node
+const onDragStart = (event: MouseEvent | TouchEvent, node?: ISimulationNode) => {
+    let tar: IDragTarget
 
-    simulation.alphaTarget(0.3).restart()
-    const point = getEventPoint(event)
-    node.startX = node.lastX = point.clientX
-    node.startY = node.lastY = point.clientY
-    node.fx = node.x
-    node.fy = node.y
+    const { clientX: x, clientY: y } = getEventPoint(event)
+    const targetInfo: IDragTargetInfo = {
+        startX: x, lastX: x,
+        startY: y, lastY: y
+    }
+    if (node) {
+        simulation.alphaTarget(0.3).restart()
+        node.fx = node.x
+        node.fy = node.y
+        tar = Object.assign(node, targetInfo)
+    }
+    else {
+        const { target } = event
+        if (target instanceof Element && root.value?.contains(target)) {
+            tar = Object.assign<IView, IDragTargetInfo>({
+                type: 'view'
+            }, targetInfo)
+        }
+        else return
+    }
+
+    dragTarget.value = tar
 }
 
 const onDragMove = (event: MouseEvent | TouchEvent) => {
-    const node = draggingNode.value as IDefiniteSimulationNode | null
-    if (! node) return
-  
-    const point = getEventPoint(event)
-    node.fx += point.clientX - node.lastX
-    node.fy += point.clientY - node.lastY
-    node.lastX = point.clientX
-    node.lastY = point.clientY
+    const tar = dragTarget.value
+    if (! tar) return
+
+    const { clientX: x, clientY: y } = getEventPoint(event)
+    if (tar.type === 'node') {
+        tar.fx! += x - tar.lastX!
+        tar.fy! += y - tar.lastY!
+    }
+    else if (tar.type === 'view') {
+        viewboxOffset.value.dx += x - tar.lastX!
+        viewboxOffset.value.dy += y - tar.lastY!
+    }
+    tar.lastX = x
+    tar.lastY = y
 }
 
 const router = useRouter()
 
 const onDragEnd = (event: MouseEvent | TouchEvent) => {
-    const point = getEventPoint(event)
+    const tar = dragTarget.value
+    if (! tar) return
+    dragTarget.value = null
 
-    simulation.alphaTarget(0)
-    const node = draggingNode.value
-    if (! node) return
+    if (tar.type === 'node') {
+        const point = getEventPoint(event)
+        simulation.alphaTarget(0)
 
-    node.fx = null
-    node.fy = null
-    draggingNode.value = null
-
-    if (node.startX === point.clientX && node.startY === point.clientY) {
-        router.replace(`/words?id=${node.word.id}`)
+        if (tar.startX === point.clientX && tar.startY === point.clientY) {
+            // click event
+            router.replace(`/words?id=${tar.word.id}`)
+        }
     }
 }
 
+useEventListener('mousedown', onDragStart)
+useEventListener('touchstart', onDragStart)
 useEventListener('mousemove', onDragMove)
 useEventListener('touchmove', onDragMove)
 useEventListener('mouseup', onDragEnd)
@@ -169,11 +198,11 @@ useEventListener('touchend', onDragEnd)
 </script>
 
 <template>
-    <div ref="root" class="word-graph-chart">
+    <div ref="root" class="word-graph-chart" :class="{ dragging: !! dragTarget }">
         <svg
             :width="width"
             :height="height"
-            :viewBox="`-${width / 2} -${height / 2} ${width} ${height}`"
+            :viewBox="`-${width / 2 + viewboxOffset.dx} -${height / 2 + viewboxOffset.dy} ${width} ${height}`"
         >
             <g class="links">
                 <g
@@ -197,8 +226,8 @@ useEventListener('touchend', onDragEnd)
                     :key="index"
                     class="node"
                     :class="{ center: node.word.id === word.id }"
-                    @mousedown.stop.prevent="event => onDragStart(node, event)"
-                    @touchstart.stop.prevent="event => onDragStart(node, event)"
+                    @mousedown.stop.prevent="event => onDragStart(event, node)"
+                    @touchstart.stop.prevent="event => onDragStart(event, node)"
                     
                 >
                     <circle
@@ -219,6 +248,13 @@ useEventListener('touchend', onDragEnd)
 </template>
 
 <style scoped>
+.word-graph-chart {
+    cursor: grab;
+}
+.word-graph-chart.dragging {
+    cursor: grabbing;
+}
+
 .node :deep(text) {
     text-anchor: middle;
     dominant-baseline: middle;
