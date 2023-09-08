@@ -164,8 +164,8 @@ const onDragMove = (event: MouseEvent | TouchEvent) => {
         tar.fy! += y - tar.lastY!
     }
     else if (tar.type === 'view') {
-        viewboxOffset.value.dx += x - tar.lastX!
-        viewboxOffset.value.dy += y - tar.lastY!
+        viewboxOffset.value.dx += tar.lastX! - x
+        viewboxOffset.value.dy += tar.lastY! - y
     }
     tar.lastX = x
     tar.lastY = y
@@ -186,6 +186,10 @@ const onDragEnd = (event: MouseEvent | TouchEvent) => {
             // click event
             router.replace(`/words?id=${tar.word.id}`)
         }
+
+        // cancel fixing
+        delete tar.fx
+        delete tar.fy
     }
 }
 
@@ -202,7 +206,7 @@ useEventListener('touchend', onDragEnd)
         <svg
             :width="width"
             :height="height"
-            :viewBox="`-${width / 2 + viewboxOffset.dx} -${height / 2 + viewboxOffset.dy} ${width} ${height}`"
+            :viewBox="`${- width / 2 + viewboxOffset.dx} ${- height / 2 + viewboxOffset.dy} ${width} ${height}`"
         >
             <g class="links">
                 <g
