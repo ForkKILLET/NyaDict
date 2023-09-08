@@ -37,13 +37,6 @@ export const useWord = defineStore('words', () => {
                 sub: 'Nya Dict',
                 mem: emptyMem()
             })
-            archiveStore.archiveInfo['0'] = {
-                title: '黙認',
-                accessTime: Date.now(),
-                size: 0,
-                wordCount: 1,
-                version: ARCHIVE_VERSION
-            }
         },
         map: compress_IWord
     }))

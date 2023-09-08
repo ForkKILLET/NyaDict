@@ -80,6 +80,19 @@ export const useArchive = defineStore('archives', () => {
         }
     }
 
+    const createArchive = () => {
+        const newId = String(Math.max(...Object.keys(archiveInfo).map(Number)) + 1)
+        archiveInfo[newId] = {
+            title: '黙認',
+            accessTime: Date.now(),
+            size: 0,
+            wordCount: 1,
+            version: ARCHIVE_VERSION
+        }
+    }
+
+    if (! Object.keys(archiveInfo).length) createArchive()
+
     type IExtractArchiveData<K extends Array<keyof IArchiveData>> = {
         [key in K[number]]: WritableComputedRef<UnwrapRef<IArchiveData[key]>>
     }
@@ -98,6 +111,6 @@ export const useArchive = defineStore('archives', () => {
     return {
         currentId, archiveInfo, currentInfo, archiveData,
         extractData, define,
-        disposeArchive, reloadArchive, exportArchive, withdrawArchive, importArchive
+        disposeArchive, reloadArchive, exportArchive, withdrawArchive, importArchive, createArchive
     }
 })

@@ -187,6 +187,8 @@ watch(route, ({ path }) => {
             </label>
             <input id="file" type="file" accept=".json" @change="onSelectFile" />
             
+            <fa-icon @click="archiveStore.createArchive" icon="circle-plus" class="button" />
+
             <fa-icon @click="getRemoteInfo" icon="rotate" class="button" />
         </p>
         <div class="archive-list-entries scroll-y">

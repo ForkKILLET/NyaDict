@@ -8,7 +8,7 @@ export const getCalendarData = <T>(source: T[], getDate: (item: T) => number) =>
 
     const dates = []
     const nums: Record<string, number> = {}
-    let firstDate: number = Infinity
+    let firstDate = Infinity
     let maxNum = 0
 
     source.forEach(item => {
@@ -18,7 +18,7 @@ export const getCalendarData = <T>(source: T[], getDate: (item: T) => number) =>
         if (++ nums[date] > maxNum) maxNum = nums[date]
     })
 
-    for (
+    if (firstDate !== Infinity) for (
         let day = dayjs(firstDate);
         ! day.isAfter(today, 'd');
         day = day.add(1, 'd')
