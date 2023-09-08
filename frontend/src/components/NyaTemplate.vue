@@ -8,6 +8,7 @@ const props = defineProps<{
     text: string
     word: IWord
     hideSelf?: boolean
+    short?: boolean
 }>()
 
 const segments = computed(() => getTemplateSegements(props.text))
@@ -23,6 +24,7 @@ const segments = computed(() => getTemplateSegements(props.text))
                 :disp="seg.disp"
                 :self="! seg.id"
                 :hide-self="hideSelf"
+                :short="short"
                 :class="{ adjacent: index && typeof segments[index - 1] === 'object' }"
             />
         </template>

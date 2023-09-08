@@ -152,6 +152,7 @@ const backlink = (doc: ILinkDocument) => {
                             :text="doc.text"
                             :word="word"
                             :hide-self="hideSelf"
+                            :short="doc.kind === DocumentKind.Sentence"
                         />
                     </div>
                 </template>
