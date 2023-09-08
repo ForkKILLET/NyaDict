@@ -1,6 +1,6 @@
 {
   "build": {
-    "beforeBuildCommand": "VITE_SYNC_API=\"https://be.icelava.top:49374/NyaDict\" pnpm -F nyadict-frontend build",
+    "beforeBuildCommand": "pnpm cross-env VITE_SYNC_API=\"https://be.icelava.top:49374/NyaDict\" pnpm -F nyadict-frontend build",
     "beforeDevCommand": "pnpm -F nyadict-frontend dev",
     "devPath": "http://localhost:1635",
     "distDir": "../../frontend/dist"
