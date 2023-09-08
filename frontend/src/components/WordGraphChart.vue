@@ -193,6 +193,14 @@ const onDragEnd = (event: MouseEvent | TouchEvent) => {
     }
 }
 
+const scale = ref(1)
+
+const zoom = (deltaScale: number) => {
+    const newScale = scale.value + deltaScale
+    if (newScale <= 0 || newScale >= 2) return
+    scale.value = newScale
+}
+
 useEventListener('mousedown', onDragStart)
 useEventListener('touchstart', onDragStart)
 useEventListener('mousemove', onDragMove)
@@ -203,10 +211,16 @@ useEventListener('touchend', onDragEnd)
 
 <template>
     <div ref="root" class="word-graph-chart" :class="{ dragging: !! dragTarget }">
+        <div class="toolbar">
+            <fa-icon @click="zoom(+ 0.1)" icon="magnifying-glass-plus" class="button" />
+            <fa-icon @click="zoom(- 0.1)" icon="magnifying-glass-minus" class="button" />
+        </div>
         <svg
             :width="width"
             :height="height"
-            :viewBox="`${- width / 2 + viewboxOffset.dx} ${- height / 2 + viewboxOffset.dy} ${width} ${height}`"
+            :viewBox="[- width / 2 + viewboxOffset.dx, - height / 2 + viewboxOffset.dy, width, height]
+                .map(x => x / scale).join(' ')
+            "
         >
             <g class="links">
                 <g
