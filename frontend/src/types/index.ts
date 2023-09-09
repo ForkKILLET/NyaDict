@@ -30,26 +30,31 @@ export enum LinkDocumentRelationship {
     Other = -1
 }
 
-// @compress
+export type IWordDocumentLabel = Record<string, boolean>
+
+// @compress { "labels": "l" }
 export type IMeaningDocument = {
     id: number
+    labels?: IWordDocumentLabel
     kind: DocumentKind.Meaning
     text: string
     docs: IWordDocument[]
 }
 
-// @compress { "tran": "t" }
+// @compress { "tran": "t", "labels": "l" }
 export type ISentenceDocument = {
     id: number
+    labels?: IWordDocumentLabel
     kind: DocumentKind.Sentence
     lang?: string
     text: string
     tran: string
 }
 
-// @compress
+// @compress { "labels": "l" }
 export type ILinkDocument = {
     id: number
+    labels?: IWordDocumentLabel
     kind: DocumentKind.Link
     text: string
     rel: LinkDocumentRelationship

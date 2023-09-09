@@ -9,6 +9,7 @@ import {
   ITestRec,
   IWord,
   IWordDocument,
+  IWordDocumentLabel,
   IWordGraph,
   IWordGraphEdge,
   LinkDocumentRelationship,
@@ -60,19 +61,22 @@ export const compress_IWordDocument = {
 
 export type IMeaningDocument_Compress = {
   I: number
+  l?: IWordDocumentLabel
   K: DocumentKind.Meaning
   T: string
   D: IWordDocument_Compress[]
 }
 export const compress_IMeaningDocument = {
-  serialize: ({ id: I, kind: K, text: T, docs: D }: IMeaningDocument): IMeaningDocument_Compress => ({
+  serialize: ({ id: I, labels: l, kind: K, text: T, docs: D }: IMeaningDocument): IMeaningDocument_Compress => ({
     I,
+    l,
     K,
     T,
     D: D.map(compress_IWordDocument.serialize),
   }),
-  deserialize: ({ I: id, K: kind, T: text, D: docs }: IMeaningDocument_Compress): IMeaningDocument => ({
+  deserialize: ({ I: id, l: labels, K: kind, T: text, D: docs }: IMeaningDocument_Compress): IMeaningDocument => ({
     id,
+    labels,
     kind,
     text,
     docs: docs.map(compress_IWordDocument.deserialize),
@@ -81,21 +85,24 @@ export const compress_IMeaningDocument = {
 
 export type ISentenceDocument_Compress = {
   I: number
+  l?: IWordDocumentLabel
   K: DocumentKind.Sentence
   L?: string
   T: string
   t: string
 }
 export const compress_ISentenceDocument = {
-  serialize: ({ id: I, kind: K, lang: L, text: T, tran: t }: ISentenceDocument): ISentenceDocument_Compress => ({
+  serialize: ({ id: I, labels: l, kind: K, lang: L, text: T, tran: t }: ISentenceDocument): ISentenceDocument_Compress => ({
     I,
+    l,
     K,
     L,
     T,
     t,
   }),
-  deserialize: ({ I: id, K: kind, L: lang, T: text, t: tran }: ISentenceDocument_Compress): ISentenceDocument => ({
+  deserialize: ({ I: id, l: labels, K: kind, L: lang, T: text, t: tran }: ISentenceDocument_Compress): ISentenceDocument => ({
     id,
+    labels,
     kind,
     lang,
     text,
@@ -105,19 +112,22 @@ export const compress_ISentenceDocument = {
 
 export type ILinkDocument_Compress = {
   I: number
+  l?: IWordDocumentLabel
   K: DocumentKind.Link
   T: string
   R: LinkDocumentRelationship
 }
 export const compress_ILinkDocument = {
-  serialize: ({ id: I, kind: K, text: T, rel: R }: ILinkDocument): ILinkDocument_Compress => ({
+  serialize: ({ id: I, labels: l, kind: K, text: T, rel: R }: ILinkDocument): ILinkDocument_Compress => ({
     I,
+    l,
     K,
     T,
     R,
   }),
-  deserialize: ({ I: id, K: kind, T: text, R: rel }: ILinkDocument_Compress): ILinkDocument => ({
+  deserialize: ({ I: id, l: labels, K: kind, T: text, R: rel }: ILinkDocument_Compress): ILinkDocument => ({
     id,
+    labels,
     kind,
     text,
     rel,

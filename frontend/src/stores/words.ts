@@ -1,7 +1,7 @@
 import { ref, type Ref } from 'vue'
 import { defineStore } from 'pinia' 
 import { toHiragana, toRomaji, isHiragana} from 'wanakana'
-import { ARCHIVE_VERSION, useArchive } from '@store/archive'
+import { useArchive } from '@store/archive'
 
 import { randomItem } from '@util'
 import { IWord_Compress, compress_IWord } from '@util/compress'
