@@ -68,9 +68,9 @@ export const useArchive = defineStore('archives', () => {
         }
     }
 
-    const importArchive = (id: string, portable: IPortableArchive) => {
+    const importArchive = (id: string, portable: IPortableArchive, noInfo?: boolean) => {
         if (portable._info?.version !== ARCHIVE_VERSION) return
-        archiveInfo[id] = portable._info
+        if (! noInfo) archiveInfo[id] = portable._info
         delete portable['_info']
 
         withdrawArchive(id)

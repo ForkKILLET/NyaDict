@@ -155,7 +155,7 @@ const download = async (id: string) => {
 
     const newData = json5TryParse(resp.content) as IPortableArchive
     if (! newData) return
-    archiveStore.importArchive(id, newData)
+    archiveStore.importArchive(id, newData, true)
 
     makeBlob(id)
 
