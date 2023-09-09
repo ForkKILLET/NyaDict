@@ -77,6 +77,17 @@
     animation: barber .5s linear infinite;
 }
 
+.barber-super {
+    background-image: linear-gradient(
+        -45deg,
+        var(--color-bg) 0, var(--color-bg) 25%, var(--color-order) 25%, var(--color-order) 50%,
+        var(--color-bg) 50%, var(--color-bg) 75%, var(--color-order) 75%, var(--color-order) 100%
+    );
+    background-size: 25px 25px;
+
+    animation: barber .5s linear infinite;
+}
+
 .w1 {
     width: 5em;
 }

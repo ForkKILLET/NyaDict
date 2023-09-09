@@ -77,6 +77,7 @@ const onLongPressEnd = () => {
 .long-press-button > svg {
     width: 1em;
     height: 1em;
+    vertical-align: baseline;
 }
 
 .long-press-button:active {

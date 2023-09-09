@@ -14,6 +14,7 @@ import { addNoti } from '@util/notif'
 
 import { DocumentKind } from '@type'
 import type { IWordDocument, IWord, ITemplateDocument, ILinkDocument } from '@type'
+import WordDocumentLabels from '@comp/WordDocumentLabels.vue'
 
 const props = defineProps<{
     word: IWord
@@ -111,93 +112,111 @@ const backlink = (doc: ILinkDocument) => {
 </script>
 
 <template>
-    <div v-if="doc.kind === DocumentKind.Meaning" class="meaning-doc">
-        <div class="meaning-doc-text card" :lang="lang">
-            <NyaConfirmInput
-                v-model="doc.text"
-                @withdraw="emit('withdraw')"
-                :more="true"
-                :withdrawable="true"
-                :withdraw-when-empty="true"
-                :edit-mode="newlyAdded"
-            />
-        </div>
-
-        <WordDocumentList
-            :word="word"
-            :node="doc"
-            :hide-self="hideSelf"
-        />
-    </div>
-    <div v-else-if="doc.kind === DocumentKind.Sentence || doc.kind === DocumentKind.Link" class="template-doc">
-        <div>
-            <NyaConfirmInput
-                v-model="doc.text"
-                @before-update:modelValue="updateGraph(doc, true)"
-                @update:modelValue="updateGraph(doc, false)"
-                @withdraw="updateGraph(doc, true); emit('withdraw')"
-                :more="true"
-                :withdraw-when-empty="true"
-                :withdrawable="true"
-                :edit-mode="newlyAdded"
-                :disabled="hideSelf"
+    <div class="word-doc" :class="{
+        'meaning-doc': doc.kind === DocumentKind.Meaning,
+        'template-doc': doc.kind === DocumentKind.Sentence || doc.kind === DocumentKind.Link,
+    }">
+        <template v-if="doc.kind === DocumentKind.Meaning">
+            <div
+                class="meaning-doc-main card"
+                :class="{ barber: doc.labels?.i }"
+                :lang="lang"
             >
-                <template #content>
-                    <div class="template-doc-content">
+                <NyaConfirmInput
+                    v-model="doc.text"
+                    @withdraw="emit('withdraw')"
+                    :more="true"
+                    :withdrawable="true"
+                    :withdraw-when-empty="true"
+                    :edit-mode="newlyAdded"
+                >
+                    <template #more>
+                        <WordDocumentLabels :doc="doc" />
+                    </template>
+                </NyaConfirmInput>
+            </div>
+
+            <WordDocumentList
+                :word="word"
+                :node="doc"
+                :hide-self="hideSelf"
+            />
+        </template>
+        <template v-else-if="doc.kind === DocumentKind.Sentence || doc.kind === DocumentKind.Link">
+            <div class="template-doc-main" :class="{ barber: doc.labels?.i }">
+                <NyaConfirmInput
+                    v-model="doc.text"
+                    @before-update:modelValue="updateGraph(doc, true)"
+                    @update:modelValue="updateGraph(doc, false)"
+                    @withdraw="updateGraph(doc, true); emit('withdraw')"
+                    :more="true"
+                    :withdraw-when-empty="true"
+                    :withdrawable="true"
+                    :edit-mode="newlyAdded"
+                    :disabled="hideSelf"
+                >
+                    <template #content>
+                        <div class="content">
+                            <WordLinkRelationship
+                                v-if="doc.kind === DocumentKind.Link"
+                                :rel="doc.rel"
+                            />
+                            <NyaTemplate
+                                :text="doc.text"
+                                :word="word"
+                                :hide-self="hideSelf"
+                                :short="doc.kind === DocumentKind.Sentence"
+                            />
+                        </div>
+                    </template>
+                    <template #input="{ model, submit }">
                         <WordLinkRelationship
                             v-if="doc.kind === DocumentKind.Link"
-                            :rel="doc.rel"
+                            v-model:rel="doc.rel"
+                            :edit-mode="true"
                         />
-                        <NyaTemplate
-                            :text="doc.text"
-                            :word="word"
-                            :hide-self="hideSelf"
-                            :short="doc.kind === DocumentKind.Sentence"
+                        <WordMiniSearcher
+                            v-if="showMiniSearcher"
+                            ref="miniSearcher"
+                            @select-word="word => sharpEnd(word, model.ref)"
+                            @cancel="sharpCancel"
                         />
-                    </div>
-                </template>
-                <template #input="{ model, submit }">
-                    <WordLinkRelationship
-                        v-if="doc.kind === DocumentKind.Link"
-                        v-model:rel="doc.rel"
-                        :edit-mode="true"
-                    />
-                    <WordMiniSearcher
-                        v-if="showMiniSearcher"
-                        ref="miniSearcher"
-                        @select-word="word => sharpEnd(word, model.ref)"
-                        @cancel="sharpCancel"
-                    />
-                    <input
-                        class="input"
-                        ref="templateInput"
-                        v-model="model.ref.value"
-                        @keypress.enter="submit"
-                        @keypress.#="sharpStart"
-                        @compositionend="onTemplateCompositionEnd"
-                    />
-                </template>
-                <template #more>
-                    <LongPressButton
-                        v-if="doc.kind === DocumentKind.Link"
-                        @long-press="backlink(doc)"
-                        icon="link"
-                        color="var(--color-fg)"
-                        desc="バックリンク"
-                        :delay=".5"
-                    />
-                </template>
-            </NyaConfirmInput>
-        </div>
+                        <input
+                            class="input"
+                            ref="templateInput"
+                            v-model="model.ref.value"
+                            @keypress.enter="submit"
+                            @keypress.#="sharpStart"
+                            @compositionend="onTemplateCompositionEnd"
+                        />
+                    </template>
+                    <template #more>
+                        <LongPressButton
+                            v-if="doc.kind === DocumentKind.Link"
+                            @long-press="backlink(doc)"
+                            icon="link"
+                            color="var(--color-fg)"
+                            desc="バックリンク"
+                            :delay=".5"
+                        />
+                        <WordDocumentLabels :doc="doc" />
+                    </template>
+                </NyaConfirmInput>
+            </div>
+        </template>
     </div>
 </template>
 
 <style scoped>
+.word-doc {
+    position: relative;
+}
+
 .meaning-doc {
     margin-bottom: .5em;
 }
 
-.meaning-doc-text {
+.meaning-doc-main {
     margin-bottom: .5em;
 }
 
@@ -206,7 +225,13 @@ const backlink = (doc: ILinkDocument) => {
     margin: .8em .8em .8em 0;
 }
 
-.template-doc-content {
+.template-doc-main {
+    margin: -.3em;
+    padding: .3em;
+    border-radius: .5em;
+}
+
+.template-doc .content {
     display: flex;
 }
 
