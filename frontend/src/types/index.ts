@@ -94,8 +94,23 @@ export type ITestRec = {
     testId?: number
 }
 
+export type IWordSortMethod =
+    | 'id' | 'easiness' | 'correctCount' | 'wrongCount' | 'halfCorrectCount'
+    | 'createTime' | 'acc' | 'yomikata' | 'testTime'
+export type ISortDirection = 'up' | 'down'
+
+export type IWordSorter = {
+    method: IWordSortMethod
+    direction: ISortDirection
+}
+
+export type IWordFilterModiferName = 'rei' | 'kai'
+
 export type IWordFilter = {
     search: string | null
+    modifiers: {
+        [K in IWordFilterModiferName]?: boolean
+    }
     testId: number | null
     testCorrectLevel: number
 }

@@ -27,7 +27,11 @@ export const storeRef = <T>(key: string, value: T): Ref<T> & Disposable => {
 }
 
 export const storeReactive = <T extends object>(key: string, value: T): T & Disposable => {
-    const r = reactive(initStorage(key, value)) as T
+    const v = initStorage(key, value)
+    for (const k in value) {
+        if (! (k in v)) v[k] = value[k]
+    }
+    const r = reactive(v) as T
     const stop = watch(r, (newValue) => setStorage(key, newValue))
     return Object.assign(r, {
         [kDispose]: stop

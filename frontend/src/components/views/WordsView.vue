@@ -5,11 +5,11 @@ import { useDebounceFn } from '@vueuse/core'
 
 import {
     useWord, emptyMem,
-    getCorrectness, getYomikataIndex, getLastTestTime, getHiragana
+    getCorrectness, getYomikataIndex, getLastTestTime, getHiragana,
+    getWordMeanings, getWordSentences
 } from '@store/words'
 import { useTest } from '@store/test'
 
-import { storeRef } from '@util/storage'
 import { strictToHiragana } from '@util/kana'
 import { isPortrait } from '@util/media'
 
@@ -18,8 +18,7 @@ import WordList from '@comp/WordList.vue'
 import WordDetail from '@comp/WordDetail.vue'
 import WordFilterTest from '@comp/WordFilterTest.vue'
 
-import type { IWord, ITestRec } from '@type'
-import { isRomaji } from 'wanakana'
+import type { IWord, ITestRec, IWordFilterModiferName, IWordSortMethod } from '@type'
 
 const wordStore = useWord()
 const testStore = useTest()
@@ -53,16 +52,47 @@ const toolbarConfig = reactive<ToolbarConfigItem[]>([
     }
 ])
 
-const { search, testId, testCorrectLevel } = toRefs(wordStore.filter)
+const { search, modifiers, testId, testCorrectLevel } = toRefs(wordStore.filter)
+const { method: sortMethod, direction: sortDirection } = toRefs(wordStore.sorter)
+
 const searchHiragana = computed(() => strictToHiragana(search.value))
+
+const modiferInfo: Record<IWordFilterModiferName, string> = {
+    rei: '例',
+    kai: '解釈'
+}
 
 const updateSearch = useDebounceFn((v: string) => {
     search.value = v
 }, 300)
 const searchDebounced = computed<string>({
     get: () => search.value ?? '',
-    set: updateSearch
+    set: (newSearch) => {
+        // do not debounce modifiers
+        const res = newSearch?.match(/^(?<modifer>rei|kai):$/)
+        const groups = res?.groups as { modifer?: IWordFilterModiferName } | null | undefined
+        if (groups?.modifer) {
+            modifiers.value[groups.modifer] = true
+            search.value = searchDebounced.value = ''
+        }
+
+        else updateSearch(newSearch)
+    }
 })
+
+const searchEl = ref<HTMLInputElement>()
+
+const onSearchDelete = () => {
+    const el = searchEl.value
+    if (! el) return
+    if (el.selectionStart === 0 && el.selectionEnd === 0) {
+        const activeModifers = Object
+            .entries(modifiers.value)
+            .filter(([, value ]) => value)
+        if (activeModifers.length)
+            modifiers.value[(activeModifers.at(-1)![0] as IWordFilterModiferName)] = false
+    }
+}
 
 watch(testId, () => {
     if (search.value || testId.value) toolbarMode.value = 'filter'
@@ -85,14 +115,31 @@ const filteredWords = computed<IWord[]>(() => {
     const text = search.value
     const hiragana = searchHiragana.value
     
-    return words.filter((word, index) => (
-        ! text || (hiragana
+    return words.filter((word, index) => {
+        // correct filter
+        if (testId.value !== null && recs[index].correct > testCorrectLevel.value) return false
+
+        // search filter
+        if (! text) return true
+        if (hiragana
             ? getHiragana(word).includes(hiragana)
             : word.disp.includes(text) || word.sub.includes(text)
-        )
-    ) && (
-        testId.value === null || recs[index].correct <= testCorrectLevel.value
-    ))
+        ) return true
+
+        // meaning filter
+        if (modifiers.value.kai) {
+            const meanings = getWordMeanings(word)
+            if (meanings.some(t => t.includes(text))) return true
+        }
+
+        // sentence filter
+        if (modifiers.value.rei) {
+            const sentences = getWordSentences(word)
+            if (sentences.some(t => t.includes(text))) return true
+        }
+
+        return false
+    })
 })
 
 const sortMethodInfo = {
@@ -106,10 +153,7 @@ const sortMethodInfo = {
     testTime: 'テスト時間',
     easiness: 'EZ'
 }
-type SortMethod = keyof typeof sortMethodInfo
-type SortDirection = 'up' | 'down'
-const sortMethod = storeRef<SortMethod>('wordsSortMethod', 'createTime')
-const sortDirection = storeRef<SortDirection>('wordsSortDirection', 'up')
+
 const sortFunction = computed(() => {
     const { value: method } = sortMethod
     return (a: IWord, b: IWord) => {
@@ -128,7 +172,7 @@ const sortFunction = computed(() => {
     }
 })
 const sortedWords = computed(() => [...filteredWords.value].sort(sortFunction.value))
-const onSortMethodClick = (method: SortMethod) => {
+const onSortMethodClick = (method: IWordSortMethod) => {
     if (method === sortMethod.value)
         sortDirection.value = sortDirection.value === 'up' ? 'down' : 'up'
     else
@@ -203,12 +247,22 @@ watch(route, () => {
                                 />
                             </span>
 
-                            <span
-                                v-if="search && searchHiragana && isRomaji(search)"
-                                class="badge"
-                            >ローマ字</span>
+                            <template v-for="modifier, name of modifiers">
+                                <span v-if="modifier" class="badge">
+                                    {{ modiferInfo[name] }}
+                                    <fa-icon
+                                        @click="modifiers[name] = false"
+                                        icon="trash" class="button"
+                                    />
+                                </span>
+                            </template>
 
-                            <input v-model="searchDebounced" />
+                            <input
+                                ref="searchEl"
+                                v-model="searchDebounced"
+                                @keydown.delete="onSearchDelete"
+                            />
+
                             <fa-icon
                                 @click="search = ''"
                                 icon="times-circle" class="button"

@@ -1,6 +1,6 @@
 import { ref, type Ref } from 'vue'
 import { defineStore } from 'pinia' 
-import { toHiragana, toRomaji, isHiragana} from 'wanakana'
+import { toHiragana, isHiragana} from 'wanakana'
 import { useArchive } from '@store/archive'
 
 import { randomItem } from '@util'
@@ -10,7 +10,8 @@ import type { Disposable } from '@util/disposable'
 
 import type {
     IMemory, ITestRec, IWord, ICorrect,
-    IWordDocumentWithoutId, IWordGraph, IWordDocument, IWordGraphEdge
+    IWordSorter, IWordFilter,
+    IWordDocumentWithoutId, IWordGraph, IWordDocument, IWordGraphEdge,
 } from '@type'
 import { DocumentKind } from '@type'
 
@@ -21,6 +22,7 @@ declare module '@type' {
         words: Ref<ArrayStore<IWord>> & Disposable
         wordMaxId: Ref<number> & Disposable
         wordFilter: Ref<IWordFilter> & Disposable
+        wordSorter: Ref<IWordSorter> & Disposable
         docMaxId: Ref<number> & Disposable
     }
 }
@@ -40,13 +42,20 @@ export const useWord = defineStore('words', () => {
         },
         map: compress_IWord
     }))
-    archiveStore.define('wordFilter', (key) => storeRefReactive(key, {
+    archiveStore.define('wordFilter', (key) => storeRefReactive<IWordFilter>(key, {
         search: null,
         testId: null,
+        modifiers: {},
         testCorrectLevel: 1
     }))
+    archiveStore.define('wordSorter', (key) => storeRefReactive<IWordSorter>(key, {
+        method: 'id',
+        direction: 'up'
+    }))
     archiveStore.define('docMaxId', key => storeRef(key, 0))
-    const { words, wordMaxId, wordFilter: filter, docMaxId } = archiveStore.extractData([ 'words', 'wordMaxId', 'wordFilter', 'docMaxId' ])
+    const { words, wordMaxId, wordFilter: filter, wordSorter: sorter, docMaxId } = archiveStore.extractData(
+        [ 'words', 'wordMaxId', 'wordFilter', 'wordSorter', 'docMaxId' ]
+    )
     
     const getWordDict = () => {
         const dict: Record<string, IWord> = {}
@@ -197,7 +206,7 @@ export const useWord = defineStore('words', () => {
     const randomWord = () => randomItem(words.value)
 
     return {
-        words, filter, getWordDict,
+        words, filter, sorter, getWordDict,
         add, withdraw, restore,
         newlyAddedDocId, addDoc,
         updateGraphs, updateGraphByTemplate,
@@ -220,12 +229,10 @@ export const getCorrectness = (mem: IMemory) => {
     return total ? 1 - mem.wrongCount / total : 0
 }
 
-export const getRomaji = (word: IWord) => {
-    if (word.sub.match(/[a-z]/)) return toRomaji(word.disp)
-    return toRomaji(word.sub)
+export const getHiragana = (word: IWord) => {
+    if (word.sub.match(/[a-z]/)) return toHiragana(word.disp)
+    return toHiragana(word.sub)
 }
-
-export const getHiragana = (word: IWord) => toHiragana(getRomaji(word))
 
 export const getYomikataIndex = (word: IWord) => (
     (isHiragana(word.sub[0])
@@ -281,3 +288,37 @@ export const isSameTargetEdge = (a: IWordGraphEdge, b: IWordGraphEdge) => a.targ
 export const newEdge = (sourceDoc: number, targetWord: number): IWordGraphEdge => ({
     sourceDoc, targetWord
 })
+
+export const getWordMeanings = (word: IWord) => {
+    return (word.docs ?? []).flatMap(doc => {
+        if (doc.kind === DocumentKind.Meaning) return [ doc.text ]
+        return []
+    })
+}
+
+export const getWordSegmentDisp = ({ id, disp }: WordSegment, short?: boolean) => {
+    const wordStore = useWord()
+
+    if (disp) return disp
+    const word = wordStore.getById(id)
+    if (! word) return `#${id}`
+    if (short) return word.disp.split('・')[0]
+    return word.disp
+}
+
+export const getWordSentences = (word: IWord) => {
+    const fn = (node: { docs?: IWordDocument[] }): string[] => (node.docs ?? []).flatMap(doc => {
+        if (doc.kind === DocumentKind.Sentence) return [
+            getTemplateSegements(doc.text)
+                .map(seg => (
+                    typeof seg === 'object'
+                        ? getWordSegmentDisp(seg)
+                        : seg
+                ))
+                .join('')
+        ]
+        if ('docs' in doc) return fn(doc)
+        return []
+    })
+    return fn(word)
+}
