@@ -20,12 +20,12 @@ const selectTheme = (name: ITheme) => {
         <div>
             <button
                 v-for="theme, name of themes"
+                @click="selectTheme(name)"
                 class="card square inline"
                 :class="{ active: themeStore.theme === name }"
             >
                 <fa-icon
                     :icon="theme.icon"
-                    @click="selectTheme(name)"
                 />
             </button>
         </div>
