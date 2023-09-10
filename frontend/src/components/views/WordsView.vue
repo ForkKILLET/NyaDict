@@ -113,38 +113,39 @@ const filteredWords = computed<IWord[]>(() => {
         })
     }
 
-    const text = search.value
+    const text = search.value ?? ''
     const hiragana = searchHiragana.value
     
     return words.filter((word, index) => {
         // correct filter
         if (testId.value !== null && recs[index].correct > testCorrectLevel.value) return false
 
-        // search filter
-        if (! text) return true
-        if (hiragana
-            ? getHiragana(word).includes(hiragana)
-            : word.disp.includes(text) || word.sub.includes(text)
-        ) return true
-
 		// empty doc filter
 		if (modifiers.value.aku) {
-			return ! word.docs?.length
+			if (word.docs?.length) return false
 		}
 
         // meaning filter
         if (modifiers.value.kai) {
             const meanings = getWordMeanings(word)
-            if (meanings.some(t => t.includes(text))) return true
+            if (! meanings.some(t => t.includes(text))) return false
         }
 
         // sentence filter
-        if (modifiers.value.rei) {
+        else if (modifiers.value.rei) {
             const sentences = getWordSentences(word)
-            if (sentences.some(t => t.includes(text))) return true
+            if (! sentences.some(t => t.includes(text))) return false
         }
 
-        return false
+        // normal filter
+        else {
+            if (! (hiragana
+                ? getHiragana(word).includes(hiragana)
+                : word.disp.includes(text) || word.sub.includes(text)
+            )) return false
+        }
+
+        return true
     })
 })
 
