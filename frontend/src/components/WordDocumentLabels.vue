@@ -19,6 +19,6 @@ const toggleImportant = () => {
         icon="star"
         :color="`var(${doc.labels?.i ? '--color-order' : '--color-fg'})`"
         desc="マーク"
-        :delay="0"
+        :delay="0.5"
     />
 </template>
