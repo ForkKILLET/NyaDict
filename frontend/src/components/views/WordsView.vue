@@ -59,7 +59,8 @@ const searchHiragana = computed(() => strictToHiragana(search.value))
 
 const modiferInfo: Record<IWordFilterModiferName, string> = {
     rei: '例',
-    kai: '解釈'
+    kai: '解釈',
+	aku: '空く'
 }
 
 const updateSearch = useDebounceFn((v: string) => {
@@ -69,7 +70,7 @@ const searchDebounced = computed<string>({
     get: () => search.value ?? '',
     set: (newSearch) => {
         // do not debounce modifiers
-        const res = newSearch?.match(/^(?<modifer>rei|kai):$/)
+        const res = newSearch?.match(/^(?<modifer>rei|kai|aku):$/)
         const groups = res?.groups as { modifer?: IWordFilterModiferName } | null | undefined
         if (groups?.modifer) {
             modifiers.value[groups.modifer] = true
@@ -125,6 +126,11 @@ const filteredWords = computed<IWord[]>(() => {
             ? getHiragana(word).includes(hiragana)
             : word.disp.includes(text) || word.sub.includes(text)
         ) return true
+
+		// empty doc filter
+		if (modifiers.value.aku) {
+			return ! word.docs?.length
+		}
 
         // meaning filter
         if (modifiers.value.kai) {

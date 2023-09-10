@@ -104,7 +104,7 @@ export type IWordSorter = {
     direction: ISortDirection
 }
 
-export type IWordFilterModiferName = 'rei' | 'kai'
+export type IWordFilterModiferName = 'rei' | 'kai' | 'aku' 
 
 export type IWordFilter = {
     search: string | null
