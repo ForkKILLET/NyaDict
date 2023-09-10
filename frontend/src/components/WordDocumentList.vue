@@ -18,8 +18,8 @@ const sortedDocs = computed(() => {
 
 const withdrawDoc = (docId: number) => {
     const docs = props.node.docs!
-    const index = docs.find(doc => doc.id === docId)?.id
-    if (index !== undefined) docs.splice(index, 1)
+    const index = docs.findIndex(doc => doc.id === docId)
+    if (index >= 0) docs.splice(index, 1)
 }
 </script>
 
