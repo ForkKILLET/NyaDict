@@ -61,7 +61,7 @@ const addDoc = (kind: DocumentKind) => {
             <div
                 class="doc-kinds"
                 v-if="showKinds"
-                v-on-click-outside="(event) => { event.stopPropagation(); showKinds = false }"
+                v-on-click-outside="() => { showKinds = false }"
             >
                 <div
                     v-for="info, kind in documentKindInfo"

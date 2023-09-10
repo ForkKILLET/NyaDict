@@ -81,7 +81,7 @@ watch(editMode, (mode) => {
             <Transition name="fade" :duration=".3 * 1000">
                 <div
                     v-if="more && showMore"
-                    v-on-click-outside="(event) => { event.stopPropagation(); showMore = false }"
+                    v-on-click-outside="() => { showMore = false }"
                     class="more card deep"
                 >
                     <LongPressButton
