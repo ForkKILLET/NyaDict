@@ -164,8 +164,8 @@ const onDragMove = (event: MouseEvent | TouchEvent) => {
         tar.fy! += y - tar.lastY!
     }
     else if (tar.type === 'view') {
-        viewboxOffset.value.dx += tar.lastX! - x
-        viewboxOffset.value.dy += tar.lastY! - y
+        viewboxOffset.value.dx += (tar.lastX! - x) * scale.value
+        viewboxOffset.value.dy += (tar.lastY! - y) * scale.value
     }
     tar.lastX = x
     tar.lastY = y
@@ -197,9 +197,11 @@ const scale = ref(1)
 
 const zoom = (deltaScale: number) => {
     const newScale = scale.value + deltaScale
-    if (newScale <= 0 || newScale >= 2) return
+    if (newScale - 0.4 < Number.EPSILON || newScale - 2.1 > Number.EPSILON) return
     scale.value = newScale
 }
+
+const isFullScreen = ref(false)
 
 useEventListener('mousedown', onDragStart)
 useEventListener('touchstart', onDragStart)
@@ -210,10 +212,24 @@ useEventListener('touchend', onDragEnd)
 </script>
 
 <template>
-    <div ref="root" class="word-graph-chart" :class="{ dragging: !! dragTarget }">
+    <div
+        ref="root"
+        class="word-graph-chart"
+        :class="{
+            dragging: !! dragTarget,
+            fullscreen: isFullScreen,
+            glowing: isFullScreen
+        }"
+    >
         <div class="toolbar">
-            <fa-icon @click="zoom(+ 0.1)" icon="magnifying-glass-plus" class="button" />
             <fa-icon @click="zoom(- 0.1)" icon="magnifying-glass-minus" class="button" />
+            <span class="number">{{ scale * 100 | 0 }}%</span>
+            <fa-icon @click="zoom(+ 0.1)" icon="magnifying-glass-plus" class="button" />
+            <fa-icon
+                @click="isFullScreen = ! isFullScreen"
+                :icon="isFullScreen ? 'compress' : 'expand'"
+                class="button"
+            />
         </div>
         <svg
             :width="width"
@@ -271,6 +287,15 @@ useEventListener('touchend', onDragEnd)
 }
 .word-graph-chart.dragging {
     cursor: grabbing;
+}
+
+.word-graph-chart.fullscreen {
+    position: fixed;
+    top: 1em;
+    left: 1em;
+    width: calc(100vw - 3em);
+    height: calc(100vh - 3em);
+    box-sizing: border-box;
 }
 
 .node :deep(text) {

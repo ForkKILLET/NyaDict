@@ -9,7 +9,8 @@ import {
     faCloud, faCloudArrowDown, faCloudArrowUp, faInfoCircle, faCircleQuestion,
     faForward, faPlus, faChartLine, faCode, faEye, faBars, faGear, faListDots,
     faLink, faArrowsLeftRight, faTriangleExclamation, faMoon, faSun, faWandMagic,
-    faCog, faMagnifyingGlassPlus, faMagnifyingGlassMinus, faStar, 
+    faCog, faMagnifyingGlassPlus, faMagnifyingGlassMinus, faStar, faExpand,
+    faCompress
 } from '@fortawesome/free-solid-svg-icons'
 
 
@@ -23,5 +24,6 @@ library.add(...[
     faCloud, faCloudArrowUp, faCloudArrowDown, faInfoCircle, faCircleQuestion,
     faForward, faPlus, faChartLine, faCode, faEye, faBars, faGear, faListDots,
     faLink, faArrowsLeftRight, faTriangleExclamation, faMoon, faSun, faWandMagic,
-    faCog, faMagnifyingGlassPlus, faMagnifyingGlassMinus, faStar,
+    faCog, faMagnifyingGlassPlus, faMagnifyingGlassMinus, faStar, faExpand,
+    faCompress
 ])
