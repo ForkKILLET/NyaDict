@@ -96,6 +96,10 @@ const imports = async (id?: string) => {
     }
 
     archiveStore.importArchive(id, newData)
+
+    if (currentId.value === id) {
+        archiveStore.reloadArchive()
+    }
 }
 
 const getRemoteInfo = async () => {
