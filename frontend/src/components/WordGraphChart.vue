@@ -92,7 +92,9 @@ const graph = computed(() => {
 // See <https://github.com/koishijs/webui/blob/f88acd440be92216a6081bbd3b9172c824768de7/plugins/insight/client/index.vue>
 
 const root = ref<HTMLDivElement>()
+const toolbarEl = ref<HTMLDivElement>()
 const { width, height } = useElementSize(root)
+const { height: toolbarHeight } = useElementSize(toolbarEl)
 
 const forceLink = d3
     .forceLink<ISimulationNode, IEdge>(graph.value.edges)
@@ -221,7 +223,7 @@ useEventListener('touchend', onDragEnd)
             glowing: isFullScreen
         }"
     >
-        <div class="toolbar">
+        <div ref="toolbarEl" class="toolbar">
             <fa-icon @click="zoom(- 0.1)" icon="magnifying-glass-minus" class="button" />
             <span class="number">{{ scale * 100 | 0 }}%</span>
             <fa-icon @click="zoom(+ 0.1)" icon="magnifying-glass-plus" class="button" />
@@ -233,7 +235,7 @@ useEventListener('touchend', onDragEnd)
         </div>
         <svg
             :width="width"
-            :height="height"
+            :height="height - toolbarHeight"
             :viewBox="[- width / 2 + viewboxOffset.dx, - height / 2 + viewboxOffset.dy, width, height]
                 .map(x => x / scale).join(' ')
             "
@@ -262,7 +264,6 @@ useEventListener('touchend', onDragEnd)
                     :class="{ center: node.word.id === word.id }"
                     @mousedown.stop.prevent="event => onDragStart(event, node)"
                     @touchstart.stop.prevent="event => onDragStart(event, node)"
-                    
                 >
                     <circle
                         :r="40"
@@ -293,8 +294,8 @@ useEventListener('touchend', onDragEnd)
     position: fixed;
     top: 1em;
     left: 1em;
-    width: calc(100vw - 3em);
-    height: calc(100vh - 3em);
+    width: calc(100vw - 2em);
+    height: calc(100vh - 2em);
     box-sizing: border-box;
 }
 
