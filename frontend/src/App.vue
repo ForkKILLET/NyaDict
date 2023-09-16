@@ -1,13 +1,18 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 
-import { useTheme } from '@store/theme'
+import { useConfig } from '@store/config'
+import { useTheme } from '@util/theme'
 
 import Topbar from '@comp/Topbar.vue'
 import Notifications from '@comp/notifications/Notifications.vue'
+import { storeToRefs } from 'pinia'
+import { toRefs } from 'vue'
 
 const route = useRoute()
-useTheme()
+const { config } = storeToRefs(useConfig())
+
+useTheme(toRefs(config.value).theme)
 </script>
 
 <template>

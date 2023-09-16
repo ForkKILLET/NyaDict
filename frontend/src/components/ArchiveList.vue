@@ -7,7 +7,6 @@ import { useAuth } from '@store/auth'
 import { useArchive, ARCHIVE_VERSION } from '@store/archive'
 
 import { downloadURL } from '@util/dom'
-import { api } from '@util/api'
 import { json5Stringify, json5TryParse } from '@util/storage'
 import { addNoti, handleResp } from '@util/notif'
 
@@ -20,7 +19,9 @@ import type {
 } from '@type/network'
 
 const archiveStore = useArchive()
-const { jwtPayload, axiosHeader } = storeToRefs(useAuth())
+const authStore = useAuth()
+const { jwtPayload } = storeToRefs(authStore)
+const { api } = authStore
 const { currentId, archiveInfo } = storeToRefs(archiveStore)
 
 type RemoteArchives = Record<string, IRemoteArchiveInfo>
@@ -106,9 +107,7 @@ const getRemoteInfo = async () => {
     const resp = await handleResp({
         name: 'アーカイブ・リストを取得',
         silentSuccess: true,
-        action: async () => await api.get('/archive/mine', {
-            headers: axiosHeader.value
-        }) as IArchiveGetMineResp
+        action: async () => await api.get('/archive/mine') as IArchiveGetMineResp
     })
     if (! resp) return
 
@@ -131,8 +130,6 @@ const upload = async (id: string) => {
             idPerUser: id,
             content: jsons[id],
             public: false
-        }, {
-            headers: axiosHeader.value
         }) as IArchiveUploadResp
     })
     if (! resp) return
@@ -143,9 +140,7 @@ const upload = async (id: string) => {
 const download = async (id: string) => {
     const resp = await handleResp({
         name: 'ダウンロード',
-        action: async () => await api.get(`/archive/mine/${id}`, {
-            headers: axiosHeader.value
-        }) as IArchiveDownloadResp
+        action: async () => await api.get(`/archive/mine/${id}`) as IArchiveDownloadResp
     })
     if (! resp) return
 

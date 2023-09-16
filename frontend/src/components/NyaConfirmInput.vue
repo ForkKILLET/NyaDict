@@ -10,6 +10,7 @@ const props = defineProps<{
     withdrawable?: boolean
     editMode?: boolean
     withdrawWhenEmpty?: boolean
+    clickToEdit?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -61,11 +62,16 @@ watch(editMode, (mode) => {
         class="nya-confirm-input"
         :class="{ withdrawable }"
         @keydown.escape="editMode && clear()"
+        v-on-click-outside="() => { clickToEdit && clear() }"
     >
         <template v-if="! editMode">
-            <slot name="content">
-                <span class="content">{{ modelValue }}</span>
-            </slot>
+            <div
+                @click="clickToEdit && edit()"
+            >
+                <slot name="content">
+                    <span class="content">{{ modelValue }}</span>
+                </slot>
+            </div>
             <div class="edit-buttons">
                 <fa-icon
                     v-if="! disabled"

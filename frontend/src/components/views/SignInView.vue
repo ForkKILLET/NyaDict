@@ -3,11 +3,11 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '@store/auth'
 import type { ISignInResp } from '@type/network'
-import { api } from '@util/api'
 import { handleResp } from '@util/notif'
 import ActionPanel from '@comp/ActionPanel.vue'
 
 const authStore = useAuth()
+const { api } = authStore
 const router = useRouter()
 
 const username = ref(authStore.recentlySignedUpUsername ?? '')

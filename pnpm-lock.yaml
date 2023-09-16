@@ -134,6 +134,9 @@ importers:
       pinia:
         specifier: ^2.1.6
         version: 2.1.6(typescript@5.1.6)(vue@3.3.4)
+      schemastery:
+        specifier: ^3.12.0
+        version: 3.12.0
       vue:
         specifier: ^3.3.4
         version: 3.3.4
@@ -1880,6 +1883,10 @@ packages:
       path-type: 4.0.0
       yaml: 1.10.2
     dev: true
+
+  /cosmokit@1.4.5:
+    resolution: {integrity: sha512-hu/c4LP9SWqdxC+VWBCPKW+vb78kh8TMEwERb1irCNKyiPQUGJDT1Hu8GrUM3X9Gd0HvQpbzGkEpGWFxFXREgQ==}
+    dev: false
 
   /create-require@1.1.1:
     resolution: {integrity: sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==}
@@ -3637,6 +3644,12 @@ packages:
       ajv: 6.12.6
       ajv-keywords: 3.5.2(ajv@6.12.6)
     dev: true
+
+  /schemastery@3.12.0:
+    resolution: {integrity: sha512-EA6+HIqhWrbWD80Yjjk7lJv5WrX3b7g6CI/2iQayy5+0LtNqh8Q+m2BPPYY0oP9X7HtsjsL5jXfR8mEe7wmscg==}
+    dependencies:
+      cosmokit: 1.4.5
+    dev: false
 
   /secure-json-parse@2.7.0:
     resolution: {integrity: sha512-6aU+Rwsezw7VR8/nyvKTx8QpWH9FrcYiXXlqC4z5d5XQBDRqtbfsRjnwGyqbi3gddNtWHuEk9OANUotL26qKUw==}

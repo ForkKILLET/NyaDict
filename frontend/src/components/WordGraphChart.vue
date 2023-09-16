@@ -205,22 +205,26 @@ const zoom = (deltaScale: number) => {
 
 const isFullScreen = ref(false)
 
+const onKey = (event: KeyboardEvent) => {
+    if (event.key === 'Escape' && isFullScreen.value) isFullScreen.value = false 
+}
+
 useEventListener('mousedown', onDragStart)
 useEventListener('touchstart', onDragStart)
 useEventListener('mousemove', onDragMove)
 useEventListener('touchmove', onDragMove)
 useEventListener('mouseup', onDragEnd)
 useEventListener('touchend', onDragEnd)
+useEventListener('keydown', onKey)
 </script>
 
 <template>
     <div
         ref="root"
-        class="word-graph-chart"
+        class="word-graph-chart glowing"
         :class="{
             dragging: !! dragTarget,
             fullscreen: isFullScreen,
-            glowing: isFullScreen
         }"
     >
         <div ref="toolbarEl" class="toolbar">
@@ -284,6 +288,7 @@ useEventListener('touchend', onDragEnd)
 
 <style scoped>
 .word-graph-chart {
+    margin: 1em 0;
     cursor: grab;
 }
 .word-graph-chart.dragging {

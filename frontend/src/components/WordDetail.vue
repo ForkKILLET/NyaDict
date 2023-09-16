@@ -117,9 +117,7 @@ window.addEventListener('resize', () => {
                     v-if="word.graph"
                     :graph="word.graph"
                 />
-                <WordGraphChart
-                    :word="word"
-                />
+                <WordGraphChart :word="word" />
             </template>
         </NyaTab>
     </div>

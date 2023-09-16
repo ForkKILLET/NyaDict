@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+
 import { useAuth } from '@store/auth'
-import { api } from '@util/api'
+
 import { handleResp } from '@util/notif'
 import type { ISignUpResp } from '@type/network'
 
 import ActionPanel from '@comp/ActionPanel.vue'
 
 const authStore = useAuth()
+const { api } = authStore
 const router = useRouter()
 
 const username = ref('')
