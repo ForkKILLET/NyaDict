@@ -81,7 +81,8 @@ export const useArchive = defineStore('archives', () => {
     }
 
     const createArchive = () => {
-        const newId = String(Math.max(...Object.keys(archiveInfo).map(Number)) + 1)
+        const ids = Object.keys(archiveInfo)
+        const newId = ids.length ? String(Math.max(...ids.map(Number)) + 1) : 0
         archiveInfo[newId] = {
             title: '黙認',
             accessTime: Date.now(),
