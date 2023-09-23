@@ -122,6 +122,7 @@ const onKey = (event: KeyboardEvent) => {
 }
 
 const onWheel = (event: WheelEvent) => {
+    event.preventDefault()
     if (event.deltaY < 0) {
         zoom(+ 0.1)
     }
