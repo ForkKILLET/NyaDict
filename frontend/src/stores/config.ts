@@ -22,6 +22,10 @@ export const Config = Schema.object({
         .default('default')
         .extra('listStyle', 'icon')
         .description('テーマ'),
+    lazySharp: Schema
+        .boolean()
+        .default(false)
+        .description('タブキーを押すと単語IDを挿入する'),
     syncApi: Schema
         .string()
         .default(import.meta.env.VITE_SYNC_API)

@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { computed, nextTick, ref } from 'vue'
+import { storeToRefs } from 'pinia'
 
 import { useWord, getFirstWordTemplateSegment } from '@store/words'
+import { useConfig } from '@store/config'
 
 import NyaConfirmInput from '@comp/NyaConfirmInput.vue'
 import NyaTemplate from '@comp/NyaTemplate.vue'
@@ -27,6 +29,7 @@ const emit = defineEmits<{
 }>()
 
 const wordStore = useWord()
+const { config } = storeToRefs(useConfig())
 
 const lang = computed(() => navigator.language)
 
@@ -45,26 +48,39 @@ const sharpStart = () => {
         miniSearcher.value?.focus()
     })
 }
+
 const sharpEnd = (word: IWord, model: { value: string }) => {
     showMiniSearcher.value = false
     templateInput.value!.focus()
+
     const el = templateInput.value
-    if (el) {
-        const pos = el.selectionStart
-        if (pos !== null) {
-            if (model.value[pos - 1] === '#') {
-                const id = String(word.id)
-                model.value = model.value.slice(0, pos) + id + model.value.slice(pos)
-                nextTick(() => {
-                    el.selectionStart = el.selectionEnd = pos + id.length
-                })
-            }
-        }
+    if (! el) return
+
+    const pos = el.selectionStart
+    if (typeof pos === 'number' && el.value[pos - 1] === '#') {
+        const id = String(word.id)
+        model.value = model.value.slice(0, pos) + id + model.value.slice(pos)
+        nextTick(() => {
+            const el = templateInput.value
+            if (el) el.selectionStart = el.selectionEnd = pos + id.length
+        })
     }
 }
 const sharpCancel = () => {
     showMiniSearcher.value = false
     templateInput.value!.focus()
+}
+const onSharp = () => {
+    if (! config.value.lazySharp) sharpStart()
+}
+const onTab = () => {
+    const el = templateInput.value
+    if (! el) return
+
+    const pos = el.selectionStart
+    if (typeof pos === 'number' && el.value[pos - 1] === '#') {
+        sharpStart()
+    }
 }
 const onTemplateCompositionEnd = (event: CompositionEvent) => {
     if (event.data === '#') sharpStart()
@@ -186,7 +202,8 @@ const backlink = (doc: ILinkDocument) => {
                             ref="templateInput"
                             v-model="model.ref.value"
                             @keypress.enter="submit"
-                            @keypress.#="sharpStart"
+                            @keypress.#="onSharp"
+                            @keydown.tab.prevent="onTab"
                             @compositionend="onTemplateCompositionEnd"
                         />
                     </template>

@@ -42,6 +42,9 @@ const value = computed({
                     :click-to-edit="true"
                 />
             </div>
+            <div v-else-if="schema.type === 'boolean'">
+                <input v-model="value" type="checkbox" />
+            </div>
         </div>
     </div>
 </template>
@@ -58,5 +61,10 @@ const value = computed({
 .nya-confirm-input {
     text-decoration: underline;
     text-decoration-color: var(--color-ui);
+}
+
+input[type=checkbox] {
+    width: 1em;
+    height: 1em;
 }
 </style>
