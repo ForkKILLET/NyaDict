@@ -11,9 +11,10 @@ import NyaConfirmInput from '@comp/NyaConfirmInput.vue'
 import WordDocumentList from '@comp/WordDocumentList.vue'
 import WordDocumentAdder from '@comp/WordDocumentAdder.vue'
 import WordGraphList from '@comp/WordGraphList.vue'
+import WordGraphChart from '@comp/WordGraphChart.vue'
 
 import type { IWord, IWordDocumentWithoutId } from '@type'
-import WordGraphChart from './WordGraphChart.vue'
+import WordSub from './WordSub.vue'
 
 const props = withDefaults(defineProps<{
     word: IWord
@@ -62,7 +63,11 @@ window.addEventListener('resize', () => {
         </RouterLink>
 
         <NyaConfirmInput v-model="word.disp" class="word-disp" />
-        <NyaConfirmInput v-model="word.sub" class="word-sub" />
+        <NyaConfirmInput v-model="word.sub" class="word-sub">
+            <template #content>
+                <WordSub :word="word" />
+            </template>
+        </NyaConfirmInput>
 
         <p>
             <LongPressButton
@@ -128,7 +133,7 @@ window.addEventListener('resize', () => {
     margin: 0;
 }
 
-.word-disp :deep(input), .word-sub :deep(input) {
+.word-disp :deep(.input), .word-sub :deep(.input) {
     width: calc(100% - 4rem);
 }
 
@@ -136,6 +141,10 @@ window.addEventListener('resize', () => {
     font-size: 2em;
     font-weight: bold;
     margin-bottom: .5rem;
+}
+
+.word-sub {
+    font-size: 1.2em;
 }
 
 .calendar {

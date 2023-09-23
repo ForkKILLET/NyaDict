@@ -20,23 +20,26 @@ export type IWord_Compress = {
   I: number
   D: string
   S: string
+  T?: number
   M: IMemory_Compress
   d?: IWordDocument_Compress[]
   G?: IWordGraph_Compress
 }
 export const compress_IWord = {
-  serialize: ({ id: I, disp: D, sub: S, mem: M, docs: d, graph: G }: IWord): IWord_Compress => ({
+  serialize: ({ id: I, disp: D, sub: S, tone: T, mem: M, docs: d, graph: G }: IWord): IWord_Compress => ({
     I,
     D,
     S,
+    T,
     M: compress_IMemory.serialize(M),
     d: d?.map(compress_IWordDocument.serialize),
     G: G ? compress_IWordGraph.serialize(G) : undefined,
   }),
-  deserialize: ({ I: id, D: disp, S: sub, M: mem, d: docs, G: graph }: IWord_Compress): IWord => ({
+  deserialize: ({ I: id, D: disp, S: sub, T: tone, M: mem, d: docs, G: graph }: IWord_Compress): IWord => ({
     id,
     disp,
     sub,
+    tone,
     mem: compress_IMemory.deserialize(mem),
     docs: docs?.map(compress_IWordDocument.deserialize),
     graph: graph ? compress_IWordGraph.deserialize(graph) : undefined,

@@ -5,6 +5,7 @@ export type IWord = {
     id: number
     disp: string
     sub: string
+    tone?: number
     mem: IMemory
     docs?: IWordDocument[]
     graph?: IWordGraph

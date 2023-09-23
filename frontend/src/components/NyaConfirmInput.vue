@@ -69,7 +69,7 @@ watch(editMode, (mode) => {
                 @click="clickToEdit && edit()"
             >
                 <slot name="content">
-                    <span class="content">{{ modelValue }}</span>
+                    <span class="content" :value="modelValue">{{ modelValue }}</span>
                 </slot>
             </div>
             <div class="edit-buttons">
