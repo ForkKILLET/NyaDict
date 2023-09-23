@@ -1,94 +1,30 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useElementSize, useEventListener } from '@vueuse/core'
-import * as d3 from 'd3-force'
 
-import { isSameTargetEdge, useWord } from '@store/words'
+import { IDragTarget, IDragTargetInfo, ISimulationNode, IView, useWordGraph } from '@store/wordGraph'
 
-import { dedup, intersect } from '@util'
 import { getEventPoint } from '@util/dom'
+import { depRef } from '@util/reactivity'
 
 import EllipsisText from '@comp/charts/EllipsisText.vue'
 import Arrow from '@comp/charts/Arrow.vue'
 
-import type { IWord, IWordGraphEdge } from '@type'
+import type { IWord } from '@type'
 
 const props = defineProps<{
     word: IWord
 }>()
 
-type INode = {
-    word: IWord
-}
+const wordGraphStore = useWordGraph()
 
-type IDragTargetInfo = {
-    lastX: number
-    lastY: number
-    startX: number
-    startY: number
-}
+const graph = depRef(
+    () => wordGraphStore.useGraph(props.word),
+    () => props.word
+)
 
-type ISimulationNode = INode & d3.SimulationNodeDatum & { type: 'node' } & Partial<IDragTargetInfo>
-
-type IView = {
-    type: 'view'
-} & Partial<IDragTargetInfo>
-
-type IDragTarget = ISimulationNode | IView
-
-type IEdge = {
-    source: ISimulationNode
-    target: ISimulationNode
-    twoWay: boolean
-}
-
-const wordStore = useWord()
-
-const graph = computed(() => {
-    const wordDict = wordStore.getWordDict()
-    const visitedNodes: Record<number, boolean> = {}
-    const nodes: ISimulationNode[] = []
-    const edges: IEdge[] = []
-
-    const visit = (now: IWord) => {
-        const node: ISimulationNode = { type: 'node', word: now }
-        nodes.push(node)
-        visitedNodes[now.id] = true
-
-        const { graph } = now
-        if (! graph) return node
-
-        const [ edgesInAndOut, edgesIn, edgesOut ] = intersect(
-            dedup(graph.edgesIn, isSameTargetEdge),
-            dedup(graph.edgesOut, isSameTargetEdge),
-            isSameTargetEdge
-        )
-        
-        const visitEdge = (direction: 'in' | 'out' | 'twoway') => ({ targetWord }: IWordGraphEdge) => {
-            const nextNode = visitedNodes[targetWord]
-                ? nodes.find(node => node.word.id === targetWord)!
-                : visit(wordDict[targetWord])
-            edges.push({
-                source: direction === 'in' ? nextNode : node,
-                target: direction === 'in' ? node : nextNode,
-                twoWay: direction === 'twoway'
-            })
-        }
-
-        edgesIn.forEach(visitEdge('in'))
-        edgesOut.forEach(visitEdge('out'))
-        edgesInAndOut.forEach(visitEdge('twoway'))
-
-        return node
-    }
-    
-    const centerNode = visit(props.word)
-
-    return reactive({ centerNode, nodes, edges })
-})
-
-// Following simulation code is from Koishi.
+// Simulation code is from Koishi.
 // See <https://github.com/koishijs/webui/blob/f88acd440be92216a6081bbd3b9172c824768de7/plugins/insight/client/index.vue>
 
 const root = ref<HTMLDivElement>()
@@ -96,36 +32,6 @@ const toolbarEl = ref<HTMLDivElement>()
 const { width, height } = useElementSize(root)
 const { height: toolbarHeight } = useElementSize(toolbarEl)
 const svgHeight = computed(() => height.value - toolbarHeight.value)
-
-const forceLink = d3
-    .forceLink<ISimulationNode, IEdge>(graph.value.edges)
-    .id(node => node.word.id)
-    .distance(130)
-
-const simulation = d3
-    .forceSimulation(graph.value.nodes)
-    .force('link', forceLink)
-    .force('charge', d3.forceManyBody().strength(- 200))
-    .stop()
-
-const TICKS = 1000
-const ALPHA_MIN = 0.001
-
-onMounted(() => {
-    simulation
-        .alpha(1)
-        .alphaMin(ALPHA_MIN)
-        .alphaDecay(1 - Math.pow(ALPHA_MIN, 1 / TICKS))
-        .restart()
-})
-
-watch(graph, () => {
-    simulation.nodes(graph.value.nodes)
-    forceLink.links(graph.value.edges)
-    simulation
-        .alpha(0.3)
-        .restart()
-})
 
 const dragTarget = ref<IDragTarget | null>(null)
 const viewboxOffset = ref<{ dx: number, dy: number }>({ dx: 0, dy: 0 })
@@ -139,7 +45,7 @@ const onDragStart = (event: MouseEvent | TouchEvent, node?: ISimulationNode) => 
         startY: y, lastY: y
     }
     if (node) {
-        simulation.alphaTarget(0.3).restart()
+        graph.value.simulation.alphaTarget(0.3).restart()
         node.fx = node.x
         node.fy = node.y
         tar = Object.assign(node, targetInfo)
@@ -183,7 +89,7 @@ const onDragEnd = (event: MouseEvent | TouchEvent) => {
 
     if (tar.type === 'node') {
         const point = getEventPoint(event)
-        simulation.alphaTarget(0)
+        graph.value.simulation.alphaTarget(0)
 
         if (tar.startX === point.clientX && tar.startY === point.clientY) {
             // click event
