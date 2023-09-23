@@ -50,7 +50,7 @@ cd backend  # 进入后端目录
 pnpm build  # 构建
 ```
 
-编辑 `.env` 和 `.env.prod` 可以调整调试和生产模式的配置。
+编辑 `.env` 和 `.env.production` 可以调整调试和生产模式的配置。
 
 生产模式运行：
 

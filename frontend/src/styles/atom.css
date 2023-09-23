@@ -119,3 +119,7 @@
 .scroll-y::-webkit-scrollbar {
     display: none;
 }
+
+.no-select {
+    user-select: none;
+}

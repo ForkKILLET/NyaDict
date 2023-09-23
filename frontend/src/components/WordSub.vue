@@ -89,7 +89,6 @@ const onToneChange = () => {
 }
 
 .word-tone-editor {
-
     border: 1px solid var(--color-ui);
     color: var(--color-ui);
     background-color: unset;

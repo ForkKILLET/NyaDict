@@ -50,7 +50,7 @@ cd backend  # get into backend directory
 pnpm build  # build
 ```
 
-To configure for develop or production mode, edit `.env` or `.env.prod`.
+To configure for develop or production mode, edit `.env` or `.env.production`.
 
 To run in production mode:
 

@@ -83,9 +83,9 @@ const graph = computed(() => {
         return node
     }
     
-    visit(props.word)
+    const centerNode = visit(props.word)
 
-    return reactive({ nodes, edges })
+    return reactive({ centerNode, nodes, edges })
 })
 
 // Following simulation code is from Koishi.
@@ -95,6 +95,7 @@ const root = ref<HTMLDivElement>()
 const toolbarEl = ref<HTMLDivElement>()
 const { width, height } = useElementSize(root)
 const { height: toolbarHeight } = useElementSize(toolbarEl)
+const svgHeight = computed(() => height.value - toolbarHeight.value)
 
 const forceLink = d3
     .forceLink<ISimulationNode, IEdge>(graph.value.edges)
@@ -166,8 +167,8 @@ const onDragMove = (event: MouseEvent | TouchEvent) => {
         tar.fy! += y - tar.lastY!
     }
     else if (tar.type === 'view') {
-        viewboxOffset.value.dx += (tar.lastX! - x) * scale.value
-        viewboxOffset.value.dy += (tar.lastY! - y) * scale.value
+        viewboxOffset.value.dx += (tar.lastX! - x) / scale.value
+        viewboxOffset.value.dy += (tar.lastY! - y) / scale.value
     }
     tar.lastX = x
     tar.lastY = y
@@ -199,14 +200,28 @@ const scale = ref(1)
 
 const zoom = (deltaScale: number) => {
     const newScale = scale.value + deltaScale
-    if (newScale - 0.4 < Number.EPSILON || newScale - 2.1 > Number.EPSILON) return
+    if (newScale < Number.EPSILON || newScale - 2.1 > Number.EPSILON) return
     scale.value = newScale
+}
+
+const center = () => {
+    viewboxOffset.value.dx = graph.value.centerNode.x!
+    viewboxOffset.value.dy = graph.value.centerNode.y!
 }
 
 const isFullScreen = ref(false)
 
 const onKey = (event: KeyboardEvent) => {
     if (event.key === 'Escape' && isFullScreen.value) isFullScreen.value = false 
+}
+
+const onWheel = (event: WheelEvent) => {
+    if (event.deltaY < 0) {
+        zoom(+ 0.1)
+    }
+    else if (event.deltaY > 0) {
+        zoom(- 0.1)
+    }
 }
 
 useEventListener('mousedown', onDragStart)
@@ -216,6 +231,7 @@ useEventListener('touchmove', onDragMove)
 useEventListener('mouseup', onDragEnd)
 useEventListener('touchend', onDragEnd)
 useEventListener('keydown', onKey)
+useEventListener(root, 'wheel', onWheel)
 </script>
 
 <template>
@@ -228,21 +244,31 @@ useEventListener('keydown', onKey)
         }"
     >
         <div ref="toolbarEl" class="toolbar">
-            <fa-icon @click="zoom(- 0.1)" icon="magnifying-glass-minus" class="button" />
-            <span class="number">{{ scale * 100 | 0 }}%</span>
-            <fa-icon @click="zoom(+ 0.1)" icon="magnifying-glass-plus" class="button" />
-            <fa-icon
-                @click="isFullScreen = ! isFullScreen"
-                :icon="isFullScreen ? 'compress' : 'expand'"
-                class="button"
-            />
+            <span>
+                <fa-icon @click="zoom(- 0.1)" icon="magnifying-glass-minus" class="button" />
+                <span class="number no-select">{{ scale * 100 | 0 }}%</span>
+                <fa-icon @click="zoom(+ 0.1)" icon="magnifying-glass-plus" class="button" />
+                <fa-icon @click="center" icon="location-dot" class="button" />
+                <fa-icon
+                    @click="isFullScreen = ! isFullScreen"
+                    :icon="isFullScreen ? 'compress' : 'expand'"
+                    class="button"
+                />
+            </span>
+            <span class="graph-data">
+                <span class="number">{{ graph.nodes.length }}</span> 単語 /
+                <span class="number">{{ graph.edges.length }}</span> リンク
+            </span>
         </div>
         <svg
             :width="width"
-            :height="height - toolbarHeight"
-            :viewBox="[- width / 2 + viewboxOffset.dx, - height / 2 + viewboxOffset.dy, width, height]
-                .map(x => x / scale).join(' ')
-            "
+            :height="svgHeight"
+            :viewBox="[
+                - width / scale / 2 + viewboxOffset.dx,
+                - svgHeight / scale / 2 + viewboxOffset.dy,
+                width / scale,
+                svgHeight / scale
+            ].join(' ')"
         >
             <g class="links">
                 <g
@@ -330,5 +356,9 @@ useEventListener('keydown', onKey)
 .edge :deep(line) {
     stroke-width: 2;
     stroke: var(--color-fg);
+}
+
+.graph-data {
+    margin-left: 1em;
 }
 </style>
