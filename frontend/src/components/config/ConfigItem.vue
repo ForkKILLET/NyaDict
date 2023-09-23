@@ -59,5 +59,6 @@ const hasRole = (schema: Schema, role: string) => schema.meta.role?.split('|').i
 
 .nya-confirm-input {
     text-decoration: underline;
+    text-decoration-color: var(--color-ui);
 }
 </style>
