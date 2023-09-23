@@ -17,8 +17,6 @@ const value = computed({
     get: () => props.modelValue,
     set: v => emit('update:modelValue', v)
 })
-
-const hasRole = (schema: Schema, role: string) => schema.meta.role?.split('|').includes(role)
 </script>
 
 <template>
@@ -27,13 +25,13 @@ const hasRole = (schema: Schema, role: string) => schema.meta.role?.split('|').i
         <div class="config-form">
             <div v-if="schema.type === 'union'">
                 <template v-for="item of schema.list">
-                    <template v-if="hasRole(schema, 'icon')">
+                    <template v-if="schema.meta.listStyle === 'icon'">
                         <button
                             class="card square inline"
                             :class="{ active: value === item.value }"
                             @click="value = item.value"
                         >
-                            <fa-icon :icon="(item.meta.description as string)" />
+                            <fa-icon :icon="item.meta.icon" />
                         </button>
                     </template>
                 </template>

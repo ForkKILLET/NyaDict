@@ -3,15 +3,24 @@ import Schema from 'schemastery'
 
 import { storeReactive } from '@util/storage'
 
+declare global {
+    namespace Schemastery {
+        interface Meta<T> {
+            icon: string
+            listStyle: 'icon' | 'text'
+        }
+    }
+}
+
 export const Config = Schema.object({
     theme: Schema
         .union([
-            Schema.const('default').description('wand-magic').comment('自動'),
-            Schema.const('light').description('sun').comment('Light'),
-            Schema.const('dark').description('moon').comment('Dark')
+            Schema.const('default').extra('icon', 'wand-magic').comment('自動'),
+            Schema.const('light').extra('icon', 'sun').comment('Light'),
+            Schema.const('dark').extra('icon', 'moon').comment('Dark')
         ])
         .default('default')
-        .role('icon')
+        .extra('listStyle', 'icon')
         .description('テーマ'),
     syncApi: Schema
         .string()
