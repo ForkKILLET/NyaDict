@@ -83,7 +83,7 @@ const onTab = () => {
     }
 }
 const onTemplateCompositionEnd = (event: CompositionEvent) => {
-    if (event.data === '#') sharpStart()
+    if (event.data === '#' && ! config.value.lazySharp) sharpStart()
 }
 const updateGraph = (doc: ITemplateDocument, reversed: boolean) => {
     wordStore.updateGraphByTemplate(doc.id, doc.text, props.word, props.word.id, reversed)
