@@ -175,7 +175,8 @@ const backlink = (doc: ILinkDocument) => {
                         <div class="content">
                             <WordLinkRelationship
                                 v-if="doc.kind === DocumentKind.Link"
-                                :rel="doc.rel"
+                                v-model:rel="doc.rel"
+                                :edit-mode="true"
                             />
                             <NyaTemplate
                                 :text="doc.text"
