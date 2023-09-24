@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, ref } from 'vue'
+import { nextTick, ref, computed } from 'vue'
 import { isHiragana } from 'wanakana'
 
 import type { IWord } from '@type'
@@ -7,6 +7,12 @@ import type { IWord } from '@type'
 const props = defineProps<{
     word: IWord
 }>()
+
+const syllables = computed(() => props.word.sub
+	.replace(/.[ゃゅょ]|./g, s => s + '|')
+	.slice(0, - 1)
+	.split('|')
+)
 
 const editMode = ref(false)
 const toneInputEl = ref<HTMLInputElement>()
@@ -41,7 +47,7 @@ const onToneChange = () => {
         v-if="isHiragana(word.sub)"
     >
         <span
-            v-for="char, index of [ ...word.sub ]"
+            v-for="char, index of syllables"
             class="word-sub-char"
             :class="word.tone !== undefined && {
                 flat: index && (word.tone === 0 || index < word.tone - 1),
@@ -105,7 +111,7 @@ const onToneChange = () => {
 
     top: .2em;
     left: 0;
-    width: 1em;
+    width: 100%;
     height: 1px;
     background: var(--color-num);
 }
