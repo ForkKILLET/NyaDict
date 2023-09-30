@@ -51,6 +51,8 @@ export const filterN = <T>(items: T[], count: number, pred: (item: T) => boolean
 
 export type IsEqual<T> = (a: T, b: T) => boolean
 
+export const equalOn = <K extends string>(key: K) => <T extends { [k in K]: unknown }>(a: T, b: T) => a[key] === b[key]
+
 export const curry = <A, B extends any[], R>(f: (arg: A, ...rest: B) => R) =>
     (arg: A) => (...rest: B): R => f(arg, ...rest)
 
@@ -65,6 +67,14 @@ export const intersect = <T>(a: T[], b: T[], comp: IsEqual<T>): [T[], T[], T[]] 
         if (! i.some(equalTo(item))) b2.push(item)
     })
     return [ i, a2, b2 ] 
+}
+
+export const diff = <T>(source: T[], dist: T[], comp: IsEqual<T>): { added: T[], removed: T[] } => {
+    const equalTo = curry(comp)
+    return {
+        added: dist.filter(item => ! source.some(equalTo(item))),
+        removed: source.filter(item => ! dist.some(equalTo(item)))
+    }
 }
 
 export const dedup = <T>(items: T[], comp: IsEqual<T>): T[] => (

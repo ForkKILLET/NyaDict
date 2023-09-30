@@ -85,8 +85,9 @@ const onTab = () => {
 const onTemplateCompositionEnd = (event: CompositionEvent) => {
     if (event.data === '#' && ! config.value.lazySharp) sharpStart()
 }
-const updateGraph = (doc: ITemplateDocument, reversed: boolean) => {
-    wordStore.updateGraphByTemplate(doc.id, doc.text, props.word, props.word.id, reversed)
+const oldDocText = ref(props.doc.text)
+const updateGraph = (newDocText: string) => {
+    wordStore.updateGraphByTemplate(props.doc.id, oldDocText.value, newDocText, props.word, props.word.id)
 }
 
 const backlink = (doc: ILinkDocument) => {
@@ -117,7 +118,7 @@ const backlink = (doc: ILinkDocument) => {
             rel: doc.rel
         }
         const newDocId = wordStore.addDoc(targetWord.docs ??= [], newDoc)
-        wordStore.updateGraphByTemplate(newDocId, newDoc.text, targetWord, targetId, false)
+        wordStore.updateGraphByTemplate(newDocId, '', newDoc.text, targetWord, targetId, false)
         addNoti({
             content: 'バックリンクを作成しました',
             type: 'success',
@@ -162,9 +163,9 @@ const backlink = (doc: ILinkDocument) => {
             <div class="template-doc-main" :class="{ barber: doc.labels?.i }">
                 <NyaConfirmInput
                     v-model="doc.text"
-                    @before-update:modelValue="updateGraph(doc, true)"
-                    @update:modelValue="updateGraph(doc, false)"
-                    @withdraw="updateGraph(doc, true); emit('withdraw')"
+                    @before-update:modelValue="oldDocText = doc.text"
+                    @update:modelValue="updateGraph(doc.text)"
+                    @withdraw="updateGraph(''); emit('withdraw')"
                     :more="true"
                     :withdraw-when-empty="true"
                     :withdrawable="true"

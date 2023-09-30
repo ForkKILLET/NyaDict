@@ -3,9 +3,10 @@ import { defineStore } from 'pinia'
 import { toHiragana, isHiragana} from 'wanakana'
 import { useArchive } from '@store/archive'
 
-import { randomItem } from '@util'
+import { curry, diff, equalOn, randomItem } from '@util'
 import { IWord_Compress, compress_IWord } from '@util/compress'
 import { storeRef, storeArray, storeRefReactive, type ArrayStore } from '@util/storage'
+import { mitt } from '@util/mitt'
 import type { Disposable } from '@util/disposable'
 
 import type {
@@ -140,67 +141,89 @@ export const useWord = defineStore('words', () => {
 
     const updateGraphByTemplate = (
         docId: number,
+        oldTemplate: string,
         template: string,
         word: IWord,
         wordId: number,
-        reversed: boolean,
+        noEmit?: boolean,
         wordDict?: Record<string, IWord>,
     ) => {
-        const segments = getTemplateSegements(template)
-        segments.forEach(seg => {
-            if (typeof seg === 'object') {
-                const nowId = seg.id
-                if (! nowId) return
+        const oldSegments = getTemplateSegements(oldTemplate, true)
+        const segments = getTemplateSegements(template, true)
 
-                word.graph ??= emptyGraph()
+        const { added, removed } = diff(oldSegments, segments, equalOn('id'))
 
-                const target = wordDict?.[nowId] ?? getById(nowId)
-                if (target) {
-                    target.graph ??= emptyGraph()
-                    const { edgesIn } = target.graph
-                    const nowEdge = newEdge(docId, wordId)
-                    const indexIn = edgesIn.findIndex(edge => isSameEdge(edge, nowEdge))
-                    if (indexIn >= 0 && reversed) edgesIn.splice(indexIn, 1)
-                    else if (indexIn < 0 && ! reversed) edgesIn.push(nowEdge)
-                }
+        const updated = added.length || removed.length
+        if (updated) word.graph ??= emptyGraph()
 
-                {
-                    const { edgesOut } = word.graph
-                    const nowEdge = newEdge(docId, nowId)
-                    const indexOut = edgesOut.findIndex(edge => isSameEdge(edge, nowEdge))
-                    if (indexOut >= 0 && reversed) edgesOut.splice(indexOut, 1)
-                    else if (indexOut < 0 && ! reversed) edgesOut.push(nowEdge)
-                }
+        type Updater = (edges: IWordGraphEdge[], index: number, nowEdge: IWordGraphEdge) => void
+        const updateSegment = (updater: Updater) => ({ id: nowId }: ExternalWordSegment) => {
+            const target = wordDict?.[nowId] ?? getById(nowId)
+
+            if (target) {
+                const { edgesIn } = target.graph ??= emptyGraph()
+                const nowEdge = newEdge(docId, wordId)
+                const indexIn = edgesIn.findIndex(isSameEdge(nowEdge))
+                updater(edgesIn, indexIn, nowEdge)
             }
-        })
+
+            {
+                const { edgesOut } = word.graph!
+                const nowEdge = newEdge(docId, nowId)
+                const indexOut = edgesOut.findIndex(isSameEdge(nowEdge))
+                updater(edgesOut, indexOut, nowEdge)
+            }
+        }
+
+        added.forEach(updateSegment((edges, index, nowEdge) => {
+            if (index < 0) edges.push(nowEdge)
+        }))
+
+        removed.forEach(updateSegment((edges, index) => {
+            if (index >= 0) edges.splice(index, 1)
+        }))
+
+        if (! noEmit && updated) mitt.emit('data:word:graph', { wordId: word.id })
     }
 
     const updateGraphByWord = (
         word: IWord,
         docs: IWordDocument[],
         reversed: boolean,
+        noEmit?: boolean,
         wordDict?: Record<string, IWord>
     ) => {
         const wordId = word.id
 
         docs.forEach(doc => {
             if (doc.kind === DocumentKind.Link || doc.kind === DocumentKind.Sentence) {
-                updateGraphByTemplate(doc.id, doc.text, word, wordId, reversed, wordDict)
+                if (reversed) {
+                    updateGraphByTemplate(doc.id, doc.text, '', word, wordId, true, wordDict)
+                }
+                else {
+                    updateGraphByTemplate(doc.id, '', doc.text, word, wordId, true, wordDict)
+                }
             }
-            if ('docs' in doc) updateGraphByWord(word, doc.docs, reversed, wordDict)
+            if ('docs' in doc) updateGraphByWord(word, doc.docs, reversed, true, wordDict)
         })
+
+        if (! noEmit) mitt.emit('data:word:graph', { wordId })
     }
 
     const updateGraphs = () => {
         const wordDict = getWordDict()
 
         for (const id in wordDict) {
+            delete wordDict[id].graph
+        }
+
+        for (const id in wordDict) {
             const word = wordDict[id]
-            delete word.graph
             if (word.docs) {
-                updateGraphByWord(word, word.docs, false, wordDict)
+                updateGraphByWord(word, word.docs, false, true, wordDict)
             }
         }
+        mitt.emit('data:word:graph', { wordId: '*' })
     }
 
     const randomWord = () => randomItem(words.value)
@@ -261,8 +284,9 @@ export const getCorrectnessCount = (correctness: ICorrect[]) => {
 export type TemplateSegment = WordSegment | TextSegment
 export type TextSegment = string
 export type WordSegment = { id: number | undefined, disp: string | undefined }
+export type ExternalWordSegment = { id: number, disp: string | undefined }
 
-export const getTemplateSegements = (template: string): TemplateSegment[] => template
+export const getTemplateSegements = <L extends boolean>(template: string, externalOnly?: L) => template
     .split(/(#\d*\([^)]+?\)|#\d*)/)
     .map(seg => {
         if (seg[0] === '#') {
@@ -272,14 +296,17 @@ export const getTemplateSegements = (template: string): TemplateSegment[] => tem
         }
         return seg
     })
-    .filter(seg => seg)
+    .filter(seg => externalOnly
+        ? typeof seg === 'object' && typeof seg.id === 'number'
+        : seg
+    ) as L extends true ? ExternalWordSegment[] : TemplateSegment[] 
 
 export const getFirstWordTemplateSegment = (template: string) => getTemplateSegements(template)
-    .find((seg): seg is WordSegment => typeof seg === 'object')
+    .find(seg => typeof seg === 'object') as WordSegment | undefined
 
 export const emptyGraph = (): IWordGraph => ({ edgesIn: [], edgesOut: [] })
 
-export const isSameEdge = (e1: IWordGraphEdge, e2: IWordGraphEdge) => (
+export const isSameEdge = (e1: IWordGraphEdge) => (e2: IWordGraphEdge) => (
     e1.sourceDoc === e2.sourceDoc && e1.targetWord === e2.targetWord
 )
 

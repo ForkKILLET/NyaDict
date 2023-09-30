@@ -1,7 +1,7 @@
 {
   "name": "nyadict-frontend",
   "private": true,
-  "version": "0.20.2",
+  "version": "0.20.3",
   "type": "module",
   "scripts": {
     "dev": "vite --port 1635",
@@ -22,6 +22,7 @@
     "dayjs": "^1.11.9",
     "json5": "^2.2.3",
     "jwt-decode": "^3.1.2",
+    "mitt": "^3.0.1",
     "normalize.css": "^8.0.1",
     "pinia": "^2.1.6",
     "schemastery": "^3.13.0",

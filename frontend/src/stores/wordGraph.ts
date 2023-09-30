@@ -1,4 +1,4 @@
-import { reactive, ref } from 'vue'
+import { reactive, ref, watch } from 'vue'
 import { defineStore } from 'pinia'
 import * as d3 from 'd3-force'
 
@@ -7,6 +7,7 @@ import { isSameTargetEdge, useWord } from '@store/words'
 import { dedup, intersect } from '@util'
 
 import type { IWord, IWordGraphEdge } from '@type'
+import { mitt } from '@util/mitt'
 
 export type INode = {
     word: IWord
@@ -40,6 +41,8 @@ export type IGraph = {
 
     simulation: ISimulation
     forceLink: d3.ForceLink<ISimulationNode, IEdge>
+
+    updateKey: number
 }
 
 export type ISimulation = d3.Simulation<ISimulationNode, IEdge>
@@ -52,7 +55,7 @@ export const useWordGraph = defineStore('word-graph', () => {
 
     const graph = ref<IGraph>()
 
-    const simulation = ref<ISimulation>()
+    const graphUpdateKey = ref(0)
 
     const initGraph = (word: IWord): IGraph => {
         const wordDict = wordStore.getWordDict()
@@ -111,15 +114,14 @@ export const useWordGraph = defineStore('word-graph', () => {
 
         return {
             centerNode, nodes, edges,
-            simulation, forceLink
+            simulation, forceLink,
+            updateKey: graphUpdateKey.value
         }
     }
 
     const useGraph = (word: IWord): IGraph => {
-        console.log('useGraph')
-
         // return the current graph if the center word is contained in it
-        if (graph.value) {
+        if (graph.value && graph.value.updateKey === graphUpdateKey.value) {
             const centerNode = graph.value.nodes.find(node => node.word.id === word.id)
             if (centerNode) {
                 graph.value.centerNode = centerNode
@@ -127,8 +129,17 @@ export const useWordGraph = defineStore('word-graph', () => {
             }
         }
 
-        return graph.value = initGraph(word)
+        const newGraph = initGraph(word)
+        graph.value = newGraph
+
+        return newGraph
     }
 
-    return { simulation, graph, useGraph }
+    mitt.on('data:word:graph', ({ wordId }) => {
+        if (wordId === '*' || graph.value?.nodes.some(node => node.word.id === wordId)) {
+            graphUpdateKey.value ++
+        }
+    })
+
+    return { useGraph, graphUpdateKey }
 })

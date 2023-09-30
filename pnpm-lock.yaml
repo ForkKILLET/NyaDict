@@ -128,6 +128,9 @@ importers:
       jwt-decode:
         specifier: ^3.1.2
         version: 3.1.2
+      mitt:
+        specifier: ^3.0.1
+        version: 3.0.1
       normalize.css:
         specifier: ^8.0.1
         version: 8.0.1
@@ -3111,6 +3114,10 @@ packages:
     dependencies:
       minipass: 3.3.6
       yallist: 4.0.0
+    dev: false
+
+  /mitt@3.0.1:
+    resolution: {integrity: sha512-vKivATfr97l2/QBCYAkXYDbrIWPM2IIKEl7YPhjCvKlG3kE2gm+uBo6nEXK3M5/Ffh/FLpKExzOQ3JJoJGFKBw==}
     dev: false
 
   /mkdirp@1.0.4:

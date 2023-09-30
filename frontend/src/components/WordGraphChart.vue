@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
 import { useElementSize, useEventListener } from '@vueuse/core'
 
 import { IDragTarget, IDragTargetInfo, ISimulationNode, IView, useWordGraph } from '@store/wordGraph'
@@ -19,9 +20,11 @@ const props = defineProps<{
 
 const wordGraphStore = useWordGraph()
 
+// TODO: perf
+
 const graph = depRef(
     () => wordGraphStore.useGraph(props.word),
-    () => props.word
+    [ props, storeToRefs(wordGraphStore).graphUpdateKey ]
 )
 
 // Simulation code is from Koishi.
