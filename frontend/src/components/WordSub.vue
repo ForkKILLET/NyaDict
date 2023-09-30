@@ -35,8 +35,12 @@ const onToneChange = () => {
     const inputEl = toneInputEl.value
     if (! inputEl) return
 
-    const tone = Number(inputEl.value)
-    props.word.tone = isNaN(tone) ? undefined : tone
+    if (! inputEl.value) delete props.word.tone
+    else {
+        const tone = Number(inputEl.value)
+        if (! isNaN(tone)) props.word.tone = tone
+    }
+
     editMode.value = false
 }
 </script>
@@ -62,6 +66,7 @@ const onToneChange = () => {
         >{{ word.tone ?? '-' }}</span>
         <input
             v-else
+            :value="word.tone"
             ref="toneInputEl"
             class="word-tone-editor"
             @input="onToneInput"
