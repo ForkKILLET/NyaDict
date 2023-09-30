@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { version } from '@/../package.json'
-import { routes } from '@/routes'
+import { routes } from '@util/routes'
 
 import { isPortrait } from '@util/media'
 </script>
@@ -58,3 +58,4 @@ h1 {
     background-color: var(--color-order);
 }
 </style>
+@util/routes

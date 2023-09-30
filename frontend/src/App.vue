@@ -1,18 +1,34 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
+import { toRefs } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
 
 import { useConfig } from '@store/config'
+
 import { useTheme } from '@util/theme'
+import { registerShortcuts, newKey } from '@util/keyboard'
+import { routes } from '@util/routes'
 
 import Topbar from '@comp/Topbar.vue'
 import Notifications from '@comp/notifications/Notifications.vue'
-import { storeToRefs } from 'pinia'
-import { toRefs } from 'vue'
 
 const route = useRoute()
+const router = useRouter()
 const { config } = storeToRefs(useConfig())
 
 useTheme(toRefs(config.value).theme)
+
+registerShortcuts(routes
+    .filter(route => route.display)
+    .map((route, index) => ({
+        id: `route:${route.path}`,
+        key: newKey(`ctrl+${index + 1}`),
+        info: `${route.display!.info}のページへ`,
+        action: () => {
+            router.push(route.path)
+        }
+    }))
+)
 </script>
 
 <template>
