@@ -1,11 +1,14 @@
 import { defineStore } from 'pinia' 
 import { computed, ref, type Ref } from 'vue'
+
 import { useArchive } from '@store/archive'
+
+import { groupBy, sample, shuffle } from '@util'
 import { storeArray, type ArrayStore, storeRef } from '@util/storage'
-import { groupBy, sample } from '@util'
-import type { ITest, TestMode, IWord } from '@type'
 import type { Disposable } from '@util/disposable'
 import { type ITest_Compress, compress_ITest } from '@util/compress'
+
+import type { ITest, TestMode, IWord } from '@type'
 
 declare module '@type' {
     interface IArchiveData {
@@ -59,6 +62,8 @@ export const useTest = defineStore('test', () => {
             const testableWordIds = testableWords.map(word => word.id)
             wordIds.push(...sample(testableWordIds, size))
         }
+
+        shuffle(wordIds)
 
         const test: ITest = {
             id: ++ maxId.value,

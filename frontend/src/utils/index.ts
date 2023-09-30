@@ -26,6 +26,18 @@ export const sample = <T>(items: T[], size: number) => {
     return items.slice(0, size)
 }
 
+export const shuffle = <T>(items: T[]) => {
+    const { length } = items
+    let index = - 1
+    while (++ index < length) {
+        const rand = random(index, length)
+        const value = items[rand]
+        items[rand] = items[index]
+        items[index] = value
+    }
+    return items
+}
+
 export type GroupByResult<R extends string, U> = {
     [key in R]?: U[]
 }
