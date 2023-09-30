@@ -36,7 +36,7 @@ const a = computed(() => {
 </script>
 
 <template>
-    <g class="arrow" v-if="a">
+    <g class="arrow" v-if="a" :class="{ major: twoWay }">
         <line
             :x1="a.tx1"
             :y1="a.ty1"
@@ -53,9 +53,14 @@ const a = computed(() => {
 </template>
 
 <style scoped>
+.arrow:not(.major) line {
+    stroke-dasharray: 5;
+}
+
 .arrow path {
     fill: var(--color-fg);
     stroke-width: 2;
     stroke: var(--color-fg);
 }
+
 </style>
