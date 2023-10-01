@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref, toRefs, watch, type Ref, withModifiers } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useDebounceFn } from '@vueuse/core'
+import { useDebounceFn, useRefHistory } from '@vueuse/core'
 
 import {
     useWord, emptyMem,
@@ -54,6 +54,8 @@ const toolbarConfig = reactive<ToolbarConfigItem[]>([
 
 const { search, modifiers, testId, testCorrectLevel } = toRefs(wordStore.filter)
 const { method: sortMethod, direction: sortDirection } = toRefs(wordStore.sorter)
+
+const searchHistory = useRefHistory(search)
 
 const searchHiragana = computed(() => strictToHiragana(search.value))
 
@@ -272,6 +274,8 @@ watch(route, () => {
                                 ref="searchEl"
                                 v-model="searchDebounced"
                                 @keydown.delete="onSearchDelete"
+                                @keydown.up="searchHistory.undo"
+                                @keydown.down="searchHistory.redo"
                             />
 
                             <fa-icon

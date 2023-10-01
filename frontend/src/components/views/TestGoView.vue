@@ -224,6 +224,10 @@ const endTest = () => {
     margin-bottom: 6em;
 }
 
+.question > .word-doc {
+    margin-bottom: 1em;
+}
+
 .test-area > p {
     margin: .5em 0;
     height: 3em;
