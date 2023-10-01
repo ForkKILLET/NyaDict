@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref, toRefs, watch, type Ref } from 'vue'
+import { computed, reactive, ref, toRefs, watch, type Ref, withModifiers } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useDebounceFn } from '@vueuse/core'
 
@@ -101,29 +101,33 @@ watch(testId, () => {
 
 const filteredWords = computed<IWord[]>(() => {
     let words = [...wordStore.words]
-    const recs: ITestRec[] = []
+    const recs: Record<number, ITestRec> = {}
 
     if (testId.value !== null) {
         const test = testStore.getById(testId.value)
         if (! test) return []
-        words = test.wordIds.map((id, index) => {
-            const word = wordStore.getById(id)!
-            recs[index] = word.mem.testRec[test.recIds[index]]
-            return word
-        })
+
+        words = test.wordIds
+            .map(wordStore.getById)
+            .map((word, index) => {
+                if (! word) return
+                recs[word.id] = word.mem.testRec[test.recIds[index]]
+                return word
+            })
+            .filter((word): word is IWord => word !== undefined)
     }
 
     const text = search.value ?? ''
     const hiragana = searchHiragana.value
     
-    return words.filter((word, index) => {
+    return words.filter(word => {
         // correct filter
-        if (testId.value !== null && recs[index].correct > testCorrectLevel.value) return false
+        if (testId.value !== null && recs[word.id].correct > testCorrectLevel.value) return false
 
-		// empty doc filter
-		if (modifiers.value.aku) {
-			if (word.docs?.length) return false
-		}
+        // empty doc filter
+        if (modifiers.value.aku) {
+            if (word.docs?.length) return false
+        }
 
         // meaning filter
         if (modifiers.value.kai) {
