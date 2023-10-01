@@ -248,6 +248,7 @@ const endTest = () => {
 .test-progress-inner {
     height: 10px;
     background-color: var(--color-order);
+    transition: .5s width;
 }
 
 .answer :deep(.word-disp), .answer :deep(.word-sub) {
