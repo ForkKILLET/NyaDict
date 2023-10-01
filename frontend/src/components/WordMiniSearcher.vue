@@ -12,7 +12,7 @@ import type { IWord } from '@type'
 const props = withDefaults(defineProps<{
     maxResult?: number
 }>(), {
-    maxResult: 3
+    maxResult: 4
 })
 
 const emit = defineEmits<{
@@ -39,6 +39,10 @@ const filteredWords = computed(() => {
     )
 })
 
+const sortedWords = computed(() => filteredWords.value
+    .sort((a, b) => a.disp.length - b.disp.length)
+)
+
 const cancel = () => {
     emit('cancel')
     search.value = ''
@@ -56,12 +60,12 @@ const focus = () => {
 
 const activeWordIndex = ref(0)
 const navigateActiveWord = (delta: number) => {
-    const { length } = filteredWords.value
+    const { length } = sortedWords.value
     if (! length) return
     activeWordIndex.value = (activeWordIndex.value + delta + length) % length
 }
 const submitActiveWord = () => {
-    const activeWord = filteredWords.value[activeWordIndex.value]
+    const activeWord = sortedWords.value[activeWordIndex.value]
     if (activeWord) submit(activeWord)
     else cancel()
 }
@@ -86,7 +90,7 @@ defineExpose({
             @change="activeWordIndex = 0"
             class="card light"
         />
-        <div class="word-mini-list" v-for="word, index of filteredWords">
+        <div class="word-mini-list" v-for="word, index of sortedWords">
             <div
                 @click="submit(word)"
                 class="word-mini-item"
