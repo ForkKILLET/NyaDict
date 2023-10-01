@@ -42,6 +42,7 @@ const edit = () => {
 
 const clear = () => {
     if (props.withdrawWhenEmpty && ! model.ref.value) emit('withdraw')
+    model.ref.value = modelValue.value
     editMode.value = false
 }
 
