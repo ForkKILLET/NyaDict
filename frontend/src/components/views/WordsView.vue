@@ -17,6 +17,7 @@ import WordEditor from '@comp/WordEditor.vue'
 import WordList from '@comp/WordList.vue'
 import WordDetail from '@comp/WordDetail.vue'
 import WordFilterTest from '@comp/WordFilterTest.vue'
+import WordNavigator from '@comp/WordNavigator.vue'
 
 import type { IWord, ITestRec, IWordFilterModiferName, IWordSortMethod } from '@type'
 
@@ -71,11 +72,11 @@ const updateSearch = useDebounceFn((v: string) => {
 const searchDebounced = computed<string>({
     get: () => search.value ?? '',
     set: (newSearch) => {
-        // do not debounce modifiers
-        const res = newSearch?.match(/^(?<modifer>rei|kai|aku):$/)
-        const groups = res?.groups as { modifer?: IWordFilterModiferName } | null | undefined
-        if (groups?.modifer) {
-            modifiers.value[groups.modifer] = true
+        // Do not debounce modifiers
+        const res = newSearch?.match(/^(?<modifier>rei|kai|aku):$/)
+        const groups = res?.groups as { modifier?: IWordFilterModiferName } | null | undefined
+        if (groups?.modifier) {
+            modifiers.value[groups.modifier] = true
             search.value = searchDebounced.value = ''
         }
 
@@ -123,27 +124,27 @@ const filteredWords = computed<IWord[]>(() => {
     const hiragana = searchHiragana.value
     
     return words.filter(word => {
-        // correct filter
+        // Correct filter
         if (testId.value !== null && recs[word.id].correct > testCorrectLevel.value) return false
 
-        // empty doc filter
+        // Empty doc filter
         if (modifiers.value.aku) {
             if (word.docs?.length) return false
         }
 
-        // meaning filter
+        // Meaning filter
         if (modifiers.value.kai) {
             const meanings = getWordMeanings(word)
             if (! meanings.some(t => t.includes(text))) return false
         }
 
-        // sentence filter
+        // Sentence filter
         else if (modifiers.value.rei) {
             const sentences = getWordSentences(word)
             if (! sentences.some(t => t.includes(text))) return false
         }
 
-        // normal filter
+        // Normal filter
         else {
             if (! (hiragana
                 ? getHiragana(word).includes(hiragana)
@@ -298,6 +299,7 @@ watch(route, () => {
             :word="currentWord"
             class="right scroll-y"
         />
+        <WordNavigator />
     </div>
 </template>
 

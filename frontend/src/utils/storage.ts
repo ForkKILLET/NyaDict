@@ -152,7 +152,7 @@ export const storeArray = <T extends object, U>(key: string, options: {
         })
     }
     for (let i = 0; i < arr.length; i ++) {
-        watchIndex(i) // watch all indices
+        watchIndex(i) // Watch all indices
     }
 
     if (isInit) options.onInit?.(reactiveArr)

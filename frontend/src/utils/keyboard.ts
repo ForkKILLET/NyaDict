@@ -36,7 +36,10 @@ export const registerShortcuts = (shortcuts: Shortcut[]) => {
 }
 
 export const newKey = (keyCombinationStr: string) => {
-    const [ key, modifiers ] = keyCombinationStr.toLowerCase().split('+').reverse()
+    const [ key, ...modifiers ] = keyCombinationStr
+        .split('+')
+        .reverse()
+        .map((s, i) => i ? s.toLowerCase() : s)
     return {
         key,
         ctrl: modifiers.includes('ctrl'),

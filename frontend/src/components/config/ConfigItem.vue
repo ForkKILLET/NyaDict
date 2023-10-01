@@ -1,7 +1,9 @@
 <script setup lang="ts" generic="T">
 import { computed } from 'vue'
 import Schema from 'schemastery'
-import NyaConfirmInput from '@comp/NyaConfirmInput.vue';
+
+import NyaConfirmInput from '@comp/NyaConfirmInput.vue'
+import NyaSwitch from '@comp/NyaSwitch.vue'
 
 const props = defineProps<{
     modelValue: T
@@ -43,7 +45,7 @@ const value = computed({
                 />
             </div>
             <div v-else-if="schema.type === 'boolean'">
-                <input v-model="value" type="checkbox" />
+                <NyaSwitch v-model="(value as boolean)" />
             </div>
         </div>
     </div>
@@ -61,10 +63,5 @@ const value = computed({
 .nya-confirm-input {
     text-decoration: underline;
     text-decoration-color: var(--color-ui);
-}
-
-input[type=checkbox] {
-    width: 1em;
-    height: 1em;
 }
 </style>

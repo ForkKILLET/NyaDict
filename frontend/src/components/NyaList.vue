@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="T">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useOffsetPagination } from '@vueuse/core'
 import Pager from '@comp/Pager.vue'
 
@@ -10,6 +10,12 @@ const props = defineProps<{
 
 const total = computed(() => props.items.length)
 
+const pagination = useOffsetPagination({
+    total,
+    page: 1,
+    pageSize: 20
+})
+
 const {
     currentPage: page,
     currentPageSize: pageSize,
@@ -18,10 +24,18 @@ const {
     next,
     isFirstPage,
     isLastPage
-} = useOffsetPagination({
-    total,
-    page: 1,
-    pageSize: 20
+} = pagination
+
+const scrollEl = ref<HTMLDivElement>()
+
+const currentSlice = computed(() => (
+    props.items.slice((page.value - 1) * pageSize.value, page.value * pageSize.value)
+))
+
+defineExpose({
+    currentSlice,
+    pagination,
+    scrollEl
 })
 </script>
 
@@ -42,8 +56,8 @@ const {
                 :is-last-page="isLastPage"
             />
         </div>
-        <div class="nya-list-entries scroll-y">
-            <p v-for="item of items.slice((page - 1) * pageSize, page * pageSize)">
+        <div class="nya-list-entries scroll-y" ref="scrollEl">
+            <p v-for="item of currentSlice">
                 <slot name="default" :item="item"></slot>
             </p>
         </div>

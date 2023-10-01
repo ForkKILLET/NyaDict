@@ -175,7 +175,7 @@ const noInfoReasons: Record<INoInfoReason, string> = {
     background-color: var(--color-ui-bg-alt);
     padding: .2em .5em;
     border-radius: 0 .5em .5em 0;
-    box-shadow: 0 0 .4em #faad704d;
+    box-shadow: 0 0 .4em var(--color-shad-ui);
     margin-top: .5em;
 }
 

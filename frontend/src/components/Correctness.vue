@@ -113,7 +113,7 @@ const arc = getArc(2 * Math.PI * 8)
     padding: .2em;
     border-radius: .5em;
     background: var(--color-bg);
-    box-shadow: 0 0 .4em #faad704d;
+    box-shadow: 0 0 .4em var(--color-shad-ui);
 }
 
 .ring:hover + .count.hide {

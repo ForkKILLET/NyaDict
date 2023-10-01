@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { isHiragana } from 'wanakana'
+
 import { addNoti } from '@util/notif'
+
 import type { IWord } from '@type'
 
 const props = defineProps<{
@@ -109,7 +111,7 @@ const onCompositionEnd = (event: CompositionEvent) => {
     display: inline-block;
     border-radius: .4em;
     background-color: var(--color-bg);
-    box-shadow: 0 0 .2em var(--color-shad-ui) inset;
+    box-shadow: 0 0 .2em var(--color-shad-ui-alt) inset;
 }
 
 input {

@@ -97,11 +97,11 @@ const onDragEnd = (event: MouseEvent | TouchEvent) => {
         graph.value.simulation.alphaTarget(0)
 
         if (tar.startX === point.clientX && tar.startY === point.clientY) {
-            // click event
+            // Click event
             router.replace(`/words?id=${tar.word.id}`)
         }
 
-        // cancel fixing
+        // Cancel fixing
         delete tar.fx
         delete tar.fy
     }

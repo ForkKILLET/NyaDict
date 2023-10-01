@@ -3,7 +3,7 @@
     padding: .8em;
     background-color: var(--color-ui-bg);
     border-radius: .8em;
-    box-shadow: 0 0 .4em #faad704d;
+    box-shadow: 0 0 .4em var(--color-shad-ui);
 }
 .card.light {
     background-color: var(--color-bg);
@@ -27,12 +27,12 @@ input.card, .input.card {
 
     color: var(--color-ui);
     background-color: var(--color-ui-bg);
-    box-shadow: 0 0 .4em #faad704d;
+    box-shadow: 0 0 .4em var(--color-shad-ui);
     transition: .5s color, .5s background-color, .5s box-shadow;
 }
 input.card:focus, .input.card:focus-within {
     background-color: var(--color-bg);
-    box-shadow: 0 0 .4em #faae70ef;
+    box-shadow: 0 0 .4em var(--color-shad-ui-hl);
 }
 input.card.up, .input.card.up {
     background-color: var(--color-bg);
@@ -52,7 +52,7 @@ button.card:enabled:hover, button.card:enabled:active,
 .card.checkbox:hover {
     color: var(--color-ui-act);
     background-color: var(--color-bg);
-    box-shadow: 0 0 .4em #faae70ef;
+    box-shadow: 0 0 .4em var(--color-shad-ui-hl);
 }
 button.card:disabled {
     cursor: not-allowed;

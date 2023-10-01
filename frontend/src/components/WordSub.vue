@@ -47,7 +47,7 @@ const onToneChange = () => {
 
 <template>
     <span
-        class="word-sub word-hiragana"
+        class="word-hiragana"
         v-if="isHiragana(word.sub)"
     >
         <span
@@ -74,7 +74,7 @@ const onToneChange = () => {
             @blur="onToneChange"
         />
     </span>
-    <span class="word-sub" v-else>{{ word.sub }}</span>
+    <span v-else>{{ word.sub }}</span>
 </template>
 
 <style scoped>

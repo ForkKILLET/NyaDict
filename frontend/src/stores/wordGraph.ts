@@ -120,7 +120,7 @@ export const useWordGraph = defineStore('word-graph', () => {
     }
 
     const useGraph = (word: IWord): IGraph => {
-        // return the current graph if the center word is contained in it
+        // Return the current graph if the center word is contained in it
         if (graph.value && graph.value.updateKey === graphUpdateKey.value) {
             const centerNode = graph.value.nodes.find(node => node.word.id === word.id)
             if (centerNode) {

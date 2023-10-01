@@ -4,25 +4,31 @@ import { storeToRefs } from 'pinia'
 import { useConfig, Config } from '@store/config'
 
 import { shortcuts } from '@util/keyboard'
+import { groupBy } from '@util/index'
 
 import ConfigItem from '@comp/config/ConfigItem.vue'
 import ShortcutItem from '@comp/config/ShortcutItem.vue'
 
 const { config } = storeToRefs(useConfig())
+
+const configSections = groupBy(Object.entries(Config.dict!), ([, schema ]) => schema.meta.section)
 </script>
 
 <template>
     <div>
-        <ConfigItem
-            v-for="schema, id in Config.dict"
-            v-model="config[id]"
-            :schema="schema"
-            :id="id"
-        />
+        <div class="card" v-for="schemas, section in configSections">
+            <span>{{ section }}</span>
+            <ConfigItem
+                v-for="[ id, schema ] of schemas"
+                v-model="config[id]"
+                :schema="schema"
+                :id="id"
+            />
+        </div>
     </div>
 
     <div class="shortcuts card">
-        ショートカット
+        <span>ショートカット</span>
         <ShortcutItem
             v-for="shortcut of shortcuts"
             :shortcut="shortcut"
@@ -37,11 +43,16 @@ const { config } = storeToRefs(useConfig())
 
 .shortcut-item {
     font-size: .8em;
-    margin-left: 1em;
     margin-top: .5em;
 }
 
-.shortcuts {
-    margin-top: 2em;
+.card {
+    margin-bottom: 2em;
+}
+
+.card > span:first-child {
+    font-weight: bold;
+    font-size: 1.1em;
+    color: var(--color-ui);
 }
 </style>

@@ -9,7 +9,7 @@ const props = defineProps<{
 
 const toggleImportant = () => {
     const labels = props.doc.labels ??= {}
-    labels.i = ! labels.i // i = important
+    labels.i = ! labels.i // `i` = important
 }
 </script>
 

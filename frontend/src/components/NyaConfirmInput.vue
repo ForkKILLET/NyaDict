@@ -140,11 +140,12 @@ watch(editMode, (mode) => {
     border-radius: .5rem;
     box-shadow: 0 0 .3rem #f3aa6d4d;
     font: inherit;
+    color: inherit;
     transition: .3s box-shadow;
 }
 
 :deep(.input:hover, .input:focus) {
-    box-shadow: 0 0 .4rem #faae70ef;
+    box-shadow: 0 0 .4rem var(--color-shad-ui-hl);
 }
 
 .edit-buttons {

@@ -12,7 +12,9 @@
 
     --color-transparent: #f2f2f2a0;
     --color-shad-bg: #00000016;
-    --color-shad-ui: #f3aa6d4d;
+    --color-shad-ui: #faad704d;
+    --color-shad-ui-alt: #f3aa6d4d;
+    --color-shad-ui-hl: #faae70ef;
 
     --color-chart-bg: #ebedf0;
 
@@ -38,7 +40,9 @@
 
     --color-transparent: #ffffff2e;
     --color-shad-bg: #ffffff80;
-    --color-shad-ui: #f3aa6d4d;
+    --color-shad-ui: #faad704d;
+    --color-shad-ui-alt: #f3aa6d4d;
+    --color-shad-ui-hl: #faae70ef;
 
     --color-chart-bg: #161b22;
 

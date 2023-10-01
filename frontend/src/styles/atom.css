@@ -39,7 +39,7 @@
     border-radius: .4em;
     line-height: 1.1;
     color: var(--color-ui);
-    box-shadow: 0 0 .4em #faad704d;
+    box-shadow: 0 0 .4em var(--color-shad-ui);
     cursor: pointer;
     user-select: none;
     transition: .3s background-color;
