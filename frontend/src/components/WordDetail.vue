@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useEventListener } from '@vueuse/core'
 
 import { useWord } from '@store/words'
 
@@ -12,9 +13,9 @@ import WordDocumentList from '@comp/WordDocumentList.vue'
 import WordDocumentAdder from '@comp/WordDocumentAdder.vue'
 import WordGraphList from '@comp/WordGraphList.vue'
 import WordGraphChart from '@comp/WordGraphChart.vue'
+import WordSub from '@comp/WordSub.vue'
 
 import type { IWord, IWordDocumentWithoutId } from '@type'
-import WordSub from './WordSub.vue'
 
 const props = withDefaults(defineProps<{
     word: IWord
@@ -27,6 +28,7 @@ const props = withDefaults(defineProps<{
 const wordStore = useWord()
 
 const withdrawed = computed(() => ! wordStore.getById(props.word.id))
+const nazoMode = ref(false)
 
 const addDoc = (doc: IWordDocumentWithoutId) => {
     const id = wordStore.addDoc(props.word.docs ??= [], doc)
@@ -50,7 +52,7 @@ const setCenter = (el: HTMLElement) => {
     scrollEl.value?.scrollBy({ top: delta, behavior: 'smooth' })
 }
 
-window.addEventListener('resize', () => {
+useEventListener('resize', () => {
     const el = editingEl.value
     if (el) setCenter(el)
 })
@@ -69,7 +71,7 @@ window.addEventListener('resize', () => {
             </template>
         </NyaConfirmInput>
 
-        <p>
+        <p class="word-actions">
             <LongPressButton
                 v-if="! withdrawed"
                 @long-press="wordStore.withdraw(word.id)"
@@ -85,6 +87,15 @@ window.addEventListener('resize', () => {
                 color="var(--color-ui)"
                 desc="削除取り消し"
                 :delay=".5"
+            />
+
+            <LongPressButton
+                v-if="! withdrawed"
+                @long-press="nazoMode = ! nazoMode"
+                :icon="nazoMode ? 'eye' : 'eye-slash'"
+                color="var(--color-fg)"
+                :desc="'なぞモード ' + (nazoMode ? 'OFF' : 'ON')"
+                :delay="0.5"
             />
         </p>
 
@@ -115,6 +126,7 @@ window.addEventListener('resize', () => {
                     @blur.capture="editingEl = undefined"
                     :word="word"
                     :node="word"
+                    :hide-self="nazoMode"
                 />
             </template>
             <template #link>
@@ -131,6 +143,10 @@ window.addEventListener('resize', () => {
 <style scoped>
 .word-disp, .word-sub {
     margin: 0;
+}
+
+.word-actions > * {
+    margin-right: .5em;
 }
 
 .word-disp :deep(.input), .word-sub :deep(.input) {
