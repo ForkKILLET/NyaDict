@@ -18,14 +18,19 @@ const { config } = storeToRefs(useConfig())
 
 useTheme(toRefs(config.value).theme)
 
+const history: string[] = []
+router.afterEach((to) => {
+    history.unshift(to.path)
+})
+
 registerShortcuts(routes
     .filter(route => route.display)
-    .map((route, index) => ({
-        id: `route:${route.path}`,
+    .map(({ path, display }, index) => ({
+        id: `route:${path}`,
         key: newKey(`ctrl+${index + 1}`),
-        info: `${route.display!.info}のページへ`,
+        info: `${display!.info}のページへ`,
         action: () => {
-            router.push(route.path)
+            router.push(history.find(hist => hist.startsWith(path)) ?? path)
         }
     }))
 )
