@@ -63,6 +63,8 @@ const onDragStart = (event: MouseEvent | TouchEvent, node?: ISimulationNode) => 
         else return
     }
 
+    event.preventDefault()
+
     dragTarget.value = tar
 }
 
