@@ -90,22 +90,35 @@ const updateGraph = (newDocText: string) => {
     wordStore.updateGraphByTemplate(props.doc.id, oldDocText.value, newDocText, props.word, props.word.id)
 }
 
-const backlink = (doc: ILinkDocument) => {
-    const target = getFirstWordTemplateSegment(doc.text)
+const backlinkInfo = computed(() => {
+    if (props.doc.kind !== DocumentKind.Link) return
+
+    const target = getFirstWordTemplateSegment(props.doc.text)
     if (! target?.id) return
 
     const targetId = target.id
     const targetWord = wordStore.getById(targetId)
+
     if (! targetWord) return
 
-    const backlinkDoc = targetWord.docs?.find(doc => {
+    const backDoc = targetWord.docs?.find(doc => {
         if (doc.kind !== DocumentKind.Link) return false
         const target = getFirstWordTemplateSegment(doc.text)
         if (target?.id !== props.word.id) return false
         return true
     })
 
-    if (backlinkDoc) addNoti({
+    return {
+        targetWord,
+        backDoc
+    }
+})
+
+const backlink = (doc: ILinkDocument) => {
+    const info = backlinkInfo.value
+    if (! info) return
+
+    if (info.backDoc) addNoti({
         content: 'バックリンクは既に存在します',
         type: 'info',
         duration: 2 * 1000
@@ -117,8 +130,8 @@ const backlink = (doc: ILinkDocument) => {
             text: '#' + props.word.id,
             rel: doc.rel
         }
-        const newDocId = wordStore.addDoc(targetWord.docs ??= [], newDoc)
-        wordStore.updateGraphByTemplate(newDocId, '', newDoc.text, targetWord, targetId, false)
+        const newDocId = wordStore.addDoc(info.targetWord.docs ??= [], newDoc)
+        wordStore.updateGraphByTemplate(newDocId, '', newDoc.text, info.targetWord, info.targetWord.id, false)
         addNoti({
             content: 'バックリンクを作成しました',
             type: 'success',
@@ -214,7 +227,7 @@ const backlink = (doc: ILinkDocument) => {
                             v-if="doc.kind === DocumentKind.Link"
                             @long-press="backlink(doc)"
                             icon="link"
-                            color="var(--color-fg)"
+                            :color="backlinkInfo?.backDoc ? 'var(--color-order)' : 'var(--color-fg)'"
                             desc="バックリンク"
                             :delay=".5"
                         />
