@@ -120,11 +120,11 @@ const data = {
                     :data="data"
                     :colors="gradeColors"
                 >
-                    <template #current="{ value }">
-                        <div v-if="value">
-                            <NyaDate :date="value.date" />
+                    <template #current="{ item }">
+                        <div v-if="item">
+                            <NyaDate :date="item.date" />
                             に単語を
-                            <span class="number">{{ value.num ?? 0 }}</span>
+                            <span class="number">{{ item.value.num ?? 0 }}</span>
                             個作成しました
                         </div>
                     </template>
@@ -160,11 +160,11 @@ const data = {
                     :data="data"
                     :colors="gradeColors"
                 >
-                    <template #current="{ value }">
-                        <div v-if="value">
-                            <NyaDate :date="value.date" />
+                    <template #current="{ item }">
+                        <div v-if="item">
+                            <NyaDate :date="item.date" />
                             にテストを
-                            <span class="number">{{ value.num ?? 0 }}</span>
+                            <span class="number">{{ item.value.num ?? 0 }}</span>
                             個作成しました
                         </div>
                     </template>

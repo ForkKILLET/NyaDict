@@ -56,8 +56,8 @@ const data = computed(() => {
     }
     return dates.map(date => ({
         kind: data[date].state,
+        date: dayjs(date),
         value: {
-            date,
             recs: data[date].recs
         }
     }))
@@ -93,11 +93,11 @@ const data = computed(() => {
                 both: 'linear-gradient(-45deg, var(--color-correct) 50%, var(--color-wrong) 50%)'
             }"
         >
-            <template #current="{ value }">
-                <template v-if="value">
-                    <NyaDate :date="value.date" />
+            <template #current="{ item }">
+                <template v-if="item">
+                    <NyaDate :date="item.date" />
 
-                    <template v-for="rec of value.recs">
+                    <template v-for="rec of item.value.recs">
                         <span class="rec-id id" v-if="rec.testId !== undefined">{{ rec.testId }}</span>
                     </template>
                 </template>

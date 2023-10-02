@@ -1,5 +1,5 @@
 <script lang="ts">
-import dayjs from 'dayjs'
+import dayjs, { Dayjs } from 'dayjs'
 
 import { gradeBy } from '@util'
 
@@ -32,10 +32,8 @@ export const getCalendarData = <T>(source: T[], getDate: (item: T) => number) =>
             const num = nums[date]
             return {
                 kind: gradeBy(num, maxNum),
-                value: {
-                    num,
-                    date
-                }
+                date: dayjs(date),
+                value: { num }
             }
         })
     return {
@@ -48,17 +46,22 @@ export const getCalendarData = <T>(source: T[], getDate: (item: T) => number) =>
 <script setup lang="ts" generic="T">
 import { onMounted, ref } from 'vue'
 
+type DataItem = {
+    date: Dayjs
+    kind: string
+    value: T
+}
+
 defineProps<{
     startDay: number
-    data: Array<{
-        kind: string
-        value?: T
-    }>
+    data: DataItem[]
     colors: Record<string, string>
 }>()
 
-const currentIndex = ref<number>()
-const currentValue = ref<T | undefined>()
+const current = ref<{
+    index: number
+    item: DataItem
+}>()
 
 const inner = ref<HTMLDivElement>()
 
@@ -78,19 +81,28 @@ onMounted(() => scrollInner(inner.value?.clientWidth ?? 0))
         <fa-icon @click="scrollInner(+ 50)" icon="arrow-circle-right" class="button"></fa-icon>
 
         <div class="calendar-inner scroll-x" ref="inner">
-            <div class="calendar-title" v-for="text of [...'日月火水木金土']">{{ text }}</div>
+            <div class="calendar-title no-select" v-for="text of [...'日月火水木金土']">{{ text }}</div>
             <div class="pad" :style="{ width: '1em', height: startDay + 'em' }"></div>
-            <div
-                v-for="{ kind, value }, index of data"
-                class="calendar-day"
-                @mouseover="currentIndex = index; currentValue = value"
-                :style="{ background: colors[kind] ?? 'var(--color-chart-bg)' }"
-                :class="{ current: index === currentIndex }"
-            ></div>
+            <template v-for="item, index of data">
+                <div
+                    class="calendar-day"
+                    @mouseover="current = { index, item }"
+                    :style="{ background: colors[item.kind] ?? 'var(--color-chart-bg)' }"
+                    :class="{
+                        current: current?.index === index,
+                        'start-of-month': item.date.date() === 1
+                    }"
+                ></div>
+                <div
+                    v-if="item.date.date() === 1"
+                    class="calendar-month"
+                    :style="{ left: (((index + startDay) / 7 | 0) + 1) + 'rem' }"
+                >{{ item.date.month() + 1 }} 月</div>
+            </template>
         </div>
 
         <div class="current-message">
-            <slot name="current" :value="currentValue"></slot>
+            <slot name="current" :item="current?.item"></slot>
         </div>
     </div>
 </template>
@@ -107,17 +119,19 @@ onMounted(() => scrollInner(inner.value?.clientWidth ?? 0))
 .calendar > .button {
     position: absolute;
     z-index: 1;
-    top: 3em;
+    top: 0;
     opacity: .3;
     transition: .5s opacity;
 }
 
 .calendar > .button:first-of-type {
-    left: 1em;
+    left: 0;
+    padding-left: 0;
 }
 
 .calendar > .button:last-of-type {
     right: 0;
+    padding-right: 0;
 }
 
 .calendar-inner {
@@ -127,6 +141,8 @@ onMounted(() => scrollInner(inner.value?.clientWidth ?? 0))
     flex-wrap: wrap;
     align-content: start;
     height: 7em;
+    padding-right: 2em;
+    padding-top: 1em;
 }
 
 .calendar-title {
@@ -135,6 +151,15 @@ onMounted(() => scrollInner(inner.value?.clientWidth ?? 0))
     font-size: .7em;
     line-height: 1;
     background-color: var(--color-ui-bg);
+    z-index: 1;
+}
+
+.calendar-month {
+    position: absolute;
+    top: 0;
+    margin: .1em;
+    font-size: .7em;
+    white-space: nowrap;
 }
 
 .calendar-day, .calendar-title {
@@ -144,11 +169,22 @@ onMounted(() => scrollInner(inner.value?.clientWidth ?? 0))
 }
 
 .calendar-day {
+    position: relative;
     border-radius: .2rem;
 }
 
 .calendar-day.current {
     outline: 2px solid #db8e3090;
+}
+
+.calendar-day.start-of-month::before {
+    content: '';
+    position: absolute;
+    top: -.1em;
+    display: block;
+    width: 100%;
+    height: 1px;
+    background: var(--color-ui);
 }
 
 .current-message, .current-message * {
