@@ -60,7 +60,7 @@ const searchHistory = useRefHistory(search)
 
 const searchHiragana = computed(() => strictToHiragana(search.value))
 
-const modiferInfo: Record<IWordFilterModiferName, string> = {
+const modifierInfo: Record<IWordFilterModiferName, string> = {
     rei: '例',
     kai: '解釈',
 	aku: '空く'
@@ -95,6 +95,9 @@ const onSearchDelete = () => {
             .filter(([, value ]) => value)
         if (activeModifers.length)
             modifiers.value[(activeModifers.at(-1)![0] as IWordFilterModiferName)] = false
+        else if (testId.value) {
+            testId.value = null
+        }
     }
 }
 
@@ -120,9 +123,27 @@ const filteredWords = computed<IWord[]>(() => {
             .filter((word): word is IWord => word !== undefined)
     }
 
-    const text = search.value ?? ''
+    let text = search.value ?? ''
     const hiragana = searchHiragana.value
-    
+
+
+    let match: (t: string) => (s: string) => boolean = t => s => s.includes(t)
+    if (text[0] === '^' && text.at(- 1) === '$') {
+        text = text.slice(1, - 1)
+        match = t => s => s === t
+    }
+    if (text[0] === '^') {
+        text = text.slice(1)
+        match = t => s => s.startsWith(t)
+    }
+    else if (text.at(- 1) === '$') {
+        text = text.slice(0, - 1)
+        match = t => s => s.endsWith(t)
+    }
+
+    const matchText = match(text)
+    const matchHiragana = match(hiragana ?? '')
+
     return words.filter(word => {
         // Correct filter
         if (testId.value !== null && recs[word.id].correct > testCorrectLevel.value) return false
@@ -135,20 +156,20 @@ const filteredWords = computed<IWord[]>(() => {
         // Meaning filter
         if (modifiers.value.kai) {
             const meanings = getWordMeanings(word)
-            if (! meanings.some(t => t.includes(text))) return false
+            if (! meanings.some(matchText)) return false
         }
 
         // Sentence filter
         else if (modifiers.value.rei) {
             const sentences = getWordSentences(word)
-            if (! sentences.some(t => t.includes(text))) return false
+            if (! sentences.some(matchText)) return false
         }
 
         // Normal filter
         else {
             if (! (hiragana
-                ? getHiragana(word).includes(hiragana)
-                : word.disp.includes(text) || word.sub.includes(text)
+                ? matchHiragana(getHiragana(word))
+                : matchText(word.disp) || matchText(word.sub)
             )) return false
         }
 
@@ -263,7 +284,7 @@ watch(route, () => {
 
                             <template v-for="modifier, name of modifiers">
                                 <span v-if="modifier" class="badge">
-                                    {{ modiferInfo[name] }}
+                                    {{ modifierInfo[name] }}
                                     <fa-icon
                                         @click="modifiers[name] = false"
                                         icon="trash" class="button"
