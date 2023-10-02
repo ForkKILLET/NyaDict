@@ -90,8 +90,8 @@ const noInfoReasons: Record<INoInfoReason, string> = {
                 <slot></slot>
             </div>
         </template>
-        <template v-else>
-            <span class="no-info-reason">{{ noInfoReasons[noInfoReason!] }}</span>
+        <template v-else-if="noInfoReason">
+            <span class="no-info-reason">{{ noInfoReasons[noInfoReason] }}</span>
         </template>
         <div class="archive-labels">
             <slot name="labels"></slot>

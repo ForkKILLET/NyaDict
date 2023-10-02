@@ -51,10 +51,11 @@ const sharpStart = () => {
 
 const sharpEnd = (word: IWord, model: { value: string }) => {
     showMiniSearcher.value = false
-    templateInput.value!.focus()
 
     const el = templateInput.value
     if (! el) return
+
+    el.focus()
 
     const pos = el.selectionStart
     if (typeof pos === 'number' && el.value[pos - 1] === '#') {
@@ -68,7 +69,7 @@ const sharpEnd = (word: IWord, model: { value: string }) => {
 }
 const sharpCancel = () => {
     showMiniSearcher.value = false
-    templateInput.value!.focus()
+    templateInput.value?.focus()
 }
 const onSharp = () => {
     if (! config.value.lazySharp) sharpStart()

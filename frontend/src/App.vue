@@ -24,11 +24,11 @@ router.afterEach((to) => {
 })
 
 registerShortcuts(routes
-    .filter(route => route.display)
+    .filter((route): route is Required<typeof route> => !! route.display)
     .map(({ path, display }, index) => ({
         id: `route:${path}`,
         key: newKey(`ctrl+${index + 1}`),
-        info: `${display!.info}のページへ`,
+        info: `${display.info}のページへ`,
         action: () => {
             router.push(history.find(hist => hist.startsWith(path)) ?? path)
         }

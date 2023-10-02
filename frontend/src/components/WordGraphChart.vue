@@ -136,12 +136,9 @@ const onWheel = (event: WheelEvent) => {
     }
 }
 
-useEventListener('mousedown', onDragStart)
-useEventListener('touchstart', onDragStart)
-useEventListener('mousemove', onDragMove)
-useEventListener('touchmove', onDragMove)
-useEventListener('mouseup', onDragEnd)
-useEventListener('touchend', onDragEnd)
+useEventListener([ 'mousedown', 'touchstart' ], onDragStart)
+useEventListener([ 'mousemove', 'touchmove' ], onDragMove)
+useEventListener([ 'mouseup', 'touchend' ], onDragEnd)
 useEventListener('keydown', onKey)
 useEventListener(root, 'wheel', onWheel)
 </script>

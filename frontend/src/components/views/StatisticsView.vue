@@ -114,18 +114,25 @@ const data = {
             title="単語作成"
             :data="data.createWord"
         >
-            <template #default="{ data: { data, firstDate } }">
+            <template #default="{ data: { data, firstDate }, actionsEl }">
                 <Calendar
                     :start-day="firstDate.get('d')"
+                    :has-count="true"
                     :data="data"
                     :colors="gradeColors"
+                    :actions-el="actionsEl"
                 >
                     <template #current="{ item }">
                         <div v-if="item">
                             <NyaDate :date="item.date" />
                             に単語を
-                            <span class="number">{{ item.value.num ?? 0 }}</span>
-                            個作成しました
+                            <span class="number">{{ item.count ?? 0 }}</span>
+                            個作成しました。
+                            <template v-if="item.total !== undefined">
+                                合計
+                                <span class="number">{{ item.total }}</span>
+                                個です。
+                            </template>
                         </div>
                     </template>
                 </Calendar>
@@ -136,8 +143,8 @@ const data = {
             title="EZ 分布"
             :data="data.easiness"
         >
-            <template #default="{ data: { data } }">
-                <PieChart :data="data" />
+            <template #default="{ data: { data }, actionsEl }">
+                <PieChart :data="data" :actions-el="actionsEl" />
             </template>
         </StatisticsItem>
 
@@ -145,8 +152,8 @@ const data = {
             title="次のテストの時間"
             :data="data.testAfter"
         >
-            <template #default="{ data: { data } }">
-                <PieChart :data="data" />
+            <template #default="{ data: { data }, actionsEl }">
+                <PieChart :data="data" :actions-el="actionsEl" />
             </template>
         </StatisticsItem>
 
@@ -154,17 +161,19 @@ const data = {
             title="テスト作成"
             :data="data.createTest"
         >
-            <template #default="{ data: { data, firstDate } }">
+            <template #default="{ data: { data, firstDate }, actionsEl }">
                 <Calendar
                     :start-day="firstDate.get('d')"
+                    :has-count="true"
                     :data="data"
                     :colors="gradeColors"
+                    :actions-el="actionsEl"
                 >
                     <template #current="{ item }">
                         <div v-if="item">
                             <NyaDate :date="item.date" />
                             にテストを
-                            <span class="number">{{ item.value.num ?? 0 }}</span>
+                            <span class="number">{{ item.count ?? 0 }}</span>
                             個作成しました
                         </div>
                     </template>

@@ -20,11 +20,14 @@ export const getArc = (perimeter: number) => {
 </script>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
 const props = defineProps<{
     data: PieData
+    actionsEl?: HTMLElement
 }>()
+
+const showAll = ref(false)
 
 const dataWithAttr = computed<
     Array<PieData[number] & { attrs: ReturnType<ReturnType<typeof getArc>> }>
@@ -49,8 +52,12 @@ const dataWithAttr = computed<
                 v-bind="attrs"
             ></circle>
         </svg>
-        <div class="pie-chart-legend-area">
-            <div v-for="{ name, value, color, ratio } of data" class="pie-chart-legend">
+        <div class="pie-chart-legends" :class="{ 'show-all': showAll }">
+            <div
+                v-for="{ name, value, color, ratio } of data"
+                class="pie-chart-legend"
+                :class="{ insignificant: ratio < 0.01 }"
+            >
                 <div class="pie-chart-legend-box" :style="{ backgroundColor: color }"></div>
                 <span class="pie-chart-legend-name">{{ name }}</span>
                 <span class="pie-chart-legend-value">
@@ -60,6 +67,13 @@ const dataWithAttr = computed<
             </div>
         </div>
     </div>
+    <Teleport :disabled="! actionsEl" :to="actionsEl">
+        <fa-icon
+            @click="showAll = ! showAll"
+            :icon="showAll ? 'compress' : 'expand'"
+            class="button"
+        />
+    </Teleport>
 </template>
 
 <style scoped>
@@ -73,6 +87,15 @@ const dataWithAttr = computed<
 .pie-chart-legend {
     display: flex;
     align-items: baseline;
+}
+.pie-chart-legend.insignificant {
+    max-height: 0;
+    opacity: 0;
+    transition: .5s max-height, .5s opacity;
+}
+.pie-chart-legends.show-all .pie-chart-legend.insignificant {
+    max-height: 2em;
+    opacity: 1;
 }
 .pie-chart-legend-box {
     width: .8rem;

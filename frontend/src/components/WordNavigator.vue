@@ -46,12 +46,9 @@ const onDragEnd = () => {
     if (lastPoint.value) lastPoint.value = null
 }
 
-useEventListener(root, 'mousedown', onDragStart)
-useEventListener(root, 'touchstart', onDragStart)
-useEventListener('mousemove', onDragMove)
-useEventListener('touchmove', onDragMove)
-useEventListener('mouseup', onDragEnd)
-useEventListener('touchend', onDragEnd)
+useEventListener(root, [ 'mousedown', 'touchstart' ], onDragStart)
+useEventListener([ 'mousemove', 'touchmove' ], onDragMove)
+useEventListener([ 'mouseup', 'touchend' ], onDragEnd)
 
 const navigate = (action: 'up' | 'down') => mitt.emit('ui:word:navigate', { action })
 

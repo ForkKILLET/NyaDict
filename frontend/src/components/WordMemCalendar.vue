@@ -84,6 +84,7 @@ const data = computed(() => {
         />
         <Calendar
             :start-day="startDate.day()"
+            :has-count="false"
             :data="data"
             :colors="{
                 idle: '#aaa',

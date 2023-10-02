@@ -83,7 +83,9 @@ const onSelectFile = (event: Event) => {
     selectedFile.value = (event.currentTarget as HTMLInputElement).files?.[0]
 }
 const imports = async (id?: string) => {
-    const file = selectedFile.value!
+    const file = selectedFile.value
+    if (! file) return
+
     const newJSON = await file.text()
     const newData: IPortableArchive = json5TryParse(newJSON)
     if (newData?._info?.version !== ARCHIVE_VERSION) return
@@ -191,11 +193,11 @@ watch(route, ({ path }) => {
             <fa-icon @click="getRemoteInfo" icon="rotate" class="button" />
         </p>
         <div class="archive-list-entries scroll-y">
-            <div v-if="selectedFile" class="archive-entry">
+            <div v-if="selectedFile && selectedTitle" class="archive-entry">
                 <ArchiveInfo
                     id="アップ"
                     :info="{
-                        title: selectedTitle!,
+                        title: selectedTitle,
                         accessTime: selectedFile.lastModified,
                         size: selectedFile.size,
                     }"

@@ -105,7 +105,7 @@ export const gradeBy = (x: number, base: number): Grade => {
     if (x >= base * .9) return 'top'
     if (x >= base * .5) return 'high'
     if (x >= base * .1) return 'medium'
-    if (x >= 0) return 'low'
+    if (x > 0) return 'low'
     return 'none'
 }
 

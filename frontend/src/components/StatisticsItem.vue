@@ -7,15 +7,20 @@ const props = defineProps<{
 }>()
 
 const value = ref(props.data()) as Ref<T>
+
+const actionsEl = ref<HTMLSpanElement>()
 </script>
 
 <template>
     <div class="statistics-item card">
         <div class="statistics-item-title">
             <span>{{ title }}</span>
-            <fa-icon @click="value = data()" icon="rotate" class="button" />
+            <span class="statistics-item-actions">
+                <span ref="actionsEl"></span>
+                <fa-icon @click="value = data()" icon="rotate" class="button" />
+            </span>
         </div>
-        <slot :data="value"></slot>
+        <slot :data="value" :actionsEl="actionsEl"></slot>
     </div>
 </template>
 
@@ -24,5 +29,6 @@ const value = ref(props.data()) as Ref<T>
     display: flex;
     justify-content: space-between;
     align-items: baseline;
+    margin-bottom: .5em;
 }
 </style>
