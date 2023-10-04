@@ -69,6 +69,10 @@ const addManyWords = () => {
         duration: 2 * 1000
     })
 }
+
+import { parse } from '@util/filterQuery'
+
+Object.assign(window, { parse })
 </script>
 
 <template>

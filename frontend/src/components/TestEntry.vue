@@ -24,7 +24,7 @@ const startTest = () => {
 }
 
 const showInWordsView = () => {
-    wordStore.filter.testId = props.test.id
+    // FIXME: wordStore.filter.testId = props.test.id
     router.push('/words')
 }
 

@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { computed, reactive, ref, toRefs, watch, type Ref, withModifiers } from 'vue'
+import { computed, reactive, ref, toRefs, watch, type Ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useDebounceFn, useRefHistory } from '@vueuse/core'
 
 import {
     useWord, emptyMem,
@@ -10,21 +9,18 @@ import {
 } from '@store/words'
 import { useTest } from '@store/test'
 
-import { strictToHiragana } from '@util/kana'
 import { isPortrait } from '@util/media'
+import type { IQuery } from '@util/filterQuery'
 
 import WordEditor from '@comp/WordEditor.vue'
 import WordList from '@comp/WordList.vue'
 import WordDetail from '@comp/WordDetail.vue'
-import WordFilterTest from '@comp/WordFilterTest.vue'
 import WordNavigator from '@comp/WordNavigator.vue'
+import WordFilter from '@comp/WordFilter.vue'
 
-import type { IWord, ITestRec, IWordFilterModiferName, IWordSortMethod } from '@type'
+import type { IWord, IWordSortMethod } from '@type'
 
-const wordStore = useWord()
-const testStore = useTest()
-
-const currentWord = ref<IWord>()
+// Toolbar
 
 type ToolbarMode = 'add' | 'sort' | 'filter'
 const toolbarMode = ref<ToolbarMode | null>(null)
@@ -53,129 +49,17 @@ const toolbarConfig = reactive<ToolbarConfigItem[]>([
     }
 ])
 
-const { search, modifiers, testId, testCorrectLevel } = toRefs(wordStore.filter)
+const wordStore = useWord()
 const { method: sortMethod, direction: sortDirection } = toRefs(wordStore.sorter)
+const currentWord = ref<IWord>()
 
-const searchHistory = useRefHistory(search)
+// Filtering
 
-const searchHiragana = computed(() => strictToHiragana(search.value))
+const wordFilter = ref<InstanceType<typeof WordFilter>>()
+const query = ref<IQuery>()
+const filteredWords = computed(() => [])
 
-const modifierInfo: Record<IWordFilterModiferName, string> = {
-    rei: '例',
-    kai: '解釈',
-	aku: '空く'
-}
-
-const updateSearch = useDebounceFn((v: string) => {
-    search.value = v
-}, 300)
-const searchDebounced = computed<string>({
-    get: () => search.value ?? '',
-    set: (newSearch) => {
-        // Do not debounce modifiers
-        const res = newSearch?.match(/^(?<modifier>rei|kai|aku):$/)
-        const groups = res?.groups as { modifier?: IWordFilterModiferName } | null | undefined
-        if (groups?.modifier) {
-            modifiers.value[groups.modifier] = true
-            search.value = searchDebounced.value = ''
-        }
-
-        else updateSearch(newSearch)
-    }
-})
-
-const searchEl = ref<HTMLInputElement>()
-
-const onSearchDelete = () => {
-    const el = searchEl.value
-    if (! el) return
-    if (el.selectionStart === 0 && el.selectionEnd === 0) {
-        const activeModifers = Object
-            .entries(modifiers.value)
-            .filter(([, value ]) => value)
-        if (activeModifers.length)
-            modifiers.value[(activeModifers.at(-1)![0] as IWordFilterModiferName)] = false
-        else if (testId.value) {
-            testId.value = null
-        }
-    }
-}
-
-watch(testId, () => {
-    if (search.value || testId.value) toolbarMode.value = 'filter'
-}, { immediate: true })
-
-const filteredWords = computed<IWord[]>(() => {
-    let words = [...wordStore.words]
-    const recs: Record<number, ITestRec> = {}
-
-    if (testId.value !== null) {
-        const test = testStore.getById(testId.value)
-        if (! test) return []
-
-        words = test.wordIds
-            .map(wordStore.getById)
-            .map((word, index) => {
-                if (! word) return
-                recs[word.id] = word.mem.testRec[test.recIds[index]]
-                return word
-            })
-            .filter((word): word is IWord => word !== undefined)
-    }
-
-    let text = search.value ?? ''
-    const hiragana = searchHiragana.value
-
-
-    let match: (t: string) => (s: string) => boolean = t => s => s.includes(t)
-    if (text[0] === '^' && text.at(- 1) === '$') {
-        text = text.slice(1, - 1)
-        match = t => s => s === t
-    }
-    if (text[0] === '^') {
-        text = text.slice(1)
-        match = t => s => s.startsWith(t)
-    }
-    else if (text.at(- 1) === '$') {
-        text = text.slice(0, - 1)
-        match = t => s => s.endsWith(t)
-    }
-
-    const matchText = match(text)
-    const matchHiragana = match(hiragana ?? '')
-
-    return words.filter(word => {
-        // Correct filter
-        if (testId.value !== null && recs[word.id].correct > testCorrectLevel.value) return false
-
-        // Empty doc filter
-        if (modifiers.value.aku) {
-            if (word.docs?.length) return false
-        }
-
-        // Meaning filter
-        if (modifiers.value.kai) {
-            const meanings = getWordMeanings(word)
-            if (! meanings.some(matchText)) return false
-        }
-
-        // Sentence filter
-        else if (modifiers.value.rei) {
-            const sentences = getWordSentences(word)
-            if (! sentences.some(matchText)) return false
-        }
-
-        // Normal filter
-        else {
-            if (! (hiragana
-                ? matchHiragana(getHiragana(word))
-                : matchText(word.disp) || matchText(word.sub)
-            )) return false
-        }
-
-        return true
-    })
-})
+// Sorting
 
 const sortMethodInfo = {
     id: 'ID',
@@ -188,7 +72,6 @@ const sortMethodInfo = {
     testTime: 'テスト時間',
     easiness: 'EZ'
 }
-
 const sortFunction = computed(() => {
     const { value: method } = sortMethod
     return (a: IWord, b: IWord) => {
@@ -206,7 +89,10 @@ const sortFunction = computed(() => {
         return sortDirection.value === 'up' ? - delta : + delta
     }
 })
-const sortedWords = computed(() => [...filteredWords.value].sort(sortFunction.value))
+const sortedWords = computed(() => {
+    if (! filteredWords.value) return
+    return [...filteredWords.value].sort(sortFunction.value)
+})
 const onSortMethodClick = (method: IWordSortMethod) => {
     if (method === sortMethod.value)
         sortDirection.value = sortDirection.value === 'up' ? 'down' : 'up'
@@ -214,22 +100,25 @@ const onSortMethodClick = (method: IWordSortMethod) => {
         sortMethod.value = method
 }
 
+// Adding
+
 const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
     const id = wordStore.add({ ...word, mem: emptyMem() })
     gotoWord(id)
 }
 
-const contentEl = ref<HTMLDivElement>()
+// Route
 
 const router = useRouter()
 const route = useRoute()
+const contentEl = ref<HTMLDivElement>()
 
-const gotoWord = (wordId: number) => {
-    router.replace(`/words?id=${wordId}`)
-    if (isPortrait.value) setTimeout(() => contentEl.value?.scrollBy({
+const gotoWord = async (wordId: number) => {
+    await router.replace(`/words?id=${wordId}`)
+    if (isPortrait.value) contentEl.value?.scrollBy({
         left: window.innerWidth,
         behavior: 'smooth'
-    }), 0)
+    })
 }
 
 watch(route, () => {
@@ -272,46 +161,15 @@ watch(route, () => {
                         </span>
                     </div>
                     <div v-else-if="toolbarMode === 'filter'">
-                        <div class="filter-search card input light">
-                            <span v-if="testId" class="filter-test badge">
-                                テスト <span class="id">{{ testId }}</span>
-                                <WordFilterTest />
-                                <fa-icon
-                                    @click="testId = null"
-                                    icon="trash" class="button"
-                                />
-                            </span>
-
-                            <template v-for="modifier, name of modifiers">
-                                <span v-if="modifier" class="badge">
-                                    {{ modifierInfo[name] }}
-                                    <fa-icon
-                                        @click="modifiers[name] = false"
-                                        icon="trash" class="button"
-                                    />
-                                </span>
-                            </template>
-
-                            <input
-                                ref="searchEl"
-                                v-model="searchDebounced"
-                                @keydown.delete="onSearchDelete"
-                                @keydown.up="searchHistory.undo"
-                                @keydown.down="searchHistory.redo"
-                            />
-
-                            <fa-icon
-                                @click="search = ''"
-                                icon="times-circle" class="button"
-                            />
-                        </div>
+                        <WordFilter v-model="query" ref="wordFilter" />
                     </div>
                 </div>
             </div>
             <WordList
+                v-if="sortedWords"
+                @goto-word="gotoWord"
                 :active-word-id="currentWord?.id"
                 :words="sortedWords"
-                @goto-word="gotoWord"
                 class="scroll-y"
             />
         </div>

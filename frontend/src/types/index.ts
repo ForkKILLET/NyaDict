@@ -108,12 +108,7 @@ export type IWordSorter = {
 export type IWordFilterModiferName = 'rei' | 'kai' | 'aku' 
 
 export type IWordFilter = {
-    search: string | null
-    modifiers: {
-        [K in IWordFilterModiferName]?: boolean
-    }
-    testId: number | null
-    testCorrectLevel: number
+    query: string
 }
 
 export enum TestMode {

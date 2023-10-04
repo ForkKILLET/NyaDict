@@ -1,10 +1,18 @@
 <script setup lang="ts">
-import { toRefs } from 'vue'
-import { useWord } from '@store/words'
+import { computed } from 'vue'
 
-const wordStore = useWord()
+const props = defineProps<{
+    modelValue: number
+}>()
 
-const { testCorrectLevel: level } = toRefs(wordStore.filter)
+const emit = defineEmits<{
+    (event: 'update:modelValue', value: number): void
+}>()
+
+const level = computed({
+    get: () => props.modelValue,
+    set: (newLevel) => emit('update:modelValue', newLevel)
+})
 </script>
 
 <template>

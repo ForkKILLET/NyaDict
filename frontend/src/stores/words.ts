@@ -1,4 +1,4 @@
-import { ref, type Ref } from 'vue'
+import { computed, ref, type Ref } from 'vue'
 import { defineStore } from 'pinia' 
 import { toHiragana, isHiragana} from 'wanakana'
 import { useArchive } from '@store/archive'
@@ -44,19 +44,21 @@ export const useWord = defineStore('words', () => {
         map: compress_IWord
     }))
     archiveStore.define('wordFilter', (key) => storeRefReactive<IWordFilter>(key, {
-        search: null,
-        testId: null,
-        modifiers: {},
-        testCorrectLevel: 1
+        query: ''
     }))
     archiveStore.define('wordSorter', (key) => storeRefReactive<IWordSorter>(key, {
         method: 'id',
         direction: 'up'
     }))
     archiveStore.define('docMaxId', key => storeRef(key, 0))
+
     const { words, wordMaxId, wordFilter: filter, wordSorter: sorter, docMaxId } = archiveStore.extractData(
         [ 'words', 'wordMaxId', 'wordFilter', 'wordSorter', 'docMaxId' ]
     )
+
+    const structuredFilter = computed(() => {
+
+    })
     
     const getWordDict = () => {
         const dict: Record<string, IWord> = {}
