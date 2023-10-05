@@ -69,6 +69,7 @@ const dataWithAttr = computed<
     </div>
     <Teleport :disabled="! actionsEl" :to="actionsEl">
         <fa-icon
+            v-if="data.some(item => item.ratio < 0.01)"
             @click="showAll = ! showAll"
             :icon="showAll ? 'compress' : 'expand'"
             class="button"
