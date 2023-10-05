@@ -1,18 +1,26 @@
+import { getWordMeanings, getWordSentences } from '@store/words'
+
+import { unreachable } from '@util'
+
+import { type IWord } from '@type'
 import type { Repeated } from '@type/tool'
+import { strictToHiragana } from './kana'
+
+export type IMatchMethod = 'equals' | 'contains' | 'startswith' | 'endswith'
 
 export type IQuery = {
     type: 'text'
     text: string
-    match: 'equals' | 'contains' | 'startswith' | 'endswith'
-    object: IQueryTextTarget
+    match: IMatchMethod
+    object: IQueryTextObject
 } | {
     type: 'empty'
-    object: IQueryTextTarget
+    object: IQueryTextObject
 } | {
     type: 'time'
     timeStart?: number
     timeEnd?: number
-    object: IQueryTimeTarget
+    object: IQueryTimeObject
 } | {
     type: 'test'
     testId: number
@@ -43,6 +51,7 @@ export type IQueryASTCall = IPos & {
 export type IQueryASTString = IPos & {
     type: 'string'
     value: string
+    kana?: string
 }
 
 export type IQueryASTObject = IPos & {
@@ -55,16 +64,17 @@ export type IQueryAST =
     | IQueryASTString
     | IQueryASTObject
 
-export type IQueryTextTarget =
+export type IQueryTextObject =
     | 'word' | 'disp' | 'sub'
     | 'meaning' | 'sentence'
-export type IQueryTimeTarget =
+export type IQueryTimeObject =
     | 'create' | 'test'
 
 export enum QueryTokenType {
     Object,
     Verb,
     String,
+    RomajiString,
     LParen,
     RParen,
 }
@@ -88,10 +98,14 @@ export class QueryError extends Error {
         const caretCount = cause.end === undefined ? 1 : cause.end - cause.start
         const message
             = `${cause.stage}Error`
-            + `\n${cause.query}\n` + ' '.repeat(spaceCount) + '^'.repeat(caretCount)
+            + `\n${cause.query.replace(/[^\u0020-\u007f]/g, '#')}\n` + ' '.repeat(spaceCount) + '^'.repeat(caretCount)
             + ` ${cause.error.replace(/\n/g, '\n' + ' '.repeat(spaceCount + caretCount + 1))}`
         super(message, { cause })
     }
+}
+
+export interface QueryError {
+    cause: IQueryErrorCause
 }
 
 export type IQueryDataType = {
@@ -158,7 +172,7 @@ export const verbAliases: Record<string, string> = {
 }
 
 const whiteChars = ' \t\r\n\u3000'
-const symbolChars = '=~^$' + '&|!'
+const symbolChars = '=~^[]' + '&|!'
 const identifierChars
     = 'abcdefghijklmnopqrstuvwxyz'
     + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -196,7 +210,7 @@ const _tokenize = (ctx: IQueryContext): IQueryToken[] | null => {
             continue
         }
 
-        if (char === '\'' || char === '"') {
+        if (char === '\'' || char === '"' || char === '`') {
             const quote = char
             const start = index
             let value = ''
@@ -207,14 +221,17 @@ const _tokenize = (ctx: IQueryContext): IQueryToken[] | null => {
             }
             if (char === quote) {
                 const end = ++ index
-                tokens.push({ type: QueryTokenType.String, value, start, end })
+                tokens.push({
+                    type:quote === '`' ? QueryTokenType.RomajiString : QueryTokenType.String, value,
+                    start, end
+                })
             }
             else throw _error({
                 stage: 'Tokenize',
                 query: query,
                 error: 'String not ended',
                 start: start,
-                end: length
+                end: query.length
             })
             continue
         }
@@ -347,14 +364,21 @@ const _parse = (state: IQueryParseState, endAt: ParseEndAt, depth: number): IQue
             return tree
         }
 
-        if (token.type === QueryTokenType.String) {
+        if (token.type === QueryTokenType.String || token.type === QueryTokenType.RomajiString) {
             state.advance()
-            return {
+            const tree: IQueryASTString = {
                 type: 'string',
                 value: token.value,
                 start: token.start,
                 end: token.end
             }
+            if (token.type === QueryTokenType.RomajiString) {
+                const kana = strictToHiragana(token.value)
+                if (kana === undefined)
+                    throw state.error(`[RomajiString] '${token.value}' is not legal romaji`, token)
+                tree.kana = kana
+            }
+            return tree
         }
 
         if (token.type === QueryTokenType.Object) {
@@ -445,11 +469,12 @@ const _expand = (ctx: IQueryContext, tree: IQueryAST): IQuery => {
             }
         }
         if (tree.verb === 'contains' || tree.verb === 'equals' || tree.verb === 'startswith' || tree.verb === 'endswith') {
+            const str = tree.args[1] as IQueryASTString
             return {
                 type: 'text',
                 match: tree.verb,
                 object: (tree.args[0] as IQueryASTObject).name as any,
-                text: (tree.args[1] as IQueryASTString).value
+                text: str.kana ?? str.value
             }
         }
         if (tree.verb === 'empty') {
@@ -477,15 +502,80 @@ const _expand = (ctx: IQueryContext, tree: IQueryAST): IQuery => {
     })
 }
 
-export const parse = (query: string): IQuery | null => {
+export type IQueryParseResult = {
+    state: 'success'
+    structured: IQuery
+} | {
+    state: 'null'
+} | {
+    state: 'error'
+    error: QueryError
+}
+
+export const parse = (query: string): IQueryParseResult => {
     const ctx = { query }
 
-    const tokens = _tokenize(ctx)
-    if (tokens === null) return null
+    try {
+        const tokens = _tokenize(ctx)
+        if (tokens === null) return { state: 'null' }
 
-    const ast = _parse(_newParseState(ctx, tokens), ParseEndAt.EOI, 0)
-    if (ast === null) return null
+        const ast = _parse(_newParseState(ctx, tokens), ParseEndAt.EOI, 0)
+        if (ast === null) return { state: 'null' }
 
-    const structured = _expand(ctx, ast)
-    return structured
+        const structured = _expand(ctx, ast)
+        return {
+            state: 'success',
+            structured
+        }
+    }
+    catch (error) {
+        return {
+            state: 'error',
+            error: error as QueryError
+        }
+    }
+}
+
+const _getTextObjectGetter = (object: IQueryTextObject): (word: IWord) => string[] => {
+    if (object === 'disp') return word => [ word.disp ]
+    if (object === 'sub') return word => [ word.sub ]
+    if (object === 'word') return word => [ word.disp, word.sub ]
+    if (object === 'meaning') return word => getWordMeanings(word)
+    if (object === 'sentence') return word => getWordSentences(word)
+    throw unreachable()
+}
+
+const _getTextMatcher = (matchMethod: IMatchMethod, source: string): (dist: string) => boolean => {
+    if (matchMethod === 'equals') return dist => dist === source
+    if (matchMethod === 'contains') return dist => dist.includes(source)
+    if (matchMethod === 'startswith') return dist => dist.startsWith(source)
+    if (matchMethod === 'endswith') return dist => dist.endsWith(source)
+    throw unreachable()
+}
+
+export type IQueryFilter = (word: IWord) => boolean
+
+export const compile = (structured: IQuery): IQueryFilter => {
+    if (structured.type === 'and') {
+        const compiledFs = structured.filters.map(compile)
+        return word => compiledFs.every(fn => fn(word))
+    }
+    if (structured.type === 'or') {
+        const compiledFs = structured.filters.map(compile)
+        return word => compiledFs.some(fn => fn(word))
+    }
+    if (structured.type === 'not') {
+        const compiledF = compile(structured.filter)
+        return word => ! compiledF(word)
+    }
+    if (structured.type === 'empty') {
+        const getObject = _getTextObjectGetter(structured.object)
+        return word => ! getObject(word).length
+    }
+    if (structured.type === 'text') {
+        const getObject = _getTextObjectGetter(structured.object)
+        const matcher = _getTextMatcher(structured.match, structured.text)
+        return word => getObject(word).some(matcher)
+    }
+    throw unreachable()
 }

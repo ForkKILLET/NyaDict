@@ -4,60 +4,54 @@ import { useDebounceFn, useRefHistory } from '@vueuse/core'
 
 import { useWord } from '@store/words'
 
-import { strictToHiragana } from '@util/kana'
-import { type IQuery } from '@util/filterQuery'
-
-import TestCorrectLevel from '@comp/TestCorrectLevel.vue'
-import WordFilterUnit from './WordFilterUnit.vue'
-
 defineProps<{
-    modelValue: IQuery | undefined // Filter query
+    modelValue: string // Filter query string
 }>()
 
 const wordStore = useWord()
 const { query } = toRefs(wordStore.filter)
 
-// const searchHistory = useRefHistory(search)
-// const searchHiragana = computed(() => strictToHiragana(search.value))
-// const searchDebounced = computed<string>({
-//     get: () => search.value ?? '',
-//     set: (newSearch) => {
-//         setSearch(newSearch)
-//     }
-// })
-
-// const setSearch = useDebounceFn((v: string) => {
-//     search.value = v
-// }, 300)
-// const clearSearch = () => {
-//     search.value = ''
-// }
-// const onSearchDelete = () => {
-
-// }
+const setQuery = useDebounceFn((val: string) => {
+    query.value = val
+}, 300)
+const clearQuery = () => {
+    query.value = ''
+}
+const queryDebounced =  computed<string>({
+    get: () => query.value ?? '',
+    set: setQuery
+})
+const queryHistory = useRefHistory(query)
 </script>
 
 <template>
-    <div class="filter-search card input light">
-        <!-- <WordFilterUnit @delete="testId = null">
-            テスト <span class="id">{{ testId }}</span>
-            <TestCorrectLevel v-model="testCorrectLevel" />
-        </WordFilterUnit>
-
-        <span v-if="testId" class="filter-test badge">
-        </span>
-
+    <div class="word-filter card input light">
         <input
-            ref="searchEl"
-            v-model="searchDebounced"
-            @keydown.delete="onSearchDelete"
-            @keydown.up="searchHistory.undo"
-            @keydown.down="searchHistory.redo"
+            class="query-raw-str"
+            ref="queryEl"
+            v-model="queryDebounced"
+            @keydown.up="queryHistory.undo"
+            @keydown.down="queryHistory.redo"
         />
 
         <fa-icon
-            @click="clearSearch"
+            @click="clearQuery"
             icon="times-circle" class="button"
-        /> -->
+        />
     </div>
 </template>
+
+<style scoped>
+.word-filter {
+    display: flex;
+    align-items: center;
+    margin-bottom: .5em;
+}
+
+.query-raw-str {
+    width: calc(100% - 1.6em);
+    padding: .2em .5em;
+    font-size: 1rem;
+    font-family: var(--font-mono);
+}
+</style>
