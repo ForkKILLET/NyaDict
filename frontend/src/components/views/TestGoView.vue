@@ -256,7 +256,7 @@ const endTest = () => {
 }
 
 .question > span {
-    font-family: var(--ja-serif);
+    font-family: var(--font-ja-serif);
     font-size: 3em;
 }
 

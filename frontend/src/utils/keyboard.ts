@@ -15,7 +15,9 @@ export type Shortcut = {
     id: string
     key: KeyCombination
     info: string
-    action: () => void
+    priority?: number
+    isActive?: () => boolean
+    action?: () => void
 }
 
 export const shortcuts: Record<string, Shortcut> = reactive({})
@@ -31,13 +33,17 @@ export const registerShortcut = (shortcut: Shortcut) => {
     }
 }
 
-export const registerShortcuts = (shortcuts: Shortcut[]) => {
-    shortcuts.forEach(registerShortcut)
+export const registerShortcuts = (shortcuts: Shortcut[]) => shortcuts.map(registerShortcut)
+
+export const disposeShortcuts = (handles: ReturnType<typeof registerShortcuts>) => {
+    handles.forEach(handle => {
+        handle?.[kDispose]()
+    })
 }
 
 export const newKey = (keyCombinationStr: string) => {
     const [ key, ...modifiers ] = keyCombinationStr
-        .split('+')
+        .split(/\s*\+\s*/)
         .reverse()
         .map((s, i) => i ? s.toLowerCase() : s)
     return {
@@ -58,12 +64,17 @@ const isKeyMatched = (event: KeyboardEvent, key: KeyCombination) => (
 )
 
 window.addEventListener('keydown', (event) => {
-    for (const id in shortcuts) {
-        const shortcut = shortcuts[id]
+    const shortcutList = Object
+        .values(shortcuts)
+        .filter(shortcut => shortcut.isActive?.() !== false)
+        .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0))
+
+    for (const shortcut of shortcutList) {
+        if (shortcut.isActive?.() === false) continue
         if (isKeyMatched(event, shortcut.key)) {
             event.preventDefault()
-            shortcut.action()
-            mitt.emit('ui:shortcut', { shortcutId: id })
+            shortcut.action?.()
+            mitt.emit('ui:shortcut', { shortcutId: shortcut.id })
             break
         }
     }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref, toRefs, watch, type Ref } from 'vue'
+import { computed, reactive, ref, toRefs, watch, type Ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import {
@@ -10,7 +10,7 @@ import {
 import { useTest } from '@store/test'
 
 import { isPortrait } from '@util/media'
-import type { IQuery } from '@util/filterQuery'
+import { compile, parse, IQueryFilter, QueryError } from '@util/filterQuery'
 
 import WordEditor from '@comp/WordEditor.vue'
 import WordList from '@comp/WordList.vue'
@@ -50,17 +50,42 @@ const toolbarConfig = reactive<ToolbarConfigItem[]>([
 ])
 
 const wordStore = useWord()
-const { method: sortMethod, direction: sortDirection } = toRefs(wordStore.sorter)
 const currentWord = ref<IWord>()
 
 // Filtering
 
-const wordFilter = ref<InstanceType<typeof WordFilter>>()
-const query = ref<IQuery>()
-const filteredWords = computed(() => [])
+const { query } = toRefs(wordStore.filter)
+const compiledFilter = ref<IQueryFilter | null>(null)
+const queryParseError = ref<QueryError | null>(null)
+watch(query, () => {
+    const result = parse(query.value)
+    if (result.state === 'null') {
+        compiledFilter.value = null
+        queryParseError.value = null
+    }
+    else if (result.state === 'error') {
+        compiledFilter.value = null
+        queryParseError.value = result.error
+    }
+    else {
+        compiledFilter.value = compile(result.structured)
+        queryParseError.value = null
+    }
+}, { immediate: true })
+const filteredWords = computed(() => {
+    if (compiledFilter.value) return wordStore.words.filter(compiledFilter.value)
+    return [...wordStore.words]
+})
+
+onMounted(() => {
+    if (compiledFilter.value) {
+        toolbarMode.value = 'filter'
+    }
+})
 
 // Sorting
 
+const { method: sortMethod, direction: sortDirection } = toRefs(wordStore.sorter)
 const sortMethodInfo = {
     id: 'ID',
     createTime: '作成時間',
@@ -94,10 +119,12 @@ const sortedWords = computed(() => {
     return [...filteredWords.value].sort(sortFunction.value)
 })
 const onSortMethodClick = (method: IWordSortMethod) => {
-    if (method === sortMethod.value)
+    if (method === sortMethod.value) {
         sortDirection.value = sortDirection.value === 'up' ? 'down' : 'up'
-    else
+    }
+    else {
         sortMethod.value = method
+    }
 }
 
 // Adding
@@ -162,6 +189,9 @@ watch(route, () => {
                     </div>
                     <div v-else-if="toolbarMode === 'filter'">
                         <WordFilter v-model="query" ref="wordFilter" />
+                        <pre class="query-parse-error scroll-x" v-if="queryParseError">{{
+                            queryParseError.message
+                        }}</pre>
                     </div>
                 </div>
             </div>
@@ -238,21 +268,9 @@ watch(route, () => {
     flex-wrap: wrap;
 }
 
-.filter-search {
-    display: flex;
-    align-items: center;
-    margin-bottom: .5em;
-}
-
-.filter-search > input {
-    width: calc(100% - 1.6em);
-    padding: .2em .5em;
-    font-size: 1rem;
-    font-family: var(--ja-serif);
-}
-
-.filter-test > svg.button {
-    padding: 0;
-    margin-left: .5em;
+.query-parse-error {
+    color: var(--color-wrong);
+    font-family: var(--font-mono);
+    font-size: .8em;
 }
 </style>

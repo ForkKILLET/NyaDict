@@ -14,7 +14,8 @@
     color: var(--color-fg);
     background-color: var(--color-bg);
 
-    --ja-serif: 'Noto Serif CJK JP', serif;
+    --font-ja-serif: 'Noto Serif CJK JP', serif;
+    --font-mono: 'Fira Code', 'Consolas', monospace;
 }
 
 @media screen and (orientation: portrait) and (max-device-width: 600px) {

@@ -6,11 +6,14 @@ import { storeToRefs } from 'pinia'
 import { useConfig } from '@store/config'
 
 import { useTheme } from '@util/theme'
+import { useModal } from '@store/modal'
 import { registerShortcuts, newKey } from '@util/keyboard'
 import { routes } from '@util/routes'
 
 import Topbar from '@comp/Topbar.vue'
 import Notifications from '@comp/notifications/Notifications.vue'
+import ShortcutList from '@comp/ShortcutList.vue'
+import Modal from '@comp/Modal.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -23,22 +26,36 @@ router.afterEach((to) => {
     history.unshift(to.path)
 })
 
+const modalStore = useModal()
+
 registerShortcuts(routes
     .filter((route): route is Required<typeof route> => !! route.display)
     .map(({ path, display }, index) => ({
         id: `route:${path}`,
-        key: newKey(`ctrl+${index + 1}`),
+        key: newKey(`Ctrl + ${index + 1}`),
         info: `${display.info}のページへ`,
         action: () => {
             router.push(history.find(hist => hist.startsWith(path)) ?? path)
         }
     }))
 )
+
+registerShortcuts([
+    {
+        id: 'shortcut:modal',
+        key: newKey('Ctrl + k'),
+        info: 'ショートカットを見る',
+        action: () => {
+            modalStore.open(ShortcutList)
+        }
+    }
+])
 </script>
 
 <template>
     <Topbar v-if="route.path !== '/'" />
     <Notifications />
+    <Modal />
     <main class="scroll-y">
         <RouterView v-slot="{ Component }">
             <KeepAlive>

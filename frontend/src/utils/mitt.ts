@@ -8,3 +8,7 @@ export type Events = {
 }
 
 export const mitt = Mitt<Events>()
+
+mitt.on('*', (event, data) => {
+    console.log('[mitt] %s %o', event, data)
+})

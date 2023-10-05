@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useElementSize, useEventListener } from '@vueuse/core'
@@ -8,11 +8,13 @@ import { IDragTarget, IDragTargetInfo, ISimulationNode, IView, useWordGraph } fr
 
 import { getEventPoint } from '@util/dom'
 import { depRef } from '@util/reactivity'
+import { disposeShortcuts, newKey, registerShortcuts } from '@util/keyboard'
 
 import EllipsisText from '@comp/charts/EllipsisText.vue'
 import Arrow from '@comp/charts/Arrow.vue'
 
 import type { IWord } from '@type'
+import { mitt } from '@util/mitt'
 
 const props = defineProps<{
     word: IWord
@@ -122,9 +124,19 @@ const center = () => {
 
 const isFullScreen = ref(false)
 
-const onKey = (event: KeyboardEvent) => {
-    if (event.key === 'Escape' && isFullScreen.value) isFullScreen.value = false 
-}
+const shortcutHandles = registerShortcuts([
+    {
+        id: 'word:graph:close',
+        key: newKey('Escape'),
+        info: '単語のリンク図を閉める',
+        isActive: () => isFullScreen.value,
+        action: () => {
+            isFullScreen.value = false
+        }
+    }
+])
+
+onUnmounted(() => disposeShortcuts(shortcutHandles))
 
 const onWheel = (event: WheelEvent) => {
     event.preventDefault()
@@ -139,7 +151,6 @@ const onWheel = (event: WheelEvent) => {
 useEventListener([ 'mousedown', 'touchstart' ], onDragStart)
 useEventListener([ 'mousemove', 'touchmove' ], onDragMove)
 useEventListener([ 'mouseup', 'touchend' ], onDragEnd)
-useEventListener('keydown', onKey)
 useEventListener(root, 'wheel', onWheel)
 </script>
 
@@ -232,7 +243,7 @@ useEventListener(root, 'wheel', onWheel)
 
 .word-graph-chart.fullscreen {
     position: fixed;
-    top: 1em;
+    top: 0;
     left: 1em;
     width: calc(100vw - 2em);
     height: calc(100vh - 2em);

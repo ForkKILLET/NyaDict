@@ -325,29 +325,29 @@ export const getWordMeanings = (word: IWord) => {
     })
 }
 
-export const getWordSegmentDisp = ({ id, disp }: WordSegment, short?: boolean) => {
+export const getWordSegmentDisp = (word: IWord, { id, disp }: WordSegment, short?: boolean) => {
     const wordStore = useWord()
 
     if (disp) return disp
-    const word = wordStore.getById(id)
-    if (! word) return `#${id}`
-    if (short) return word.disp.split('・')[0]
-    return word.disp
+    const target = id === undefined ? word : wordStore.getById(id)
+    if (! target) return `#${id}`
+    if (short) return target.disp.split('・')[0]
+    return target.disp
 }
 
 export const getWordSentences = (word: IWord) => {
-    const fn = (node: { docs?: IWordDocument[] }): string[] => (node.docs ?? []).flatMap(doc => {
+    const scanNode = (node: { docs?: IWordDocument[] }): string[] => (node.docs ?? []).flatMap(doc => {
         if (doc.kind === DocumentKind.Sentence) return [
             getTemplateSegements(doc.text)
                 .map(seg => (
                     typeof seg === 'object'
-                        ? getWordSegmentDisp(seg)
+                        ? getWordSegmentDisp(word, seg)
                         : seg
                 ))
                 .join('')
         ]
-        if ('docs' in doc) return fn(doc)
+        if ('docs' in doc) return scanNode(doc)
         return []
     })
-    return fn(word)
+    return scanNode(word)
 }

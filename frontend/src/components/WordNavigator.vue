@@ -9,6 +9,9 @@ import { getEventPoint, type Point } from '@util/dom'
 import { mitt } from '@util/mitt'
 import { storeReactive } from '@util/storage'
 import { newKey, registerShortcuts } from '@util/keyboard'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
 
 const { config } = storeToRefs(useConfig())
 
@@ -57,12 +60,14 @@ registerShortcuts([
         id: 'word:navigate:up',
         key: newKey('PageUp'),
         info: '前の単語へ',
+        isActive: () => route.path === '/words',
         action: () => navigate('up')
     },
     {
         id: 'word:navigate:down',
         key: newKey('PageDown'),
         info: '次の単語へ',
+        isActive: () => route.path === '/words',
         action: () => navigate('down')
     }
 ])

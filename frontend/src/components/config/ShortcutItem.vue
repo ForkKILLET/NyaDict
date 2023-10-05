@@ -7,15 +7,18 @@ defineProps<{
 </script>
 
 <template>
-    <div class="shortcut-item">
-        <span>{{ shortcut.info }}</span>
+    <div
+        class="shortcut-item"
+        :class="{ inactive: shortcut.isActive?.() === false }"
+    >
+        <span class="shortcut-info">{{ shortcut.info }}</span>
 
         <kbd class="badge">{{
             (shortcut.key.meta ? 'Meta + ' : '') +
             (shortcut.key.ctrl ? 'Ctrl + ' : '') +
             (shortcut.key.alt ? 'Alt + ' : '') +
             (shortcut.key.shift ? 'Shift + ' : '') +
-            shortcut.key.key.toUpperCase()
+            shortcut.key.key
         }}</kbd>
     </div>
 </template>
@@ -26,7 +29,11 @@ defineProps<{
     justify-content: space-between;
 }
 
+.shortcut-item.inactive > .shortcut-info {
+    color: #888;
+}
+
 kbd {
-    font-family: 'Fira Code', 'Consolas', monospace;
+    font-family: var(--font-mono);
 }
 </style>
