@@ -222,7 +222,7 @@ const _tokenize = (ctx: IQueryContext): IQueryToken[] | null => {
             if (char === quote) {
                 const end = ++ index
                 tokens.push({
-                    type:quote === '`' ? QueryTokenType.RomajiString : QueryTokenType.String, value,
+                    type:quote === '`' ? QueryTokenType.String : QueryTokenType.RomajiString, value,
                     start, end
                 })
             }
@@ -374,9 +374,7 @@ const _parse = (state: IQueryParseState, endAt: ParseEndAt, depth: number): IQue
             }
             if (token.type === QueryTokenType.RomajiString) {
                 const kana = strictToHiragana(token.value)
-                if (kana === undefined)
-                    throw state.error(`[RomajiString] '${token.value}' is not legal romaji`, token)
-                tree.kana = kana
+                if (kana) tree.kana = kana
             }
             return tree
         }
@@ -513,6 +511,13 @@ export type IQueryParseResult = {
 }
 
 export const parse = (query: string): IQueryParseResult => {
+    // Support old query
+    if (! query.match(/[\s\(\)!@#$%^&*'"`]/)) {
+        query = `:word contains '${query}'`
+    }
+
+    console.log(query)
+
     const ctx = { query }
 
     try {
