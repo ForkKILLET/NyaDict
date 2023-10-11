@@ -62,7 +62,7 @@ watch(editMode, (mode) => {
         ref="root"
         class="nya-confirm-input"
         :class="{ withdrawable }"
-        @keydown.escape.prevent.stop="editMode && clear()"
+        @keydown.esc.prevent.stop="editMode && clear()"
         v-on-click-outside="() => { clickToEdit && clear() }"
     >
         <template v-if="! editMode">
