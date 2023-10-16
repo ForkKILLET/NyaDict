@@ -14,11 +14,7 @@ import ListTransitionGroup from '@comp/transitions/ListTransitionGroup.vue'
                 class="noti-outter"
                 :class="noti.type"
             >
-                <Noti
-                    :noti="noti"
-                    @click="notif.removeNoti(id)"
-                    @expire="notif.removeNoti(id)"
-                />
+                <Noti :noti="noti" />
             </div>
         </template>
     </ListTransitionGroup>

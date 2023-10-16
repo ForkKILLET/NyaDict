@@ -4,13 +4,12 @@ import { useRoute, useRouter } from 'vue-router'
 
 import {
     useWord, emptyMem,
-    getCorrectness, getYomikataIndex, getLastTestTime, getHiragana,
-    getWordMeanings, getWordSentences
+    getCorrectness, getYomikataIndex, getLastTestTime
 } from '@store/words'
-import { useTest } from '@store/test'
 
 import { isPortrait } from '@util/media'
 import { compile, parse, IQueryFilter, QueryError } from '@util/filterQuery'
+import { addNoti } from '@util/notif'
 
 import WordEditor from '@comp/WordEditor.vue'
 import WordList from '@comp/WordList.vue'
@@ -129,7 +128,36 @@ const onSortMethodClick = (method: IWordSortMethod) => {
 
 // Adding
 
-const addWord = (word: Omit<IWord, 'id' | 'mem'>) => {
+const addWord = async (word: Omit<IWord, 'id' | 'mem'>) => {
+    const similarWord = wordStore.words.find(word2 => (
+        word2.disp === word.disp && word2.sub === word.sub
+    ))
+    if (similarWord) {
+        const doAdd = await new Promise(res => addNoti({
+            type: 'info',
+            content: `「${word.disp}」という単語は重複しそうです。まだ作成しますか。`,
+            actions: [
+                {
+                    info: 'はい',
+                    onclick: () => res(true)
+                },
+                {
+                    info: 'いいえ',
+                    onclick: () => res(false)
+                },
+                {
+                    info: '重複しそうな単語をチェック',
+                    onclick: () => {
+                        gotoWord(similarWord.id)
+                        return false
+                    }
+                }
+            ],
+            closable: false,
+            onclose: () => res(false)
+        }))
+        if (! doAdd) return
+    }
     const id = wordStore.add({ ...word, mem: emptyMem() })
     gotoWord(id)
 }

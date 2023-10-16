@@ -4,20 +4,28 @@ import type { DistributiveOmit } from '@type/tool'
 
 export type NotiType = 'error' | 'success' | 'info' | 'pending' | 'charge'
 
+export type NotiAction = {
+    info: string
+
+    onclick: () => boolean | void
+}
+
 export type Noti = {
     createTime: number
     content: string
     duration?: number
     style?: CSSProperties
-} & (
-    | {
-        type: Exclude<NotiType, 'charge'>
-    }
-    | {
-        type: 'charge'
-        icon: string
-    }
-)
+    actions?: NotiAction[]
+    closable?: boolean
+
+    onclose?: (data: { expired: boolean }) => void
+    onexpire?: () => void
+} & ({
+    type: Exclude<NotiType, 'charge'>
+} | {
+    type: 'charge'
+    icon: string
+})
 
 export const notis = reactive<Noti[]>([])
 
@@ -26,10 +34,16 @@ export const addNoti = (noti: DistributiveOmit<Noti, 'createTime'>): number => {
     return notis.length - 1
 }
 
-export const removeNoti = (notiId: number): boolean => {
-    if (! notis[notiId]) return false
+export const removeNoti = (notiId: number, expired = false): boolean => {
+    const noti = notis[notiId]
+    if (! noti) return false
     delete notis[notiId]
+    noti.onclose?.({ expired })
     return true
+}
+
+export const getNotiId = (noti: Noti): number => {
+    return notis.indexOf(noti)
 }
 
 export const handleResp = async <T>(options: {

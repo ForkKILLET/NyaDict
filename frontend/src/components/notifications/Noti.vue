@@ -1,13 +1,37 @@
 <script setup lang="ts">
-import { type Noti, type NotiType } from '@util/notif'
+import { ref } from 'vue'
 
-defineProps<{
+import {
+    getNotiId, removeNoti,
+    type NotiAction, type Noti, type NotiType
+} from '@util/notif'
+
+const props = defineProps<{
     noti: Noti
 }>()
 
-const emit = defineEmits<{
-    (event: 'expire'): void
-}>()
+const transparent = ref(false)
+
+const remove = (expired = false) => {
+    removeNoti(getNotiId(props.noti), expired)
+}
+
+const expire = () => {
+    props.noti.onexpire?.()
+    remove(true)
+}
+
+const onClick = () => {
+    if (props.noti.closable) remove()
+    else {
+        transparent.value = ! transparent.value
+    }
+}
+
+const handleAction = (action: NotiAction) => {
+    const toClose = action.onclick() ?? true
+    if (toClose) removeNoti(getNotiId(props.noti))
+}
 
 const typeIcons: Record<Exclude<NotiType, 'charge'>, string> = {
     info: 'info-circle',
@@ -24,18 +48,34 @@ const typeIcons: Record<Exclude<NotiType, 'charge'>, string> = {
             '--duration': noti.duration ? noti.duration + 'ms' : undefined,
             ...noti.style
         }"
-        :class="noti.type"
+        :class="{
+            [noti.type]: true,
+            transparent
+        }"
+        @click="onClick"
     >
         <fa-icon
             :icon="noti.type === 'charge' ? noti.icon : typeIcons[noti.type]"
             class="noti-type"
             :spin="noti.type === 'pending'"
         />
-        <span>{{ noti.content }}</span>
+        <span>
+            {{ noti.content }}
+            <template v-if="noti.actions">
+                <br />
+                <div
+                    v-for="action of noti.actions"
+                    class="noti-action badge"
+                    @click.stop="handleAction(action)"
+                >
+                    {{ action.info }}
+                </div>
+            </template>
+        </span>
         <div
             v-if="noti.duration"
             class="noti-lasting"
-            @animationend="emit('expire')"
+            @animationend="expire"
         >
             <div v-if="noti.type !== 'charge'" class="noti-lasting-inner"></div>
         </div>
@@ -89,7 +129,7 @@ const typeIcons: Record<Exclude<NotiType, 'charge'>, string> = {
     animation: var(--duration) linear forwards noti-progress;
 }
 
-.noti:hover {
+.noti.transparent {
     opacity: .5;
 }
 

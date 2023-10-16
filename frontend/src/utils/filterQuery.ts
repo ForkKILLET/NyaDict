@@ -1,10 +1,10 @@
 import { getWordMeanings, getWordSentences } from '@store/words'
 
 import { unreachable } from '@util'
+import { strictToHiragana } from '@util/kana'
 
 import { type IWord } from '@type'
 import type { Repeated } from '@type/tool'
-import { strictToHiragana } from './kana'
 
 export type IMatchMethod = 'equals' | 'contains' | 'startswith' | 'endswith'
 
@@ -515,8 +515,6 @@ export const parse = (query: string): IQueryParseResult => {
     if (! query.match(/[\s\(\)!@#$%^&*'"`]/)) {
         query = `:word contains '${query}'`
     }
-
-    console.log(query)
 
     const ctx = { query }
 
