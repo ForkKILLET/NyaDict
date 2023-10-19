@@ -14,23 +14,23 @@ const emit = defineEmits<{
 }>()
 
 const nid = ref()
+const charged = ref(false)
 
-const startTime = ref<number>()
 const onLongPressStart = () => {
-    startTime.value = Date.now()
     nid.value = addNoti({
         content: props.desc,
         type: 'charge',
         icon: props.icon,
-        duration: props.delay * 1000
+        duration: props.delay * 1000,
+
+        onCharge: () => {
+            charged.value = true
+        }
     })
 }
 const onLongPressEnd = () => {
-    if (! startTime.value) return
-
-    const duration = Date.now() - startTime.value
-    if (duration >= props.delay * 1000) {
-        startTime.value = undefined
+    if (charged.value) {
+        charged.value = false
         emit('long-press')
     }
 

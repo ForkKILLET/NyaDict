@@ -154,7 +154,7 @@ const addWord = async (word: Omit<IWord, 'id' | 'mem'>) => {
                 }
             ],
             closable: false,
-            onclose: () => res(false)
+            onClose: () => res(false)
         }))
         if (! doAdd) return
     }

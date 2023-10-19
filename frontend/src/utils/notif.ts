@@ -18,8 +18,9 @@ export type Noti = {
     actions?: NotiAction[]
     closable?: boolean
 
-    onclose?: (data: { expired: boolean }) => void
-    onexpire?: () => void
+    onClose?: (data: { cause?: string }) => void
+    onExpire?: () => void
+    onCharge?: () => void
 } & ({
     type: Exclude<NotiType, 'charge'>
 } | {
@@ -34,11 +35,11 @@ export const addNoti = (noti: DistributiveOmit<Noti, 'createTime'>): number => {
     return notis.length - 1
 }
 
-export const removeNoti = (notiId: number, expired = false): boolean => {
+export const removeNoti = (notiId: number, cause?: string): boolean => {
     const noti = notis[notiId]
     if (! noti) return false
     delete notis[notiId]
-    noti.onclose?.({ expired })
+    noti.onClose?.({ cause })
     return true
 }
 

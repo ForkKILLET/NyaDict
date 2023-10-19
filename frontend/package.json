@@ -5,39 +5,39 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port 1635",
-    "check": "vue-tsc",
-    "build": "vue-tsc && vite build",
-    "preview": "vite preview",
+    "check": "vue-tsc --noEmit",
+    "build": "vue-tsc --noEmit && VITE_BUILD_TIME=\"$(date -R)\" VITE_BUILD_ENV=\"$(uname -sr)\" VITE_LAST_COMMIT=\"$(git log -1 HEAD --oneline --no-color --no-decorate)\" vite build",
+	"preview": "vite preview",
     "compress": "pnpm -F nyadict-frontend-script compress -i ../src/types/index.ts -b @type -o ../src/utils/compress.ts"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.4.2",
     "@fortawesome/free-solid-svg-icons": "^6.4.2",
     "@fortawesome/vue-fontawesome": "^3.0.3",
-    "@vueuse/components": "^10.3.0",
-    "@vueuse/core": "^10.3.0",
-    "axios": "^1.4.0",
+    "@vueuse/components": "^10.5.0",
+    "@vueuse/core": "^10.5.0",
+    "axios": "^1.5.1",
     "d3-force": "^3.0.0",
     "d3-interpolate": "^3.0.1",
-    "dayjs": "^1.11.9",
+    "dayjs": "^1.11.10",
     "json5": "^2.2.3",
     "jwt-decode": "^3.1.2",
     "mitt": "^3.0.1",
     "normalize.css": "^8.0.1",
-    "pinia": "^2.1.6",
-    "schemastery": "^3.13.0",
+    "pinia": "^2.1.7",
+    "schemastery": "^3.13.1",
     "vue": "^3.3.4",
-    "vue-router": "^4.2.4",
-    "wanakana": "^5.1.0"
+    "vue-router": "^4.2.5",
+    "wanakana": "^5.2.0"
   },
   "devDependencies": {
-    "@types/d3-force": "^3.0.5",
-    "@types/d3-interpolate": "^3.0.1",
-    "@types/wanakana": "^4.0.3",
-    "@vitejs/plugin-vue": "^4.2.3",
+    "@types/d3-force": "^3.0.6",
+    "@types/d3-interpolate": "^3.0.2",
+    "@types/wanakana": "^4.0.4",
+    "@vitejs/plugin-vue": "^4.4.0",
     "@vue/runtime-core": "^3.3.4",
-    "typescript": "^5.1.6",
-    "vite": "^4.4.8",
-    "vue-tsc": "^1.8.8"
+    "typescript": "^5.2.2",
+    "vite": "^4.4.11",
+    "vue-tsc": "^1.8.19"
   }
 }

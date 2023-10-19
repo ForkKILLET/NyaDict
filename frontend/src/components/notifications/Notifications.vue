@@ -7,7 +7,7 @@ import ListTransitionGroup from '@comp/transitions/ListTransitionGroup.vue'
 
 <template>
     <ListTransitionGroup class="notis">
-        <template v-for="noti, id of notif.notis">
+        <template v-for="noti of notif.notis">
             <div
                 v-if="noti"
                 :key="noti.createTime"

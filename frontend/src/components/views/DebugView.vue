@@ -112,6 +112,7 @@ Object.assign(window, { parse })
                 color="var(--color-fg)"
                 desc="test"
                 :delay="2"
+                @long-press="notif.addNoti({ content: 'OK', type: 'success' })"
             />
         </div>
 

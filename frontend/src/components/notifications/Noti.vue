@@ -12,17 +12,25 @@ const props = defineProps<{
 
 const transparent = ref(false)
 
-const remove = (expired = false) => {
-    removeNoti(getNotiId(props.noti), expired)
+const remove = (cause?: string) => {
+    removeNoti(getNotiId(props.noti), cause)
 }
 
-const expire = () => {
-    props.noti.onexpire?.()
-    remove(true)
+const onAnimationEnd = (event: AnimationEvent) => {
+    switch (event.animationName.match(/^noti-(\w+?)-/)?.[1]) {
+        case 'progress':
+            props.noti.onExpire?.()
+            remove('expire')
+            break
+        case 'charge':
+            props.noti.onCharge?.()
+            remove('charge')
+            break
+    }
 }
 
 const onClick = () => {
-    if (props.noti.closable) remove()
+    if (props.noti.closable !== false) remove()
     else {
         transparent.value = ! transparent.value
     }
@@ -53,6 +61,7 @@ const typeIcons: Record<Exclude<NotiType, 'charge'>, string> = {
             transparent
         }"
         @click="onClick"
+        @animationend="onAnimationEnd"
     >
         <fa-icon
             :icon="noti.type === 'charge' ? noti.icon : typeIcons[noti.type]"
@@ -75,9 +84,12 @@ const typeIcons: Record<Exclude<NotiType, 'charge'>, string> = {
         <div
             v-if="noti.duration"
             class="noti-lasting"
-            @animationend="expire"
         >
-            <div v-if="noti.type !== 'charge'" class="noti-lasting-inner"></div>
+            <div
+                v-if="noti.type !== 'charge'"
+                class="noti-lasting-inner"
+                @animationend="onAnimationEnd"
+            ></div>
         </div>
     </div>
 </template>
