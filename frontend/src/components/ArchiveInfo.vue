@@ -7,7 +7,7 @@ import NyaConfirmInput from '@comp/NyaConfirmInput.vue'
 
 import type { IArchiveInfo } from '@type'
 
-type INoInfoReason = 'noAccount' | 'noRemote' | 'noLocal'
+type INoInfoReason = 'no-account' | 'no-remote' | 'no-local'
 
 defineProps<{
     info?: Omit<IArchiveInfo, 'version'> & { version?: string }
@@ -23,9 +23,9 @@ const emit = defineEmits<{
 }>()
 
 const noInfoReasons: Record<INoInfoReason, string> = {
-    noAccount: 'ログインしていません',
-    noRemote: 'アップロードしていません',
-    noLocal: 'ダウンロードしていません'
+    'no-account': 'ログインしていません',
+    'no-remote': 'リモート・アーカイブはありません',
+    'no-local': 'ローカル・アーカイブはありません'
 }
 </script>
 

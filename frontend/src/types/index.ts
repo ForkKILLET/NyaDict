@@ -155,6 +155,7 @@ export type IArchiveInfo = {
 export type IArchiveEdition = {
     time: number
     device: string
+    active?: true
 }
 
 export interface IArchiveData {}

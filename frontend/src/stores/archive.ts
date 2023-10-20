@@ -2,14 +2,21 @@ import {
     watch, toValue, shallowReactive, computed,
     type WritableComputedRef, type UnwrapRef
 } from 'vue'
-import { defineStore } from 'pinia'
-import { storeRef, storeReactive } from '@util/storage'
+import { defineStore, storeToRefs } from 'pinia'
+
+import { storeRef, storeReactive, setStorageRaw, delStorage } from '@util/storage'
 import { kDispose } from '@util/disposable'
+
+import { useConfig } from '@store/config'
+
 import type { IArchiveInfo, IArchiveData, IPortableArchive, IArchiveVersion } from '@type'
+import { mitt } from '@util/mitt'
 
 export const ARCHIVE_VERSION: IArchiveVersion = '3.1'
 
 export const useArchive = defineStore('archives', () => {
+    const { config } = storeToRefs(useConfig())
+
     const currentId = storeRef('archiveId', '0')
     const archiveInfo = storeReactive<Record<string, IArchiveInfo>>('archiveInfo', {})
     const currentInfo = computed(() => archiveInfo[currentId.value])
@@ -31,6 +38,9 @@ export const useArchive = defineStore('archives', () => {
         }
         archiveItemHooks.push({ load })
         watch(currentId, load(archiveData), { immediate: true })
+        watch(archiveData[name], () => {
+            mitt.emit('data:archive:update', { dataName: name })
+        }, { deep: true })
     }
 
     const reloadArchive = () => {
@@ -64,7 +74,7 @@ export const useArchive = defineStore('archives', () => {
 
     const withdrawArchive = (id: string) => {
         for (const key in localStorage) {
-            if (key.startsWith(id + ':')) localStorage.removeItem(key)
+            if (key.startsWith(id + ':')) delStorage(key)
         }
     }
 
@@ -76,14 +86,12 @@ export const useArchive = defineStore('archives', () => {
         withdrawArchive(id)
         const prefix = id + ':'
         for (const key in portable) {
-            localStorage.setItem(prefix + key, portable[key])
+            setStorageRaw(prefix + key, portable[key])
         }
     }
 
-    const createArchive = () => {
-        const ids = Object.keys(archiveInfo)
-        const newId = ids.length ? String(Math.max(...ids.map(Number)) + 1) : 0
-        archiveInfo[newId] = {
+    const createArchive = (id: number) => {
+        archiveInfo[id] = {
             title: '黙認',
             accessTime: Date.now(),
             size: 0,
@@ -92,7 +100,29 @@ export const useArchive = defineStore('archives', () => {
         }
     }
 
-    if (! Object.keys(archiveInfo).length) createArchive()
+    const updateActiveEdition = (doUpdate: boolean) => {
+        const chain = currentInfo.value.editionChain ??= []
+        if (! chain.at(- 1)?.active) {
+            chain.push({
+                time: Date.now(),
+                device: config.value.deviceName,
+                active: true
+            })
+        }
+        else if (doUpdate) {
+            chain.at(- 1)!.time = Date.now()
+        }
+    }
+
+    // Make sure the initial edition exists
+    watch(currentId, () => {
+        if (! currentInfo.value) return
+        updateActiveEdition(false)
+    }, { immediate: true })
+
+    mitt.on('data:archive:update', () => {
+        updateActiveEdition(true)
+    })
 
     type IExtractArchiveData<K extends Array<keyof IArchiveData>> = {
         [key in K[number]]: WritableComputedRef<UnwrapRef<IArchiveData[key]>>
@@ -112,6 +142,6 @@ export const useArchive = defineStore('archives', () => {
     return {
         currentId, archiveInfo, currentInfo, archiveData,
         extractData, define,
-        disposeArchive, reloadArchive, exportArchive, withdrawArchive, importArchive, createArchive
+        disposeArchive, reloadArchive, exportArchive, withdrawArchive, importArchive, createArchive, updateActiveEdition
     }
 })

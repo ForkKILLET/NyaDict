@@ -139,15 +139,15 @@ const addWord = async (word: Omit<IWord, 'id' | 'mem'>) => {
             actions: [
                 {
                     info: 'はい',
-                    onclick: () => res(true)
+                    onClick: () => res(true)
                 },
                 {
                     info: 'いいえ',
-                    onclick: () => res(false)
+                    onClick: () => res(false)
                 },
                 {
                     info: '重複しそうな単語をチェック',
-                    onclick: () => {
+                    onClick: () => {
                         gotoWord(similarWord.id)
                         return false
                     }

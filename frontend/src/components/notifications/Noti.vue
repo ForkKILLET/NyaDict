@@ -37,7 +37,7 @@ const onClick = () => {
 }
 
 const handleAction = (action: NotiAction) => {
-    const toClose = action.onclick() ?? true
+    const toClose = action.onClick() ?? true
     if (toClose) removeNoti(getNotiId(props.noti))
 }
 
@@ -75,6 +75,7 @@ const typeIcons: Record<Exclude<NotiType, 'charge'>, string> = {
                 <div
                     v-for="action of noti.actions"
                     class="noti-action badge"
+                    :class="{ active: action.primary }"
                     @click.stop="handleAction(action)"
                 >
                     {{ action.info }}

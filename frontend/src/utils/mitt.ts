@@ -2,6 +2,7 @@ import Mitt from 'mitt'
 
 export type Events = {
     'data:word:graph': { wordId: number | '*' }
+    'data:archive:update': { dataName: string }
 
     'ui:shortcut': { shortcutId: string }
     'ui:word:navigate': { action: 'up' | 'down' }

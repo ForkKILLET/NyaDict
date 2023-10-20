@@ -2,13 +2,28 @@ import { reactive, ref, watch, type Ref, type WatchStopHandle } from 'vue'
 import JSON5 from 'json5'
 
 import { kDispose, type Disposable } from '@util/disposable'
+import { mitt } from '@util/mitt'
 
 export const getStorage = <T>(key: string): T | undefined => {
     return json5TryParse(localStorage.getItem(key))
 }
 
+export const getStorgeRaw = (key: string): string | undefined => {
+    return localStorage.getItem(key) ?? undefined
+}
+
 export const setStorage = <T>(key: string, value: T): void => {
     localStorage.setItem(key, json5Stringify(value))
+    // mitt.emit('data:storage:write', { key })
+}
+
+export const setStorageRaw = (key: string, value: string): void => {
+    localStorage.setItem(key, value)
+}
+
+export const delStorage = (key: string): void => {
+    localStorage.removeItem(key)
+    // mitt.emit('data:storage:write', { key })
 }
 
 export const initStorage = <T>(key: string, defaultValue: T): T => {
@@ -137,7 +152,7 @@ export const storeArray = <T extends object, U>(key: string, options: {
     }
     const remove = (index: number) => {
         unwatchIndex(index)
-        localStorage.removeItem(`${key}$${index}`)
+        delStorage(`${key}$${index}`)
         return delete reactiveArr[+ index]
     }
 

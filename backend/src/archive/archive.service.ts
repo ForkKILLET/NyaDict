@@ -22,6 +22,7 @@ export class ArchiveService {
           wordCount: data.wordCount,
           public: data.public,
           content: data.content,
+		  editionChain: data.editionChain,
 
           size,
           accessTime: new Date(),
@@ -50,6 +51,7 @@ export class ArchiveService {
         size: true,
         accessTime: true,
         version: true,
+        editionChain: true
       },
       where: {
         owner,

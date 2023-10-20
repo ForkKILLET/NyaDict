@@ -27,19 +27,73 @@ const { currentId, archiveInfo } = storeToRefs(archiveStore)
 type RemoteArchives = Record<string, IRemoteArchiveInfo>
 const remoteInfo = ref<RemoteArchives | null>(null)
 
-type ArchiveInfoWithRemote = Record<string, [ IArchiveInfo?, IRemoteArchiveInfo? ]>
-const infoWithRemote = computed<ArchiveInfoWithRemote>(() => {
-    const base: ArchiveInfoWithRemote = {}
+type ArchiveGroupState = 'push-ff' | 'pull-ff' | 'up-to-date' | 'conflict'
+type ArchiveGroup = {
+    local?: IArchiveInfo
+    remote?: IRemoteArchiveInfo
+    state: ArchiveGroupState
+    pullIcon: string
+    pushIcon: string
+}
+const getGroupState = (group: Partial<ArchiveGroup>): ArchiveGroupState => {
+    if (! group.local) return 'pull-ff'
+    if (! group.remote) return 'push-ff'
+
+    const localChain = group.local.editionChain ?? []
+    const remoteChain = group.remote.editionChain ?? []
+    
+    if (! remoteChain.length) remoteChain.push({
+        time: 0,
+        device: '未知設備'
+    })
+    
+    for (let i = 0; i < Math.max(localChain.length, remoteChain.length); i ++) {
+        const le = localChain.at(i)
+        const re = remoteChain.at(i)
+        if (! le) return 'pull-ff'
+        if (! re) return 'push-ff'
+        if (le.time !== re.time) return 'conflict'
+    }
+    return 'up-to-date'
+}
+const archiveGroups = computed(() => {
+    const groups: Record<string, Partial<ArchiveGroup>> = {}
     const local = archiveInfo.value
-    for (const id in local) {
-        base[id] = [ local[id] ]
-    }
     const remote = remoteInfo.value
-    if (remote) for (const id in remote) {
-        base[id] ??= []
-        base[id][1] = remote[id]
+
+    for (const id in local) {
+        groups[id] = { local: local[id] }
     }
-    return base
+    if (remote) for (const id in remote) {
+        groups[id] ??= {}
+        groups[id].remote = remote[id]
+    }
+
+    // Calc state
+
+    for (const id in groups) {
+        const group = groups[id]
+        const state = getGroupState(group)
+        group.state = state
+        switch (state) {
+            case 'conflict':
+                group.pushIcon = group.pullIcon = 'triangle-exclamation'
+                break
+            case 'up-to-date':
+                group.pushIcon = group.pullIcon = 'check'
+                break
+            case 'pull-ff':
+                group.pushIcon = 'minus'
+                group.pullIcon = 'cloud-arrow-down'
+                break
+            case 'push-ff':
+                group.pushIcon = 'cloud-arrow-up'
+                group.pullIcon = 'minus'
+                break
+        }
+    }
+
+    return groups as Record<string, ArchiveGroup>
 })
 
 const jsons: Record<string, string> = {}
@@ -122,11 +176,42 @@ const getRemoteInfo = async () => {
     })
     remoteInfo.value = archives
 }
-const upload = async (id: string) => {
+const push = async (id: string, state: ArchiveGroupState) => {
     const info = archiveInfo.value[id]
 
+    const isFf = state === 'push-ff'
+    if (! isFf) {
+        const doOverwrite = await new Promise(res => addNoti({
+            type: 'info',
+            content: `リモート・アーカイブは${
+                state === 'pull-ff' ? 'より更新されます' :
+                state === 'up-to-date' ? '最新です' :
+                state === 'conflict' ? 'すれ違います' :
+                ''
+            }。上書きしますか。`,
+            actions: [
+                {
+                    info: 'はい',
+                    onClick: () => res(true)
+                },
+                {
+                    info: 'いいえ',
+                    primary: true,
+                    onClick: () => res(false)
+                }
+            ],
+            closable: false,
+            onClose: () => res(false)
+        }))
+        if (! doOverwrite) return
+    }
+
+    const activeEdition = info.editionChain?.at(- 1)
+    if (! activeEdition) return
+    delete activeEdition.active
+
     const resp = await handleResp({
-        name: 'アップロード',
+        name: isFf ? 'プッシュ' : 'プッシュ（上書き）',
         action: async () => await api.post('/archive/upload', {
             ...info,
             idPerUser: id,
@@ -138,10 +223,36 @@ const upload = async (id: string) => {
 
     await getRemoteInfo()
 }
+const pull = async (id: string, state: ArchiveGroupState) => {
+    const isFf = state === 'pull-ff'
+    if (! isFf) {
+        const doOverwrite = await new Promise(res => addNoti({
+            type: 'info',
+            content: `ローカル・アーカイブは${
+                state === 'push-ff' ? 'より更新されます' :
+                state === 'up-to-date' ? '最新です' :
+                state === 'conflict' ? 'すれ違います' :
+                ''
+            }。上書きしますか。`,
+            actions: [
+                {
+                    info: 'はい',
+                    onClick: () => res(true)
+                },
+                {
+                    info: 'いいえ',
+                    primary: true,
+                    onClick: () => res(false)
+                }
+            ],
+            closable: false,
+            onClose: () => res(false)
+        }))
+        if (! doOverwrite) return
+    }
 
-const download = async (id: string) => {
     const resp = await handleResp({
-        name: 'ダウンロード',
+        name: isFf ? 'プル' : 'プル（上書き）',
         action: async () => await api.get(`/archive/mine/${id}`) as IArchiveDownloadResp
     })
     if (! resp) return
@@ -151,6 +262,7 @@ const download = async (id: string) => {
         title: resp.title,
         size: resp.size,
         wordCount: resp.wordCount,
+        editionChain: resp.editionChain,
         accessTime: + new Date(resp.accessTime)
     }
 
@@ -165,14 +277,23 @@ const download = async (id: string) => {
     }
 }
 
+const create = () => {
+    const newId = Math.max(- 1, ...Object.keys(archiveGroups.value).map(Number)) + 1
+    archiveStore.createArchive(newId)
+}
+
 const route = useRoute()
-watch(route, ({ path }) => {
-    if (path === '/sync') {
-        if (jwtPayload.value) getRemoteInfo()
-        for (const id in archiveInfo.value) {
-            makeBlob(id)
-        }
+const refresh = async () => {
+    for (const id in archiveInfo.value) {
+        makeBlob(id)
     }
+    if (jwtPayload.value) await getRemoteInfo()
+    if (! Object.keys(archiveGroups.value).length) {
+        create()
+    }
+}
+watch(route, ({ path }) => {
+    if (path === '/sync') refresh()
 }, { immediate: true })
 </script>
 
@@ -180,7 +301,7 @@ watch(route, ({ path }) => {
     <div class="archive-list">
         <p class="archive-list-title">
             <span class="number">{{
-                Object.keys(infoWithRemote).length
+                Object.keys(archiveGroups).length
             }}</span> アーカイブ 
 
             <label for="file">
@@ -188,7 +309,7 @@ watch(route, ({ path }) => {
             </label>
             <input id="file" type="file" accept=".json" @change="onSelectFile" />
             
-            <fa-icon @click="archiveStore.createArchive" icon="circle-plus" class="button" />
+            <fa-icon @click="create" icon="circle-plus" class="button" />
 
             <fa-icon @click="getRemoteInfo" icon="rotate" class="button" />
         </p>
@@ -215,7 +336,7 @@ watch(route, ({ path }) => {
             </div>
 
             <div
-                v-for="[ local, remote ], id in infoWithRemote"
+                v-for="{ local, remote, state, pullIcon, pushIcon }, id in archiveGroups"
                 :key="id"
                 class="archive-entry"
             >
@@ -223,7 +344,7 @@ watch(route, ({ path }) => {
                     :active="id === currentId"
                     :id="id"
                     :info="local"
-                    :no-info-reason="'noLocal'"
+                    :no-info-reason="'no-local'"
                     :is-importing="!! selectedFile"
                     @upload-here="imports(id)"
                 >
@@ -240,10 +361,10 @@ watch(route, ({ path }) => {
                         :fixed-width="true"
                     />
                     <LongPressButton
-                        @long-press="upload(id)"
-                        icon="cloud-arrow-up"
+                        @long-press="push(id, state)"
+                        :icon="pushIcon"
                         color="var(--color-fg)"
-                        desc="アップロード"
+                        desc="プッシュ"
                         :delay=".5"
                     />
                     <LongPressButton
@@ -260,14 +381,14 @@ watch(route, ({ path }) => {
                     :id="remote?.idPerUser"
                     :remote="true"
                     :info="remote"
-                    :no-info-reason="jwtPayload ? 'noRemote' : 'noAccount'"
+                    :no-info-reason="jwtPayload ? 'no-remote' : 'no-account'"
                 >
                     <template #default>
                         <LongPressButton 
-                            @long-press="download(id)"
-                            icon="cloud-arrow-down"
+                            @long-press="pull(id, state)"
+                            :icon="pullIcon"
                             color="var(--color-fg)"
-                            desc="ダウンロード"
+                            desc="プル"
                             :delay=".5"
                         />
                     </template>

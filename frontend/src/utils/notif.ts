@@ -6,8 +6,9 @@ export type NotiType = 'error' | 'success' | 'info' | 'pending' | 'charge'
 
 export type NotiAction = {
     info: string
+    primary?: boolean
 
-    onclick: () => boolean | void
+    onClick: () => boolean | void
 }
 
 export type Noti = {

@@ -1,4 +1,4 @@
-import type { IArchiveVersion } from '@type'
+import type { IArchiveVersion, IArchiveEdition } from '@type'
 
 export type IAuthPayload = {
     name: string
@@ -39,6 +39,7 @@ export type IRemoteArchiveInfo = {
     public: boolean
     size: number
     accessTime: number
+    editionChain?: IArchiveEdition[]
 }
 
 export type IArchiveGetMineResp = NyaResp<
