@@ -149,6 +149,12 @@ export type IArchiveInfo = {
     accessTime: number
     size: number
     wordCount?: number
+    editionChain?: IArchiveEdition[]
+}
+
+export type IArchiveEdition = {
+    time: number
+    device: string
 }
 
 export interface IArchiveData {}

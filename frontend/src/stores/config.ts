@@ -28,12 +28,17 @@ export const Config = Schema.object({
         .boolean()
         .default(true)
         .extra('section', '外観')
-        .description('単語ナビゲーション・ボタン'),
+        .description('単語 Navigator'),
     lazySharp: Schema
         .boolean()
         .default(false)
         .extra('section', '外観')
-        .description('タブキーを押すと単語IDを挿入する'),
+        .description('Tab を押すと単語 ID を挿入する'),
+    deviceName: Schema
+        .string()
+        .extra('section', '同期')
+        .default('未知設備')
+        .description('この設備の名'),
     syncApi: Schema
         .string()
         .extra('section', '同期')

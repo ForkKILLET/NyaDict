@@ -1,5 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import type { RouteRecordRaw } from 'vue-router'
+import type { RouteRecordRaw, RouteLocationNormalizedLoaded } from 'vue-router'
 
 import HomeView from '@comp/views/HomeView.vue'
 import WordsView from '@comp/views/WordsView.vue'
@@ -12,6 +12,7 @@ import SignInView from '@comp/views/SignInView.vue'
 import SignUpView from '@comp/views/SignUpView.vue'
 import SettingsView from '@comp/views/SettingsView.vue'
 import DebugView from '@comp/views/DebugView.vue'
+import AboutView from '@comp/views/AboutView.vue'
 
 export const routes = [
     {
@@ -77,6 +78,10 @@ export const routes = [
     {
         path: '/debug',
         component: DebugView
+    },
+    {
+        path: '/about',
+        component: AboutView
     }
 ] as Array<RouteRecordRaw & {
     display?: {
@@ -89,3 +94,7 @@ export const router = createRouter({
     history: createWebHashHistory(),
     routes
 })
+
+export const getParentPath = (route: RouteLocationNormalizedLoaded) => (
+    route.path.replace(/\/[^/]*?$/, '') || '/'
+)

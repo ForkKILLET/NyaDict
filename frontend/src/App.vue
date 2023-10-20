@@ -8,7 +8,7 @@ import { useConfig } from '@store/config'
 import { useTheme } from '@util/theme'
 import { useModal } from '@store/modal'
 import { registerShortcuts, newKey } from '@util/keyboard'
-import { routes } from '@util/routes'
+import { getParentPath, routes } from '@util/routes'
 
 import Topbar from '@comp/Topbar.vue'
 import Notifications from '@comp/notifications/Notifications.vue'
@@ -28,17 +28,26 @@ router.afterEach((to) => {
 
 const modalStore = useModal()
 
-registerShortcuts(routes
-    .filter((route): route is Required<typeof route> => !! route.display)
-    .map(({ path, display }, index) => ({
-        id: `route:${path}`,
-        key: newKey(`Ctrl + ${index + 1}`),
-        info: `${display.info}のページへ`,
+registerShortcuts([
+    ...routes
+        .filter((route): route is Required<typeof route> => !! route.display)
+        .map(({ path, display }, index) => ({
+            id: `route:${path}`,
+            key: newKey(`Ctrl + ${index + 1}`),
+            info: `${display.info}のページへ`,
+            action: () => {
+                router.push(history.find(hist => hist.startsWith(path)) ?? path)
+            }
+        })),
+    {
+        id: 'route:up',
+        key: newKey('Ctrl + Backspace'),
+        info: 'アップのページへ',
         action: () => {
-            router.push(history.find(hist => hist.startsWith(path)) ?? path)
+            router.push(getParentPath(route))
         }
-    }))
-)
+    }
+])
 
 registerShortcuts([
     {

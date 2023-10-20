@@ -4,7 +4,7 @@
   "version": "0.22.1",
   "type": "module",
   "scripts": {
-    "dev": "vite --port 1635",
+    "dev": "VITE_BUILD_ENV=\"$(uname -sr)\" VITE_LAST_COMMIT=\"$(git log -1 HEAD --oneline --no-color --no-decorate)\" vite --port 1635",
     "check": "vue-tsc --noEmit",
     "build": "vue-tsc --noEmit && VITE_BUILD_TIME=\"$(date -R)\" VITE_BUILD_ENV=\"$(uname -sr)\" VITE_LAST_COMMIT=\"$(git log -1 HEAD --oneline --no-color --no-decorate)\" vite build",
 	"preview": "vite preview",

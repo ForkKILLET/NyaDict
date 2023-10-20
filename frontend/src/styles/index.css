@@ -42,8 +42,11 @@ a {
     transition: .3s color;
 }
 a:not(.no-animation):hover {
-    color: var(--color-ui-act);
     animation: .3s hop;
+}
+
+a:not(.no-animation):not(.no-color-change) {
+    color: var(--color-ui-act);
 }
 
 em {
