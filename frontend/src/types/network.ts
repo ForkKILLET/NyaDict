@@ -38,22 +38,16 @@ export type IRemoteArchiveInfo = {
     wordCount: number
     public: boolean
     size: number
-    accessTime: number
     editionChain?: IArchiveEdition[]
 }
 
 export type IArchiveGetMineResp = NyaResp<
-    Array<Omit<IRemoteArchiveInfo, 'accessTime'> & {
-        accessTime: string
-    }>
+    IRemoteArchiveInfo[]
 >
 
 export type IArchiveUploadResp = NyaResp<{}>
 
 export type IArchiveDownloadResp = NyaResp<
-    Omit<IRemoteArchiveInfo, 'accessTime'> & {
-        content: string
-        accessTime: string
-    }
+    IRemoteArchiveInfo & { content: string }
 >
 

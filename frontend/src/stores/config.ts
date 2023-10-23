@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import Schema from 'schemastery'
 
-import { storeRefReactive } from '@util/storage'
+import { storeReactive } from '@util/storage'
 
 declare global {
     namespace Schemastery {
@@ -47,8 +47,7 @@ export const Config = Schema.object({
 })
 
 export const useConfig = defineStore('config', () => {
-    const config = storeRefReactive<ReturnType<typeof Config>>('config', new Config())
-    config.value = Config(config)
+    const config = storeReactive<ReturnType<typeof Config>>('config', new Config(), Config)
 
     return { config }
 })

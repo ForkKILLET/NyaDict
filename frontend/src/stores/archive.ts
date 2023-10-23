@@ -93,7 +93,6 @@ export const useArchive = defineStore('archives', () => {
     const createArchive = (id: number) => {
         archiveInfo[id] = {
             title: '黙認',
-            accessTime: Date.now(),
             size: 0,
             wordCount: 1,
             version: ARCHIVE_VERSION
@@ -102,7 +101,8 @@ export const useArchive = defineStore('archives', () => {
 
     const updateActiveEdition = (doUpdate: boolean) => {
         const chain = currentInfo.value.editionChain ??= []
-        if (! chain.at(- 1)?.active) {
+        const tail = chain.at(- 1)
+        if (! tail?.active) {
             chain.push({
                 time: Date.now(),
                 device: config.value.deviceName,
@@ -110,7 +110,8 @@ export const useArchive = defineStore('archives', () => {
             })
         }
         else if (doUpdate) {
-            chain.at(- 1)!.time = Date.now()
+            tail.time = Date.now()
+            tail.device = config.value.deviceName
         }
     }
 
@@ -133,7 +134,7 @@ export const useArchive = defineStore('archives', () => {
         keys.forEach(key => {
             values[key] = computed({
                 get: () => archiveData[key].value,
-                set: (v) => archiveData[key].value = v
+                set: v => archiveData[key].value = v
             })
         })
         return values as IExtractArchiveData<K>

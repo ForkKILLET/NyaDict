@@ -167,14 +167,11 @@ const getRemoteInfo = async () => {
     })
     if (! resp) return
 
-    const archives: RemoteArchives = {}
+    const remotes: RemoteArchives = {}
     resp.forEach(info => {
-        archives[info.idPerUser] = {
-            ...info,
-            accessTime: + new Date(info.accessTime)
-        }
+        remotes[info.idPerUser] = info
     })
-    remoteInfo.value = archives
+    remoteInfo.value = remotes
 }
 const push = async (id: string, state: ArchiveGroupState) => {
     const info = archiveInfo.value[id]
@@ -262,8 +259,7 @@ const pull = async (id: string, state: ArchiveGroupState) => {
         title: resp.title,
         size: resp.size,
         wordCount: resp.wordCount,
-        editionChain: resp.editionChain,
-        accessTime: + new Date(resp.accessTime)
+        editionChain: resp.editionChain
     }
 
     const newData = json5TryParse(resp.content) as IPortableArchive
@@ -319,7 +315,6 @@ watch(route, ({ path }) => {
                     id="アップ"
                     :info="{
                         title: selectedTitle,
-                        accessTime: selectedFile.lastModified,
                         size: selectedFile.size,
                     }"
                 >
@@ -420,14 +415,14 @@ watch(route, ({ path }) => {
     flex-wrap: wrap;
 }
 
-.archive-info {
+.archive {
     flex-basis: calc(50% - 2.5em - .8em);
     flex-grow: 0;
     margin: 0 2.5em 1.5em .8em;
 }
 
 @media screen and (orientation: portrait) and (max-device-width: 600px) {
-    .archive-info {
+    .archive {
         flex-basis: 100%;
     }
 

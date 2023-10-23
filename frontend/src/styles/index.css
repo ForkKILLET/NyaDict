@@ -46,6 +46,9 @@ a:not(.no-animation):hover {
 }
 
 a:not(.no-animation):not(.no-color-change) {
+    color: var(--color-ui);
+}
+a:not(.no-animation):not(.no-color-change):hover {
     color: var(--color-ui-act);
 }
 

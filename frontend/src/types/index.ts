@@ -146,7 +146,6 @@ export type IArchiveInfo = {
     version: IArchiveVersion
     remoteId?: string
     title: string
-    accessTime: number
     size: number
     wordCount?: number
     editionChain?: IArchiveEdition[]

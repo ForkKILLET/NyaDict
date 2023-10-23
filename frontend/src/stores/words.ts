@@ -3,9 +3,9 @@ import { defineStore } from 'pinia'
 import { toHiragana, isHiragana} from 'wanakana'
 import { useArchive } from '@store/archive'
 
-import { curry, diff, equalOn, randomItem } from '@util'
+import { diff, equalOn, randomItem } from '@util'
 import { IWord_Compress, compress_IWord } from '@util/compress'
-import { storeRef, storeArray, storeRefReactive, type ArrayStore } from '@util/storage'
+import { storeRef, storeArray, type ArrayStore } from '@util/storage'
 import { mitt } from '@util/mitt'
 import type { Disposable } from '@util/disposable'
 
@@ -43,10 +43,10 @@ export const useWord = defineStore('words', () => {
         },
         map: compress_IWord
     }))
-    archiveStore.define('wordFilter', (key) => storeRefReactive<IWordFilter>(key, {
+    archiveStore.define('wordFilter', (key) => storeRef<IWordFilter>(key, {
         query: ''
     }))
-    archiveStore.define('wordSorter', (key) => storeRefReactive<IWordSorter>(key, {
+    archiveStore.define('wordSorter', (key) => storeRef<IWordSorter>(key, {
         method: 'id',
         direction: 'up'
     }))

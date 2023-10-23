@@ -6,10 +6,11 @@ import LongPressButton from '@comp/LongPressButton.vue'
 import NyaConfirmInput from '@comp/NyaConfirmInput.vue'
 
 import type { IArchiveInfo } from '@type'
+import { computed } from 'vue'
 
 type INoInfoReason = 'no-account' | 'no-remote' | 'no-local'
 
-defineProps<{
+const props = defineProps<{
     info?: Omit<IArchiveInfo, 'version'> & { version?: string }
     id?: string
     active?: boolean
@@ -27,11 +28,13 @@ const noInfoReasons: Record<INoInfoReason, string> = {
     'no-remote': 'リモート・アーカイブはありません',
     'no-local': 'ローカル・アーカイブはありません'
 }
+
+const tailEdition = computed(() => props.info?.editionChain?.at(- 1))
 </script>
 
 <template>
     <div
-        class="archive-info card"
+        class="archive card"
         :class="{ barber: active, message: ! info }"
     >
         <template v-if="isImporting">
@@ -39,7 +42,7 @@ const noInfoReasons: Record<INoInfoReason, string> = {
                 <fa-icon icon="eye" class="button" />
             </div>
             <div
-                class="archive-info message importing-mask card"
+                class="archive message importing-mask card"
             >
                 <div>
                     <span class="id">{{ id ?? '新' }}</span>
@@ -54,19 +57,22 @@ const noInfoReasons: Record<INoInfoReason, string> = {
             </div>
         </template>
         <template v-if="info">
-            <div class="archive-info-content">
-                <div class="archive-info-header">
+            <div class="archive-content">
+                <div class="archive-header">
                     <span v-if="id !== undefined" class="id">{{ id }}</span>
-                    <div class="archive-info-title">
+                    <div class="archive-title">
                         <NyaConfirmInput
                             v-model="info.title"
                             :disabled="remote"
                         />
                     </div>
                 </div>
-                <div>
-                    <fa-icon icon="calendar" :fixed-width="true" />
-                    <NyaDate :date="info.accessTime" format="YYYY-MM-DD hh:mm:ss" />
+                <div v-if="tailEdition" class="archive-tail">
+                    <fa-icon icon="code-branch" :fixed-width="true" />
+                    <RouterLink :to="`/sync/tree/${id}`" class="no-animation">
+                        <NyaDate :date="tailEdition.time" format="MM-DD hh:mm" />
+                        @ <span class="archive-device">{{ tailEdition.device }}</span>
+                    </RouterLink>
                 </div>
                 <div>
                     <fa-icon icon="folder" :fixed-width="true" />
@@ -86,7 +92,7 @@ const noInfoReasons: Record<INoInfoReason, string> = {
                     </span>
                 </div>
             </div>
-            <div class="archive-info-action">
+            <div class="archive-action">
                 <slot></slot>
             </div>
         </template>
@@ -100,24 +106,24 @@ const noInfoReasons: Record<INoInfoReason, string> = {
 </template>
 
 <style scoped>
-.archive-info {
+.archive {
     position: relative;
     display: flex;
     justify-content: space-between;
     min-height: 9.5em;
 }
 
-.archive-info.message {
+.archive.message {
     justify-content: space-around;
     align-items: center;
     color: var(--color-ui);
 }
 
-.archive-info-content {
+.archive-content {
     flex: 1;
 }
 
-.archive-info-header {
+.archive-header {
     display: flex;
     white-space: nowrap;
 }
@@ -126,11 +132,19 @@ const noInfoReasons: Record<INoInfoReason, string> = {
     margin-right: .5em;
 }
 
+.archive-tail {
+
+}
+
+.archive-device {
+    color: var(--color-ui);
+}
+
 .archive-remote-mark {
     margin-right: .5em;
 }
 
-.archive-info-title {
+.archive-title {
     flex: 1;
     justify-content: space-between;
     align-items: center;
@@ -138,28 +152,28 @@ const noInfoReasons: Record<INoInfoReason, string> = {
     font-weight: bold;
 }
 
-.archive-info-title > .nya-confirm-input:deep(> input) {
+.archive-title > .nya-confirm-input:deep(> input) {
     width: 100%;
     color: var(--color-ui);
     font-weight: bold;
     font-family: inherit;
 }
 
-.archive-info-content > div > svg:first-child {
+.archive-content > div > svg:first-child {
     margin-right: .5em;
 }
 
-.archive-info-action {
+.archive-action {
     display: flex;
     flex-flow: column;
     margin-top: -2px;
 }
 
-.archive-info-action:deep(> svg.button) {
+.archive-action:deep(> svg.button) {
     padding-top: .4rem;
     padding-bottom: .4rem;
 }
-.archive-info-action:deep(> *:not(:last-child)) {
+.archive-action:deep(> *:not(:last-child)) {
     margin-bottom: .4rem;
 }
 

@@ -41,21 +41,16 @@ export const storeRef = <T>(key: string, value: T): Ref<T> & Disposable => {
     return Object.assign(r as Ref<T>, { [kDispose]: stop })
 }
 
-export const storeReactive = <T extends object>(key: string, value: T): T & Disposable => {
+export const storeReactive = <T extends object>(key: string, value: T, map?: (storedValue: T) => T): T & Disposable => {
     const v = initStorage(key, value)
     for (const k in value) {
         if (! (k in v)) v[k] = value[k]
     }
-    const r = reactive(v) as T
+    const r = reactive(map ? map(v) : v) as T
     const stop = watch(r, (newValue) => setStorage(key, newValue))
     return Object.assign(r, {
         [kDispose]: stop
     })
-}
-
-export const storeRefReactive = <T extends object>(key: string, value: T): Ref<T> & Disposable => {
-    const r = storeReactive(key, value)
-    return Object.assign(ref(r) as Ref<T>, { [kDispose]: r[kDispose] })
 }
 
 export type ArrayStore<T> = T[] & {

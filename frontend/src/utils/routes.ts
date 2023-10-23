@@ -10,6 +10,7 @@ import StatisticsView from '@comp/views/StatisticsView.vue'
 import SyncView from '@comp/views/SyncView.vue'
 import SignInView from '@comp/views/SignInView.vue'
 import SignUpView from '@comp/views/SignUpView.vue'
+import ArchiveEditionTree from '@comp/views/ArchiveEditionTreeView.vue'
 import SettingsView from '@comp/views/SettingsView.vue'
 import DebugView from '@comp/views/DebugView.vue'
 import AboutView from '@comp/views/AboutView.vue'
@@ -66,6 +67,10 @@ export const routes = [
     {
         path: '/sync/sign-up',
         component: SignUpView
+    },
+    {
+        path: '/sync/tree/:id',
+        component: ArchiveEditionTree
     },
     {
         path: '/settings',

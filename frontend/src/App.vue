@@ -3,10 +3,10 @@ import { toRefs } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
+import { useModal } from '@store/modal'
 import { useConfig } from '@store/config'
 
 import { useTheme } from '@util/theme'
-import { useModal } from '@store/modal'
 import { registerShortcuts, newKey } from '@util/keyboard'
 import { getParentPath, routes } from '@util/routes'
 

@@ -13,8 +13,7 @@ export class ArchiveService {
         create: {
           ...data,
           owner,
-          size,
-          accessTime: new Date(),
+          size
         },
         update: {
           version: data.version,
@@ -24,8 +23,7 @@ export class ArchiveService {
           content: data.content,
 		  editionChain: data.editionChain,
 
-          size,
-          accessTime: new Date(),
+          size
         },
         where: {
           owner_idPerUser: {
@@ -49,7 +47,6 @@ export class ArchiveService {
         wordCount: true,
         public: true,
         size: true,
-        accessTime: true,
         version: true,
         editionChain: true
       },

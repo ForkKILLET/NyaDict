@@ -17,7 +17,6 @@ model Archive {
     content      String
     size         Int
     public       Boolean
-    accessTime   DateTime @updatedAt
     editionChain Json?
 
     @@unique([owner, idPerUser])
