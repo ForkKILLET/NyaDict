@@ -1,25 +1,98 @@
 import {
     watch, toValue, shallowReactive, computed,
-    type WritableComputedRef, type UnwrapRef
+    type WritableComputedRef, type UnwrapRef, ref
 } from 'vue'
 import { defineStore, storeToRefs } from 'pinia'
 
 import { storeRef, storeReactive, setStorageRaw, delStorage } from '@util/storage'
 import { kDispose } from '@util/disposable'
+import { mitt } from '@util/mitt'
 
 import { useConfig } from '@store/config'
 
 import type { IArchiveInfo, IArchiveData, IPortableArchive, IArchiveVersion } from '@type'
-import { mitt } from '@util/mitt'
+import type { IRemoteArchiveInfo } from '@type/network'
 
 export const ARCHIVE_VERSION: IArchiveVersion = '3.1'
+
+export type IRemoteArchives = Record<string, IRemoteArchiveInfo>
+export type IArchiveGroupState = 'push-ff' | 'pull-ff' | 'up-to-date' | 'conflict'
+export type IArchiveGroup = {
+    local?: IArchiveInfo
+    remote?: IRemoteArchiveInfo
+    state: IArchiveGroupState
+    pullIcon: string
+    pushIcon: string
+}
 
 export const useArchive = defineStore('archives', () => {
     const { config } = storeToRefs(useConfig())
 
     const currentId = storeRef('archiveId', '0')
-    const archiveInfo = storeReactive<Record<string, IArchiveInfo>>('archiveInfo', {})
-    const currentInfo = computed(() => archiveInfo[currentId.value])
+    const localArchivesInfo = storeReactive<Record<string, IArchiveInfo>>('archiveInfo', {})
+    const remoteArchivesInfo = ref<IRemoteArchives | null>(null)
+    const currentInfo = computed(() => localArchivesInfo[currentId.value])
+
+    const getGroupState = (group: Partial<IArchiveGroup>): IArchiveGroupState => {
+        if (! group.local) return 'pull-ff'
+        if (! group.remote) return 'push-ff'
+
+        const localChain = group.local.editionChain ?? []
+        const remoteChain = group.remote.editionChain ?? []
+        
+        if (! remoteChain.length) remoteChain.push({
+            time: 0,
+            device: '未知設備'
+        })
+        
+        for (let i = 0; i < Math.max(localChain.length, remoteChain.length); i ++) {
+            const le = localChain.at(i)
+            const re = remoteChain.at(i)
+            if (! le) return 'pull-ff'
+            if (! re) return 'push-ff'
+            if (le.time !== re.time) return 'conflict'
+        }
+        return 'up-to-date'
+    }
+    const archiveGroups = computed(() => {
+        const groups: Record<string, Partial<IArchiveGroup>> = {}
+        const local = localArchivesInfo
+        const remote = remoteArchivesInfo.value
+
+        for (const id in local) {
+            groups[id] = { local: local[id] }
+        }
+        if (remote) for (const id in remote) {
+            groups[id] ??= {}
+            groups[id].remote = remote[id]
+        }
+
+        // Calc state
+
+        for (const id in groups) {
+            const group = groups[id]
+            const state = getGroupState(group)
+            group.state = state
+            switch (state) {
+                case 'conflict':
+                    group.pushIcon = group.pullIcon = 'triangle-exclamation'
+                    break
+                case 'up-to-date':
+                    group.pushIcon = group.pullIcon = 'check'
+                    break
+                case 'pull-ff':
+                    group.pushIcon = 'minus'
+                    group.pullIcon = 'cloud-arrow-down'
+                    break
+                case 'push-ff':
+                    group.pushIcon = 'cloud-arrow-up'
+                    group.pullIcon = 'minus'
+                    break
+            }
+        }
+
+        return groups as Record<string, IArchiveGroup>
+    })
 
     const archiveData = shallowReactive({} as IArchiveData)
 
@@ -69,7 +142,7 @@ export const useArchive = defineStore('archives', () => {
             const value = localStorage[key]
             json[key.slice(prefixLen)] = value
         }
-        return Object.assign(json, { _info: toValue(archiveInfo[id]) })
+        return Object.assign(json, { _info: toValue(localArchivesInfo[id]) })
     }
 
     const withdrawArchive = (id: string) => {
@@ -80,7 +153,7 @@ export const useArchive = defineStore('archives', () => {
 
     const importArchive = (id: string, portable: IPortableArchive, noInfo?: boolean) => {
         if (portable._info?.version !== ARCHIVE_VERSION) return
-        if (! noInfo) archiveInfo[id] = portable._info
+        if (! noInfo) localArchivesInfo[id] = portable._info
         delete portable['_info']
 
         withdrawArchive(id)
@@ -91,7 +164,7 @@ export const useArchive = defineStore('archives', () => {
     }
 
     const createArchive = (id: number) => {
-        archiveInfo[id] = {
+        localArchivesInfo[id] = {
             title: '黙認',
             size: 0,
             wordCount: 1,
@@ -141,7 +214,7 @@ export const useArchive = defineStore('archives', () => {
     }
 
     return {
-        currentId, archiveInfo, currentInfo, archiveData,
+        currentId, localArchivesInfo, remoteArchivesInfo, currentInfo, archiveData, archiveGroups,
         extractData, define,
         disposeArchive, reloadArchive, exportArchive, withdrawArchive, importArchive, createArchive, updateActiveEdition
     }

@@ -4,7 +4,7 @@ import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 import { useAuth } from '@store/auth'
-import { useArchive, ARCHIVE_VERSION } from '@store/archive'
+import { useArchive, ARCHIVE_VERSION, type IRemoteArchives, type IArchiveGroupState } from '@store/archive'
 
 import { downloadURL } from '@util/dom'
 import { json5Stringify, json5TryParse } from '@util/storage'
@@ -13,88 +13,16 @@ import { addNoti, handleResp } from '@util/notif'
 import ArchiveInfo from '@comp/ArchiveInfo.vue'
 import LongPressButton from '@comp/LongPressButton.vue'
 
-import type { IArchiveInfo, IPortableArchive } from '@type'
+import type { IPortableArchive } from '@type'
 import type {
-    IRemoteArchiveInfo, IArchiveGetMineResp, IArchiveUploadResp, IArchiveDownloadResp
+    IArchiveGetMineResp, IArchiveUploadResp, IArchiveDownloadResp
 } from '@type/network'
 
 const archiveStore = useArchive()
 const authStore = useAuth()
 const { jwtPayload } = storeToRefs(authStore)
 const { api } = authStore
-const { currentId, archiveInfo } = storeToRefs(archiveStore)
-
-type RemoteArchives = Record<string, IRemoteArchiveInfo>
-const remoteInfo = ref<RemoteArchives | null>(null)
-
-type ArchiveGroupState = 'push-ff' | 'pull-ff' | 'up-to-date' | 'conflict'
-type ArchiveGroup = {
-    local?: IArchiveInfo
-    remote?: IRemoteArchiveInfo
-    state: ArchiveGroupState
-    pullIcon: string
-    pushIcon: string
-}
-const getGroupState = (group: Partial<ArchiveGroup>): ArchiveGroupState => {
-    if (! group.local) return 'pull-ff'
-    if (! group.remote) return 'push-ff'
-
-    const localChain = group.local.editionChain ?? []
-    const remoteChain = group.remote.editionChain ?? []
-    
-    if (! remoteChain.length) remoteChain.push({
-        time: 0,
-        device: '未知設備'
-    })
-    
-    for (let i = 0; i < Math.max(localChain.length, remoteChain.length); i ++) {
-        const le = localChain.at(i)
-        const re = remoteChain.at(i)
-        if (! le) return 'pull-ff'
-        if (! re) return 'push-ff'
-        if (le.time !== re.time) return 'conflict'
-    }
-    return 'up-to-date'
-}
-const archiveGroups = computed(() => {
-    const groups: Record<string, Partial<ArchiveGroup>> = {}
-    const local = archiveInfo.value
-    const remote = remoteInfo.value
-
-    for (const id in local) {
-        groups[id] = { local: local[id] }
-    }
-    if (remote) for (const id in remote) {
-        groups[id] ??= {}
-        groups[id].remote = remote[id]
-    }
-
-    // Calc state
-
-    for (const id in groups) {
-        const group = groups[id]
-        const state = getGroupState(group)
-        group.state = state
-        switch (state) {
-            case 'conflict':
-                group.pushIcon = group.pullIcon = 'triangle-exclamation'
-                break
-            case 'up-to-date':
-                group.pushIcon = group.pullIcon = 'check'
-                break
-            case 'pull-ff':
-                group.pushIcon = 'minus'
-                group.pullIcon = 'cloud-arrow-down'
-                break
-            case 'push-ff':
-                group.pushIcon = 'cloud-arrow-up'
-                group.pullIcon = 'minus'
-                break
-        }
-    }
-
-    return groups as Record<string, ArchiveGroup>
-})
+const { currentId, localArchivesInfo, remoteArchivesInfo, archiveGroups } = storeToRefs(archiveStore)
 
 const jsons: Record<string, string> = {}
 const blobs: Record<string, Blob> = {}
@@ -103,12 +31,12 @@ const makeBlob = (id: string) => {
     blobs[id] = new Blob([
         jsons[id] = json5Stringify(archiveStore.exportArchive(id), '"')
     ])
-    archiveInfo.value[id].size = blobs[id].size
+    localArchivesInfo.value[id].size = blobs[id].size
 }
 const withdraw = (id: string) => {
-    delete archiveInfo.value[id]
+    delete localArchivesInfo.value[id]
     archiveStore.withdrawArchive(id)
-    currentId.value = Object.keys(archiveInfo.value)[0]
+    currentId.value = Object.keys(localArchivesInfo.value)[0]
 }
 const exports = (id: string, remake?: boolean) => {
     if (remake) {
@@ -121,7 +49,7 @@ const exports = (id: string, remake?: boolean) => {
     }
 
     const url = URL.createObjectURL(blobs[id])
-    downloadURL(url, `nyadict-${archiveInfo.value[id].title}-${Date.now()}.json`)
+    downloadURL(url, `nyadict-${localArchivesInfo.value[id].title}-${Date.now()}.json`)
     URL.revokeObjectURL(url)
 }
 
@@ -148,7 +76,7 @@ const imports = async (id?: string) => {
 
     if (! id) {
         let newId = 0
-        for (const id in archiveInfo.value) newId = Math.max(+ id, newId)
+        for (const id in localArchivesInfo.value) newId = Math.max(+ id, newId)
         id = String(newId + 1)
     }
 
@@ -167,14 +95,14 @@ const getRemoteInfo = async () => {
     })
     if (! resp) return
 
-    const remotes: RemoteArchives = {}
+    const remotes: IRemoteArchives = {}
     resp.forEach(info => {
         remotes[info.idPerUser] = info
     })
-    remoteInfo.value = remotes
+    remoteArchivesInfo.value = remotes
 }
-const push = async (id: string, state: ArchiveGroupState) => {
-    const info = archiveInfo.value[id]
+const push = async (id: string, state: IArchiveGroupState) => {
+    const info = localArchivesInfo.value[id]
 
     const isFf = state === 'push-ff'
     if (! isFf) {
@@ -220,7 +148,7 @@ const push = async (id: string, state: ArchiveGroupState) => {
 
     await getRemoteInfo()
 }
-const pull = async (id: string, state: ArchiveGroupState) => {
+const pull = async (id: string, state: IArchiveGroupState) => {
     const isFf = state === 'pull-ff'
     if (! isFf) {
         const doOverwrite = await new Promise(res => addNoti({
@@ -254,7 +182,7 @@ const pull = async (id: string, state: ArchiveGroupState) => {
     })
     if (! resp) return
 
-    archiveInfo.value[resp.idPerUser] = {
+    localArchivesInfo.value[resp.idPerUser] = {
         version: resp.version,
         title: resp.title,
         size: resp.size,
@@ -280,7 +208,7 @@ const create = () => {
 
 const route = useRoute()
 const refresh = async () => {
-    for (const id in archiveInfo.value) {
+    for (const id in localArchivesInfo.value) {
         makeBlob(id)
     }
     if (jwtPayload.value) await getRemoteInfo()

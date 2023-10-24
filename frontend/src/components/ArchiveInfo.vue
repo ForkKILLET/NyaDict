@@ -69,7 +69,7 @@ const tailEdition = computed(() => props.info?.editionChain?.at(- 1))
                 </div>
                 <div v-if="tailEdition" class="archive-tail">
                     <fa-icon icon="code-branch" :fixed-width="true" />
-                    <RouterLink :to="`/sync/tree/${id}`" class="no-animation">
+                    <RouterLink :to="`/sync/tree/${id}` + (remote ? '?remote' : '')" class="no-animation">
                         <NyaDate :date="tailEdition.time" format="MM-DD hh:mm" />
                         @ <span class="archive-device">{{ tailEdition.device }}</span>
                     </RouterLink>
@@ -130,10 +130,6 @@ const tailEdition = computed(() => props.info?.editionChain?.at(- 1))
 
 .id {
     margin-right: .5em;
-}
-
-.archive-tail {
-
 }
 
 .archive-device {
