@@ -69,7 +69,7 @@ export const routes = [
         component: SignUpView
     },
     {
-        path: '/sync/tree/:id',
+        path: '/sync/tree',
         component: ArchiveEditionTree
     },
     {

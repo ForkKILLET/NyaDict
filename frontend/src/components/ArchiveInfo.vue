@@ -1,12 +1,13 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+
 import { ARCHIVE_VERSION } from '@store/archive'
 
-import NyaDate from '@comp/NyaDate.vue'
 import LongPressButton from '@comp/LongPressButton.vue'
 import NyaConfirmInput from '@comp/NyaConfirmInput.vue'
+import ArchiveEdition from '@comp/ArchiveEdition.vue'
 
 import type { IArchiveInfo } from '@type'
-import { computed } from 'vue'
 
 type INoInfoReason = 'no-account' | 'no-remote' | 'no-local'
 
@@ -69,9 +70,14 @@ const tailEdition = computed(() => props.info?.editionChain?.at(- 1))
                 </div>
                 <div v-if="tailEdition" class="archive-tail">
                     <fa-icon icon="code-branch" :fixed-width="true" />
-                    <RouterLink :to="`/sync/tree/${id}` + (remote ? '?remote' : '')" class="no-animation">
-                        <NyaDate :date="tailEdition.time" format="MM-DD hh:mm" />
-                        @ <span class="archive-device">{{ tailEdition.device }}</span>
+                    <RouterLink :to="{
+                        path: '/sync/tree',
+                        query: {
+                            id,
+                            remote: remote ? '' : undefined
+                        }
+                    }" class="no-animation">
+                        <ArchiveEdition :edition="tailEdition" />
                     </RouterLink>
                 </div>
                 <div>
@@ -130,10 +136,6 @@ const tailEdition = computed(() => props.info?.editionChain?.at(- 1))
 
 .id {
     margin-right: .5em;
-}
-
-.archive-device {
-    color: var(--color-ui);
 }
 
 .archive-remote-mark {

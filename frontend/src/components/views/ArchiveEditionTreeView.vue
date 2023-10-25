@@ -4,14 +4,14 @@ import { useRoute } from 'vue-router'
 
 import { useArchive } from '@store/archive'
 
-import NyaDate from '@comp/NyaDate.vue'
+import ArchiveEdition from '@comp/ArchiveEdition.vue'
 
 const route = useRoute()
 const archiveStore = useArchive()
 
 const archiveId = computed(() => {
-    const { id } = route.params
-    if (typeof id === 'string') return id
+    const { id } = route.query
+    if (id && typeof id === 'string') return id
 })
 
 const isRemote = computed(() =>
@@ -30,16 +30,23 @@ const archiveInfo = computed(() => {
     <div class="card">
         <span class="id">{{ archiveId }}</span>
         <div v-if="archiveInfo?.editionChain">
-            <div v-for="edition of archiveInfo.editionChain">
-                <NyaDate :date="edition.time" format="MM-DD hh:mm" />
-                @ <span class="archive-device">{{ edition.device }}</span>
+            <div
+                v-for="edition of [ ...archiveInfo.editionChain ].reverse()"
+            >
+                <ArchiveEdition :edition="edition">
+                    <span v-if="edition.active" class="edition-pointer">
+                        <fa-icon icon="arrow-left" />
+                        {{ isRemote ? 'リモート' : 'ローカル' }}
+                    </span>
+                </ArchiveEdition>
             </div>
         </div>
     </div>
 </template>
 
 <style scoped>
-.archive-device {
-    color: var(--color-ui);
+.edition-pointer {
+    margin-left: .5em;
+    color: var(--color-order);
 }
 </style>
