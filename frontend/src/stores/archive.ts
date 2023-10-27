@@ -7,11 +7,13 @@ import { defineStore, storeToRefs } from 'pinia'
 import { storeRef, storeReactive, setStorageRaw, delStorage } from '@util/storage'
 import { kDispose } from '@util/disposable'
 import { mitt } from '@util/mitt'
+import { handleResp } from '@util/notif'
 
 import { useConfig } from '@store/config'
+import { useAuth } from '@store/auth'
 
 import type { IArchiveInfo, IArchiveData, IPortableArchive, IArchiveVersion } from '@type'
-import type { IRemoteArchiveInfo } from '@type/network'
+import type { IArchiveGetMineResp, IRemoteArchiveInfo } from '@type/network'
 
 export const ARCHIVE_VERSION: IArchiveVersion = '3.1'
 
@@ -27,6 +29,7 @@ export type IArchiveGroup = {
 
 export const useArchive = defineStore('archives', () => {
     const { config } = storeToRefs(useConfig())
+    const { api } = useAuth()
 
     const currentId = storeRef('archiveId', '0')
     const localArchivesInfo = storeReactive<Record<string, IArchiveInfo>>('archiveInfo', {})
@@ -93,6 +96,23 @@ export const useArchive = defineStore('archives', () => {
 
         return groups as Record<string, IArchiveGroup>
     })
+
+    const fetchRemoteArchivesInfo = async (forcely = false) => {
+        if (! forcely && remoteArchivesInfo.value) return
+
+        const resp = await handleResp({
+            name: 'アーカイブ・リストを取得',
+            silentSuccess: true,
+            action: async () => await api.get('/archive/mine') as IArchiveGetMineResp
+        })
+        if (! resp) return
+
+        const remotes: IRemoteArchives = {}
+        resp.forEach(info => {
+            remotes[info.idPerUser] = info
+        })
+        remoteArchivesInfo.value = remotes
+    }
 
     const archiveData = shallowReactive({} as IArchiveData)
 
@@ -215,7 +235,7 @@ export const useArchive = defineStore('archives', () => {
 
     return {
         currentId, localArchivesInfo, remoteArchivesInfo, currentInfo, archiveData, archiveGroups,
-        extractData, define,
+        extractData, define, fetchRemoteArchivesInfo,
         disposeArchive, reloadArchive, exportArchive, withdrawArchive, importArchive, createArchive, updateActiveEdition
     }
 })

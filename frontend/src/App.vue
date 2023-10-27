@@ -14,6 +14,7 @@ import Topbar from '@comp/Topbar.vue'
 import Notifications from '@comp/notifications/Notifications.vue'
 import ShortcutList from '@comp/ShortcutList.vue'
 import Modal from '@comp/Modal.vue'
+import { mitt } from '@util/mitt'
 
 const route = useRoute()
 const router = useRouter()
@@ -56,6 +57,14 @@ registerShortcuts([
         info: 'ショートカットを見る',
         action: () => {
             modalStore.open(ShortcutList)
+        }
+    },
+    {
+        id: 'shortcut:re-edit',
+        key: newKey('.'),
+        info: '最後に編集したフィールドを編集',
+        action: () => {
+            mitt.emit('ui:re-edit', {})
         }
     }
 ])

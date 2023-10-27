@@ -6,6 +6,7 @@ export type Events = {
 
     'ui:shortcut': { shortcutId: string }
     'ui:word:navigate': { action: 'up' | 'down' }
+    'ui:re-edit': {}
 }
 
 export const mitt = Mitt<Events>()

@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { ref, toRefs, watch } from 'vue'
 import { vOnClickOutside } from '@vueuse/components'
+
+import { useInputState } from '@store/inputState'
+
+import { mitt } from '@util/mitt'
+
 import LongPressButton from '@comp/LongPressButton.vue'
 
 const props = defineProps<{
@@ -19,6 +24,8 @@ const emit = defineEmits<{
     (event: 'withdraw'): void
 }>()
 
+const inputStateStore = useInputState()
+
 const { modelValue } = toRefs(props)
 const model = {
     ref: ref(modelValue.value)
@@ -29,6 +36,7 @@ watch(modelValue, newValue => {
 
 const editMode = ref(props.editMode)
 const showMore = ref(false)
+const inputId = inputStateStore.maxInputId ++
 const root = ref<HTMLDivElement>()
 
 const focus = () => {
@@ -38,7 +46,12 @@ const focus = () => {
 
 const edit = () => {
     editMode.value = true
+    inputStateStore.lastEditedInputId = inputId
 }
+
+mitt.on('ui:re-edit', () => {
+    if (inputStateStore.lastEditedInputId === inputId) edit()
+})
 
 const clear = () => {
     if (props.withdrawWhenEmpty && ! model.ref.value) emit('withdraw')

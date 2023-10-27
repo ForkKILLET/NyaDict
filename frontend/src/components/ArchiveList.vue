@@ -4,7 +4,7 @@ import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 import { useAuth } from '@store/auth'
-import { useArchive, ARCHIVE_VERSION, type IRemoteArchives, type IArchiveGroupState } from '@store/archive'
+import { useArchive, ARCHIVE_VERSION, type IArchiveGroupState } from '@store/archive'
 
 import { downloadURL } from '@util/dom'
 import { json5Stringify, json5TryParse } from '@util/storage'
@@ -14,15 +14,13 @@ import ArchiveInfo from '@comp/ArchiveInfo.vue'
 import LongPressButton from '@comp/LongPressButton.vue'
 
 import type { IPortableArchive } from '@type'
-import type {
-    IArchiveGetMineResp, IArchiveUploadResp, IArchiveDownloadResp
-} from '@type/network'
+import type { IArchiveUploadResp, IArchiveDownloadResp } from '@type/network'
 
 const archiveStore = useArchive()
 const authStore = useAuth()
 const { jwtPayload } = storeToRefs(authStore)
 const { api } = authStore
-const { currentId, localArchivesInfo, remoteArchivesInfo, archiveGroups } = storeToRefs(archiveStore)
+const { currentId, localArchivesInfo, archiveGroups } = storeToRefs(archiveStore)
 
 const jsons: Record<string, string> = {}
 const blobs: Record<string, Blob> = {}
@@ -87,20 +85,6 @@ const imports = async (id?: string) => {
     }
 }
 
-const getRemoteInfo = async () => {
-    const resp = await handleResp({
-        name: 'アーカイブ・リストを取得',
-        silentSuccess: true,
-        action: async () => await api.get('/archive/mine') as IArchiveGetMineResp
-    })
-    if (! resp) return
-
-    const remotes: IRemoteArchives = {}
-    resp.forEach(info => {
-        remotes[info.idPerUser] = info
-    })
-    remoteArchivesInfo.value = remotes
-}
 const push = async (id: string, state: IArchiveGroupState) => {
     const info = localArchivesInfo.value[id]
 
@@ -146,7 +130,7 @@ const push = async (id: string, state: IArchiveGroupState) => {
     })
     if (! resp) return
 
-    await getRemoteInfo()
+    await archiveStore.fetchRemoteArchivesInfo(true)
 }
 const pull = async (id: string, state: IArchiveGroupState) => {
     const isFf = state === 'pull-ff'
@@ -211,7 +195,7 @@ const refresh = async () => {
     for (const id in localArchivesInfo.value) {
         makeBlob(id)
     }
-    if (jwtPayload.value) await getRemoteInfo()
+    if (jwtPayload.value) await archiveStore.fetchRemoteArchivesInfo(true)
     if (! Object.keys(archiveGroups.value).length) {
         create()
     }
@@ -235,7 +219,7 @@ watch(route, ({ path }) => {
             
             <fa-icon @click="create" icon="circle-plus" class="button" />
 
-            <fa-icon @click="getRemoteInfo" icon="rotate" class="button" />
+            <fa-icon @click="archiveStore.fetchRemoteArchivesInfo(true)" icon="rotate" class="button" />
         </p>
         <div class="archive-list-entries scroll-y">
             <div v-if="selectedFile && selectedTitle" class="archive-entry">

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 
 import { useArchive } from '@store/archive'
@@ -24,6 +24,10 @@ const archiveInfo = computed(() => {
     if (isRemote.value) return archiveStore.remoteArchivesInfo?.[id]
     return archiveStore.localArchivesInfo[id]
 })
+
+onMounted(() => {
+    archiveStore.fetchRemoteArchivesInfo()
+})
 </script>
 
 <template>
@@ -31,10 +35,10 @@ const archiveInfo = computed(() => {
         <span class="id">{{ archiveId }}</span>
         <div v-if="archiveInfo?.editionChain">
             <div
-                v-for="edition of [ ...archiveInfo.editionChain ].reverse()"
+                v-for="edition, index of [ ...archiveInfo.editionChain ].reverse()"
             >
                 <ArchiveEdition :edition="edition">
-                    <span v-if="edition.active" class="edition-pointer">
+                    <span v-if="index === 0" class="edition-pointer">
                         <fa-icon icon="arrow-left" />
                         {{ isRemote ? 'リモート' : 'ローカル' }}
                     </span>
