@@ -42,7 +42,7 @@ registerShortcuts([
         })),
     {
         id: 'route:up',
-        key: newKey('Ctrl + Backspace'),
+        key: newKey('Ctrl + ArrowUp'),
         info: 'アップのページへ',
         action: () => {
             router.push(getParentPath(route))

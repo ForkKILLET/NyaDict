@@ -67,7 +67,7 @@ watch(query, () => {
         queryParseError.value = result.error
     }
     else {
-        compiledFilter.value = compile(result.structured)
+        compiledFilter.value = compile(result.ast, query.value)
         queryParseError.value = null
     }
 }, { immediate: true })
@@ -302,3 +302,4 @@ watch(route, () => {
     font-size: .8em;
 }
 </style>
+@util/filterQuery/filterQuery

@@ -36,3 +36,20 @@ export type UnwrapRefDict<T extends Record<string, Ref<any>>> = {
 
 export type GenericComponentInstanceType<T extends (...args: any[]) => { __ctx?: { expose(exposed: any): any } }>
     = UnwrapRefDict<ArgumentsType<Exclude<ReturnType<T>['__ctx'], undefined>['expose']>['0']>
+
+export type IntSub10 = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+
+export type AddSub10Table = {
+    0: 1,
+    1: 2,
+    2: 3,
+    3: 4,
+    4: 5,
+    5: 6,
+    6: 7,
+    7: 8,
+    8: 9,
+    9: never
+}
+
+export type IncSub10<T extends IntSub10> = AddSub10Table[T]

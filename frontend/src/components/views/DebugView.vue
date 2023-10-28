@@ -7,6 +7,10 @@ import { ARCHIVE_VERSION, useArchive } from '@store/archive'
 import { json5Parse, json5Stringify, json5TryParse } from '@util/storage'
 import * as notif from '@util/notif'
 
+import { parse, stringify } from '@util/filterQuery'
+
+Object.assign(window, { parse, stringify })
+
 import LongPressButton from '@comp/LongPressButton.vue'
 
 const archiveStore = useArchive()
@@ -69,10 +73,6 @@ const addManyWords = () => {
         duration: 2 * 1000
     })
 }
-
-import { parse } from '@util/filterQuery'
-
-Object.assign(window, { parse })
 </script>
 
 <template>
@@ -143,3 +143,4 @@ div + div {
     padding: 1em;
 }
 </style>
+@util/filterQuery/filterQuery
