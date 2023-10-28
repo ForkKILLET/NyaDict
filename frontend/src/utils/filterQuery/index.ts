@@ -5,29 +5,33 @@ import type { IWord } from '@type'
 import { funcDefs } from '@util/filterQuery/functions'
 import type { IQueryDataBasicTypeStr, IQueryDataGenericTypeStr, IQueryFuncName } from '@util/filterQuery/functions'
 
-export type IMatchMethod = 'equals' | 'contains' | 'startswith' | 'endswith'
-
 export type IPos = {
     start: number
     end: number
 }
 
-export type IQueryASTCall = IPos & {
+export type IQueryAstCall = IPos & {
     type: 'call'
     funcName: IQueryFuncName
-    args: IQueryAST[]
+    args: IQueryAst[]
     sig: IQueryFuncSignature
 }
 
-export type IQueryASTString = IPos & {
+export type IQueryAstString = IPos & {
     type: 'string'
     value: string
     kana?: string
 }
 
-export type IQueryAST =
-    | IQueryASTCall
-    | IQueryASTString
+export type IQueryAstNumber = IPos & {
+    type: 'number'
+    value: number
+}
+
+export type IQueryAst =
+    | IQueryAstCall
+    | IQueryAstString
+    | IQueryAstNumber
 
 export type IQueryTextObject =
     | 'word' | 'disp' | 'sub'
@@ -38,6 +42,7 @@ export type IQueryTimeObject =
 export enum QueryTokenType {
     Func,
     String,
+    Number,
     RomajiString,
     LParen,
     RParen,
@@ -98,8 +103,6 @@ export type IQueryFunc = {
     sigs: IQueryFuncSignature[]
 }
 
-
-
 const _isFuncName = (name: string): name is IQueryFuncName => name in funcDefs
 
 const _printType =  (type: IQueryDataType): string => {
@@ -139,7 +142,7 @@ export const verbAliases: Record<string, string> = {
 }
 
 const whiteChars = ' \t\r\n\u3000'
-const symbolChars = '=~^[]' + '&|!'
+const symbolChars = '=~^[]&|!'
 const identifierChars
     = 'abcdefghijklmnopqrstuvwxyz'
     + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -195,6 +198,23 @@ const _tokenize = (state: IQueryProcessState): IQueryToken[] | null => {
             else throw state.error('String not ended', {
                 start,
                 end: query.length
+            })
+            continue
+        }
+
+        if (/\d/.test(char)) {
+            const start = index
+            let hasDot = false
+            let value = ''
+            do {
+                value += char
+                char = query[++ index]
+            }
+            while (/\d/.test(char) || (! hasDot && char === '.'))
+            const end = index
+            tokens.push({
+                type: QueryTokenType.Number, value,
+                start, end
             })
             continue
         }
@@ -305,8 +325,9 @@ const enum ParseEndAt {
     RParen
 }
 
-const _getAstType = (ast: IQueryAST): IQueryDataType => {
+const _getAstType = (ast: IQueryAst): IQueryDataType => {
     switch (ast.type) {
+        case 'number':
         case 'string':
             return { kind: 'basic', name: 'String' }
         case 'call':
@@ -314,8 +335,8 @@ const _getAstType = (ast: IQueryAST): IQueryDataType => {
     }
 } 
 
-const _parse = (state: IQueryParseState, endAt: ParseEndAt, depth: number): IQueryAST | null => {
-    const parseOne = (): IQueryAST | null => {
+const _parse = (state: IQueryParseState, endAt: ParseEndAt, depth: number): IQueryAst | null => {
+    const parseOne = (): IQueryAst | null => {
         const { current: token } = state
 
         if (token === undefined) {
@@ -344,7 +365,7 @@ const _parse = (state: IQueryParseState, endAt: ParseEndAt, depth: number): IQue
 
         if (token.type === QueryTokenType.String || token.type === QueryTokenType.RomajiString) {
             state.advance()
-            const tree: IQueryASTString = {
+            const tree: IQueryAstString = {
                 type: 'string',
                 value: token.value,
                 start: token.start,
@@ -355,6 +376,15 @@ const _parse = (state: IQueryParseState, endAt: ParseEndAt, depth: number): IQue
                 if (kana) tree.kana = kana
             }
             return tree
+        }
+
+        if (token.type === QueryTokenType.Number) {
+            return {
+                type: 'number',
+                value: Number(token.value),
+                start: token.start,
+                end: token.end
+            }
         }
 
         if (token.type === QueryTokenType.Func) {
@@ -369,7 +399,7 @@ const _parse = (state: IQueryParseState, endAt: ParseEndAt, depth: number): IQue
             const start = token.start
 
             const maybeHasParam = funcDef.sigs.some(sig => sig.parameters.length > 0)
-            const args: IQueryAST[] = []
+            const args: IQueryAst[] = []
             if (maybeHasParam) while (true) {
                 const arg = _parse(state, endAt, depth + 1)
                 if (arg === null) break
@@ -411,7 +441,7 @@ const _parse = (state: IQueryParseState, endAt: ParseEndAt, depth: number): IQue
 
 export type IQueryParseResult = {
     state: 'success'
-    ast: IQueryAST
+    ast: IQueryAst
 } | {
     state: 'null'
 } | {
@@ -431,8 +461,13 @@ export const parse = (query: string): IQueryParseResult => {
         const tokens = _tokenize(_newTokenizeState(ctx))
         if (tokens === null) return { state: 'null' }
 
-        const ast = _parse(_newParseState(ctx, tokens), ParseEndAt.EOI, 0)
+        const parseState = _newParseState(ctx, tokens)
+        const ast = _parse(parseState, ParseEndAt.EOI, 0)
         if (ast === null) return { state: 'null' }
+
+        if (ast.type !== 'call' || ast.sig.returnType.kind !== 'basic' || ast.sig.returnType.name !== 'Boolean') {
+            throw parseState.error('The root expression is not a call returning a boolean.', ast)
+        }
 
         return {
             state: 'success',
@@ -448,8 +483,10 @@ export const parse = (query: string): IQueryParseResult => {
     }
 }
 
-export const stringify = (ast: IQueryAST): string => {
+export const stringify = (ast: IQueryAst): string => {
     switch (ast.type) {
+        case 'number':
+            return String(ast.value)
         case 'string':
             return `'${ast.kana ?? ast.value}'`
         case 'call':
@@ -467,8 +504,10 @@ export type IQueryCalcCtxWrapper = {
     ctx: IQueryCalcCtx
 }
 
-const _calc = (state: IQueryCompileState, ast: IQueryAST): string | IQueryFilter => {
+const _calc = (state: IQueryCompileState, ast: IQueryAst): string | number | IQueryFilter => {
     switch (ast.type) {
+        case 'number':
+            return ast.value
         case 'string':
             return ast.kana ?? ast.value
         case 'call':
@@ -482,13 +521,9 @@ const _getCalcCtx = (word: IWord): IQueryCalcCtx => {
     }
 }
 
-export const compile = (ast: IQueryAST, query: string): IQueryFilter => {
+export const compile = (ast: IQueryAst, query: string): IQueryFilter => {
     const cctxw: IQueryCalcCtxWrapper = { ctx: null as unknown as IQueryCalcCtx }
     const state = _newCompileState({ query }, cctxw)
-
-    if (ast.type !== 'call') {
-        throw state.error('The root expression is not a .', ast)
-    }
 
     return (word: IWord) => {
         state.cctxw.ctx = _getCalcCtx(word)
