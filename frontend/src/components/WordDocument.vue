@@ -15,7 +15,7 @@ import LongPressButton from '@comp/LongPressButton.vue'
 import { addNoti } from '@util/notif'
 
 import { DocumentKind } from '@type'
-import type { IWordDocument, IWord, ITemplateDocument, ILinkDocument } from '@type'
+import type { IWordDocument, IWord, ILinkDocument } from '@type'
 import WordDocumentLabels from '@comp/WordDocumentLabels.vue'
 
 const props = defineProps<{
@@ -67,9 +67,23 @@ const sharpEnd = (word: IWord, model: { value: string }) => {
         })
     }
 }
-const sharpCancel = () => {
+const sharpCancel = (value: string | undefined, model: { value: string }) => {
     showMiniSearcher.value = false
     templateInput.value?.focus()
+
+    if (value === undefined) return
+
+    const el = templateInput.value
+    if (! el) return
+
+    const pos = el.selectionStart
+    if (typeof pos === 'number' && el.value[pos - 1] === '#') {
+        model.value = model.value.slice(0, pos - 1) + value + model.value.slice(pos)
+        nextTick(() => {
+            const el = templateInput.value
+            if (el) el.selectionStart = el.selectionEnd = pos - 1 + value.length
+        })
+    }
 }
 const onSharp = () => {
     if (! config.value.lazySharp) sharpStart()
@@ -211,7 +225,7 @@ const backlink = (doc: ILinkDocument) => {
                             v-if="showMiniSearcher"
                             ref="miniSearcher"
                             @select-word="word => sharpEnd(word, model.ref)"
-                            @cancel="sharpCancel"
+                            @cancel="value => sharpCancel(value, model.ref)"
                         />
                         <input
                             class="input"

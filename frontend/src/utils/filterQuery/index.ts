@@ -148,6 +148,7 @@ const identifierChars
     + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
     + '-'
     + '0123456789'
+    + symbolChars
 
 const _tokenize = (state: IQueryProcessState): IQueryToken[] | null => {
     const tokens: IQueryToken[] = []
@@ -207,6 +208,7 @@ const _tokenize = (state: IQueryProcessState): IQueryToken[] | null => {
             let hasDot = false
             let value = ''
             do {
+                if (char === '.') hasDot = true
                 value += char
                 char = query[++ index]
             }
@@ -216,15 +218,6 @@ const _tokenize = (state: IQueryProcessState): IQueryToken[] | null => {
                 type: QueryTokenType.Number, value,
                 start, end
             })
-            continue
-        }
-
-        if (symbolChars.includes(char)) {
-            tokens.push({
-                type: QueryTokenType.Func, value: char,
-                start: index, end: index + 1
-            })
-            index ++
             continue
         }
 
@@ -328,6 +321,7 @@ const enum ParseEndAt {
 const _getAstType = (ast: IQueryAst): IQueryDataType => {
     switch (ast.type) {
         case 'number':
+            return { kind: 'basic', name: 'Number' }
         case 'string':
             return { kind: 'basic', name: 'String' }
         case 'call':
@@ -451,7 +445,7 @@ export type IQueryParseResult = {
 
 export const parse = (query: string): IQueryParseResult => {
     // Support old query
-    if (! query.match(/[\s\(\)!@#$%^&*'"`]/)) {
+    if (! query.match(/[\s\(\)=!@#$%^&*'"`]/)) {
         query = `contains word '${query}'`
     }
 

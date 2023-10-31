@@ -17,7 +17,7 @@ const props = withDefaults(defineProps<{
 
 const emit = defineEmits<{
     (event: 'select-word', word: IWord): void
-    (event: 'cancel'): void
+    (event: 'cancel', value?: string): void
 }>()
 
 const wordStore = useWord()
@@ -43,8 +43,8 @@ const sortedWords = computed(() => filteredWords.value
     .sort((a, b) => a.disp.length - b.disp.length)
 )
 
-const cancel = () => {
-    emit('cancel')
+const cancel = (preserve = false) => {
+    emit('cancel', preserve ? search.value : undefined)
     search.value = ''
 }
 
@@ -67,7 +67,7 @@ const navigateActiveWord = (delta: number) => {
 const submitActiveWord = () => {
     const activeWord = sortedWords.value[activeWordIndex.value]
     if (activeWord) submit(activeWord)
-    else cancel()
+    else cancel(true)
 }
 
 defineExpose({
