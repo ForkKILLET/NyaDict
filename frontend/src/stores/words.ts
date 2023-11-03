@@ -15,6 +15,7 @@ import type {
     IWordDocumentWithoutId, IWordGraph, IWordDocument, IWordGraphEdge,
 } from '@type'
 import { DocumentKind } from '@type'
+import { IQueryFilter, IQueryParseResult, QueryError } from '@util/filterQuery'
 
 export const baseInterval = 5
 
@@ -44,21 +45,22 @@ export const useWord = defineStore('words', () => {
         map: compress_IWord
     }))
     archiveStore.define('wordFilter', (key) => storeRef<IWordFilter>(key, {
-        query: ''
-    }))
+        query: '',
+        advanced: false
+    }, true))
     archiveStore.define('wordSorter', (key) => storeRef<IWordSorter>(key, {
         method: 'id',
         direction: 'up'
-    }))
+    }, true))
     archiveStore.define('docMaxId', key => storeRef(key, 0))
 
     const { words, wordMaxId, wordFilter: filter, wordSorter: sorter, docMaxId } = archiveStore.extractData(
         [ 'words', 'wordMaxId', 'wordFilter', 'wordSorter', 'docMaxId' ]
     )
 
-    const structuredFilter = computed(() => {
-
-    })
+    const queryParseResult = ref<IQueryParseResult | null>(null)
+    const queryError = ref<QueryError | null>(null)
+    const queryFilter = ref<IQueryFilter | null>(null)
     
     const getWordDict = () => {
         const dict: Record<string, IWord> = {}
@@ -231,7 +233,9 @@ export const useWord = defineStore('words', () => {
     const randomWord = () => randomItem(words.value)
 
     return {
-        words, filter, sorter, getWordDict,
+        words, getWordDict,
+        filter, queryParseResult, queryError, queryFilter,
+        sorter,
         add, withdraw, restore,
         newlyAddedDocId, addDoc,
         updateGraphs, updateGraphByTemplate,

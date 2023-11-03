@@ -132,7 +132,6 @@ const _isSameType = (t: IQueryDataType, u: IQueryDataType) => {
 
 
 export const verbAliases: Record<string, string> = {
-    '=': 'equals',
     '~': 'contains',
     '[': 'startswith',
     ']': 'endswith',
@@ -142,13 +141,15 @@ export const verbAliases: Record<string, string> = {
 }
 
 const whiteChars = ' \t\r\n\u3000'
-const symbolChars = '=~^[]&|!'
+const symbolChars = '=<>~^[]&|!'
 const identifierChars
     = 'abcdefghijklmnopqrstuvwxyz'
     + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
     + '-'
     + '0123456789'
     + symbolChars
+
+type IQuoteChar = '\'' | '"' | '`'
 
 const _tokenize = (state: IQueryProcessState): IQueryToken[] | null => {
     const tokens: IQueryToken[] = []
@@ -183,10 +184,23 @@ const _tokenize = (state: IQueryProcessState): IQueryToken[] | null => {
         if (char === '\'' || char === '"' || char === '`') {
             const quote = char
             const start = index
-            let value = ''
+            let value = '', escaping = false
             char = query[++ index]
-            while (char !== quote && index < query.length) {
-                value += char
+            while (index < query.length) {
+                if (escaping) {
+                    escaping = false
+                    if (char === 'n') value += '\n'
+                    else value += char
+                }
+                else if (char === quote) {
+                    break
+                }
+                else if (char === '\\') {
+                    escaping = true
+                }
+                else {
+                    value += char
+                }
                 char = query[++ index]
             }
             if (char === quote) {
@@ -373,6 +387,7 @@ const _parse = (state: IQueryParseState, endAt: ParseEndAt, depth: number): IQue
         }
 
         if (token.type === QueryTokenType.Number) {
+            state.advance()
             return {
                 type: 'number',
                 value: Number(token.value),
@@ -443,11 +458,10 @@ export type IQueryParseResult = {
     error: QueryError
 }
 
-export const parse = (query: string): IQueryParseResult => {
-    // Support old query
-    if (! query.match(/[\s\(\)=!@#$%^&*'"`]/)) {
-        query = `contains word '${query}'`
-    }
+export const parse = (query: string, advanced: boolean): IQueryParseResult => {
+    if (! advanced) query = `contains word '${
+        query.replaceAll('\\', '\\\\').replaceAll('\'', '\\\'')
+    }'`
 
     const ctx = { query }
 

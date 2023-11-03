@@ -29,20 +29,25 @@ export const initStorage = <T>(key: string, defaultValue: T): T => {
         setStorage(key, defaultValue)
         initValue = defaultValue
     }
+    if (defaultValue && typeof defaultValue === 'object') {
+        if (typeof initValue !== 'object') initValue = {} as T
+        for (const k in defaultValue) {
+            if (! (k in (initValue as T & object))) initValue[k] = defaultValue[k]
+        }
+    }
     return initValue
 }
 
-export const storeRef = <T>(key: string, value: T): Ref<T> & Disposable => {
+export const storeRef = <T>(key: string, value: T, deep = false): Ref<T> & Disposable => {
     const r = ref(initStorage(key, value))
-    const stop = watch(r, newValue => setStorage(key, newValue))
+    const stop = deep
+        ? watch(() => r.value, newValue => setStorage(key, newValue), { deep: true })
+        : watch(r, newValue => setStorage(key, newValue))
     return Object.assign(r as Ref<T>, { [kDispose]: stop })
 }
 
 export const storeReactive = <T extends object>(key: string, value: T, map?: (storedValue: T) => T): T & Disposable => {
     const v = initStorage(key, value)
-    for (const k in value) {
-        if (! (k in v)) v[k] = value[k]
-    }
     const r = reactive(map ? map(v) : v) as T
     const stop = watch(r, (newValue) => setStorage(key, newValue))
     return Object.assign(r, {

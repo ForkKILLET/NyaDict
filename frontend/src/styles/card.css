@@ -71,12 +71,12 @@ button.card.square > svg {
 }
 
 .card.active,
-.checkbox-label > input:enabled:checked + .card.checkbox {
+.checkbox-label > input:enabled:checked + .checkbox {
     color: var(--color-bg);
     background-color: var(--color-ui);
 }
 button.card.active:hover,
-.checkbox-label > input:enabled:checked + .card.checkbox:hover {
+.checkbox-label > input:enabled:checked + .checkbox:hover {
     background-color: var(--color-ui-act);
     color: var(--color-bg);
 }

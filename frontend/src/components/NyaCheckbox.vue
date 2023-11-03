@@ -3,6 +3,7 @@ import { computed } from 'vue'
 
 const props = defineProps<{
     modelValue?: boolean
+    tiny?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -18,6 +19,17 @@ const value = computed({
 <template>
     <label class="checkbox-label">
         <input type="checkbox" v-model="value" />
-        <div class="inline card checkbox"><slot></slot></div>
+        <div
+            class="checkbox"
+            :class="tiny ? 'badge' : 'inline card'"
+        >
+            <slot></slot>
+        </div>
     </label>
 </template>
+
+<style scoped>
+.badge {
+    margin: 0;
+}
+</style>

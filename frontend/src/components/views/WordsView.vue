@@ -8,7 +8,6 @@ import {
 } from '@store/words'
 
 import { isPortrait } from '@util/media'
-import { compile, parse, IQueryFilter, QueryError } from '@util/filterQuery'
 import { addNoti } from '@util/notif'
 
 import WordEditor from '@comp/WordEditor.vue'
@@ -53,31 +52,17 @@ const currentWord = ref<IWord>()
 
 // Filtering
 
-const { query } = toRefs(wordStore.filter)
-const compiledFilter = ref<IQueryFilter | null>(null)
-const queryParseError = ref<QueryError | null>(null)
-watch(query, () => {
-    const result = parse(query.value)
-    if (result.state === 'null') {
-        compiledFilter.value = null
-        queryParseError.value = null
-    }
-    else if (result.state === 'error') {
-        compiledFilter.value = null
-        queryParseError.value = result.error
-    }
-    else {
-        compiledFilter.value = compile(result.ast, query.value)
-        queryParseError.value = null
-    }
-}, { immediate: true })
+const { queryFilter, filter } = toRefs(wordStore)
+
 const filteredWords = computed(() => {
-    if (compiledFilter.value) return wordStore.words.filter(compiledFilter.value)
+    if (queryFilter.value) {
+        return wordStore.words.filter(queryFilter.value)
+    }
     return [...wordStore.words]
 })
 
 onMounted(() => {
-    if (compiledFilter.value) {
+    if (filter.value.query) {
         toolbarMode.value = 'filter'
     }
 })
@@ -216,10 +201,7 @@ watch(route, () => {
                         </span>
                     </div>
                     <div v-else-if="toolbarMode === 'filter'">
-                        <WordFilter v-model="query" ref="wordFilter" />
-                        <pre class="query-parse-error scroll-x" v-if="queryParseError">{{
-                            queryParseError.message
-                        }}</pre>
+                        <WordFilter ref="wordFilter" />
                     </div>
                 </div>
             </div>
@@ -295,11 +277,4 @@ watch(route, () => {
     display: flex;
     flex-wrap: wrap;
 }
-
-.query-parse-error {
-    color: var(--color-wrong);
-    font-family: var(--font-mono);
-    font-size: .8em;
-}
 </style>
-@util/filterQuery/filterQuery

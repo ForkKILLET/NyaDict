@@ -109,6 +109,7 @@ export type IWordFilterModiferName = 'rei' | 'kai' | 'aku'
 
 export type IWordFilter = {
     query: string
+    advanced: boolean
 }
 
 export enum TestMode {

@@ -120,6 +120,8 @@ export const funcDefs = {
         // [ [ 'List<String>' ], 'Not<List<String>>' ]
     ]),
 
+    easiness: _ctxConstFunc('Number', (ctx): number => ctx.currentWord.mem.easiness),
+
     word: _ctxConstFunc('List<String>', (ctx): string[] => [
         ctx.currentWord.disp,
         ctx.currentWord.sub,

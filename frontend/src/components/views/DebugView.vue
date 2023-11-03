@@ -143,4 +143,3 @@ div + div {
     padding: 1em;
 }
 </style>
-@util/filterQuery/filterQuery
