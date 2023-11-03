@@ -77,13 +77,13 @@ defineExpose({
 
 <template>
     <div
-        v-on-click-outside="cancel"
+        v-on-click-outside="() => cancel()"
         class="word-mini-searcher card deep"
     >
         <input
             v-model="search"
             ref="inputEl"
-            @keydown.esc.prevent.stop="cancel"
+            @keydown.esc.prevent.stop="cancel()"
             @keydown.enter.prevent="submitActiveWord"
             @keydown.down="navigateActiveWord(+ 1)"
             @keydown.up="navigateActiveWord(- 1)"

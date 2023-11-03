@@ -8,13 +8,13 @@ import { IDragTarget, IDragTargetInfo, ISimulationNode, IView, useWordGraph } fr
 
 import { getEventPoint } from '@util/dom'
 import { depRef } from '@util/reactivity'
+import { storeRef } from '@util/storage'
 import { disposeShortcuts, newKey, registerShortcuts } from '@util/keyboard'
 
 import EllipsisText from '@comp/charts/EllipsisText.vue'
 import Arrow from '@comp/charts/Arrow.vue'
 
 import type { IWord } from '@type'
-import { mitt } from '@util/mitt'
 
 const props = defineProps<{
     word: IWord
@@ -109,7 +109,7 @@ const onDragEnd = (event: MouseEvent | TouchEvent) => {
     }
 }
 
-const scale = ref(1)
+const scale = storeRef('wordGraphScale', 1)
 
 const zoom = (deltaScale: number) => {
     const newScale = scale.value + deltaScale
