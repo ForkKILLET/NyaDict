@@ -1,12 +1,12 @@
 import { unreachable } from '@util'
 import type {
-    IQueryCalcCtx,
-    IQueryDataType, IQueryFunc, IQueryFuncSignature
+    IQueryCalcCtx, IQueryDataType, IQueryFunc, IQueryFuncSignature, SymbolChars
 } from '@util/filterQuery'
-
-import { IncSub10, IntSub10 } from '@type/tool'
+import { strictToHiragana } from '@util/kana'
 
 import { getWordMeanings, getWordSentences } from '@store/words'
+
+import { IncSub10, IntSub10 } from '@type/tool'
 
 const _basicTypeStrs = [ 'String', 'Boolean', 'Number' ] as const
 const _genericTypeStrs = [ 'List' ] as const
@@ -48,13 +48,11 @@ const _parseType = (typeStr: IQueryDataTypeStr): IQueryDataType => {
 
 type IQueryFuncSignatureConstructor = [
     IQueryDataTypeStr[],
-    IQueryDataTypeStr,
     (ctx: IQueryCalcCtx , ...args: any[]) => any
 ]
 
-const _newSig = ([ parameters, returnType, body ]: IQueryFuncSignatureConstructor) => ({
-    parameters: parameters.map(_parseType),
-    returnType: _parseType(returnType),
+const _newSig = ([ types, body ]: IQueryFuncSignatureConstructor) => ({
+    types: types.map(_parseType),
     body
 })
 
@@ -63,31 +61,38 @@ const _newFunc = (sigs: IQueryFuncSignatureConstructor[]): IQueryFunc => ({
 })
 
 const _textMatchingFunc = (fn: (search: string) => (base: string) => boolean) => _newFunc([
-    [ [ 'List<String>', 'String' ], 'Boolean', (_, bases: string[], search: string) => bases.some(fn(search)) ],
-    [ [ 'String', 'String' ], 'Boolean', (_, base: string, search: string) => fn(search)(base)  ]
+    [ [ 'List<String>', 'String', 'Boolean' ], (_, bases: string[], search: string) => bases.some(fn(search)) ],
+    [ [ 'String', 'String', 'Boolean' ], (_, base: string, search: string) => fn(search)(base)  ]
 ])
 
-const _compareFuncs = <T>(types: [type: IQueryDataTypeStr, fn: (a: T, b: T) => number][]) => {
-    const defs = Object.fromEntries([ '==', '<', '>', '<=', '>=', '<>' ]
-        .map((name): [ string, IQueryFunc ] => [ name, { sigs: [] } ]))
+const compareOperatorNames = [ '==', '<', '>', '<=', '>=', '!=' ] as const
+type IQueryCompareOperatorName = typeof compareOperatorNames[number]
+type IQueryCompareOperators = Record<IQueryCompareOperatorName, IQueryFunc>
+
+const _compareFuncs = <T>(types: [type: IQueryDataTypeStr, fn: (a: T, b: T) => number][]): IQueryCompareOperators => {
+    const defs = Object.fromEntries(compareOperatorNames
+        .map((name): [ IQueryCompareOperatorName, IQueryFunc ] =>
+            [ name, { sigs: [] } ]
+        )
+    ) as IQueryCompareOperators
     types.forEach(([ type, cmp ]) => {
-        const sigHead: [ IQueryDataTypeStr[], IQueryDataTypeStr ] = [ [ type, type ], 'Boolean' ]
-        defs['=='].sigs.push(_newSig([ ...sigHead, (_, a, b) => cmp(a, b) == 0 ]))
-        defs['<'].sigs.push(_newSig([ ...sigHead, (_, a, b) => cmp(a, b) < 0 ]))
-        defs['>'].sigs.push(_newSig([ ...sigHead, (_, a, b) => cmp(a, b) > 0 ]))
-        defs['<='].sigs.push(_newSig([ ...sigHead, (_, a, b) => cmp(a, b) <= 0 ]))
-        defs['>='].sigs.push(_newSig([ ...sigHead, (_, a, b) => cmp(a, b) <= 0 ]))
-        defs['<>'].sigs.push(_newSig([ ...sigHead, (_, a, b) => cmp(a, b) !== 0 ]))
+        const sigHead: IQueryDataTypeStr[] = [ type, type, 'Boolean' ]
+        defs['=='].sigs.push(_newSig([ sigHead, (_, a, b) => cmp(a, b) == 0 ]))
+        defs['<'].sigs.push(_newSig([ sigHead, (_, a, b) => cmp(a, b) < 0 ]))
+        defs['>'].sigs.push(_newSig([ sigHead, (_, a, b) => cmp(a, b) > 0 ]))
+        defs['<='].sigs.push(_newSig([ sigHead, (_, a, b) => cmp(a, b) <= 0 ]))
+        defs['>='].sigs.push(_newSig([ sigHead, (_, a, b) => cmp(a, b) <= 0 ]))
+        defs['!='].sigs.push(_newSig([ sigHead, (_, a, b) => cmp(a, b) !== 0 ]))
     })
     return defs
 }
 
 const _constFunc = (valueType: IQueryDataTypeStr, value: any) => _newFunc([
-    [ [], valueType, () => value  ]
+    [ [ valueType ], () => value  ]
 ])
 
 const _ctxConstFunc = (valueType: IQueryDataTypeStr, body: (ctx: IQueryCalcCtx) => any) => _newFunc([
-    [ [], valueType, body ]
+    [ [ valueType ], body ]
 ])
 
 export const funcDefs = {
@@ -96,8 +101,12 @@ export const funcDefs = {
     startswith: _textMatchingFunc(s => b => b.startsWith(s)),
     endswith: _textMatchingFunc(s => b => b.endsWith(s)),
 
+    kana: _newFunc([
+        [ [ 'String', 'String' ], (_, str: string) => strictToHiragana(str) ?? str ]
+    ]),
+
     empty: _newFunc([
-        [ [ 'List<String>' ], 'Boolean', (_, strs: string[]) => ! strs.length ]
+        [ [ 'List<String>', 'Boolean' ], (_, strs: string[]) => ! strs.length ]
     ]),
 
     true: _constFunc('Boolean', true),
@@ -108,30 +117,36 @@ export const funcDefs = {
     ]),
 
     and: _newFunc([
-        [ [ 'Boolean', 'Boolean' ], 'Boolean', (_, a: boolean, b: boolean) => a && b ],
-        // [ [ 'List<String>', 'List<String>' ], 'And<List<String>>' ]
+        [ [ 'Boolean', 'Boolean', 'Boolean' ], (_, a: boolean, b: boolean) => a && b ],
     ]),
     or: _newFunc([
-        [ [ 'Boolean', 'Boolean' ], 'Boolean', (_, a: boolean, b: boolean) => a || b ],
-        // [ [ 'List<String>', 'List<String>' ], 'Or<List<String>>' ]
+        [ [ 'Boolean', 'Boolean', 'Boolean' ], (_, a: boolean, b: boolean) => a || b ],
     ]),
     not: _newFunc([
-        [ [ 'Boolean' ], 'Boolean', (_, a: boolean) => ! a ],
-        // [ [ 'List<String>' ], 'Not<List<String>>' ]
+        [ [ 'Boolean', 'Boolean' ], (_, a: boolean) => ! a ],
+    ]),
+
+    '+': _newFunc([
+        [ [ 'Number', 'Number', 'Number' ], (_, a: number, b: number) => a + b ]
+    ]),
+    '-': _newFunc([
+        [ [ 'Number', 'Number', 'Number' ], (_, a: number, b: number) => a - b ]
+    ]),
+    '*': _newFunc([
+        [ [ 'Number', 'Number', 'Number' ], (_, a: number, b: number) => a * b ]
+    ]),
+    '/': _newFunc([
+        [ [ 'Number', 'Number', 'Number' ], (_, a: number, b: number) => a / b ]
     ]),
 
     easiness: _ctxConstFunc('Number', (ctx): number => ctx.currentWord.mem.easiness),
 
-    word: _ctxConstFunc('List<String>', (ctx): string[] => [
+    text: _ctxConstFunc('List<String>', (ctx): string[] => [
         ctx.currentWord.disp,
         ctx.currentWord.sub,
     ]),
-    disp: _ctxConstFunc('List<String>', (ctx): string[] => [
-        ctx.currentWord.disp,
-    ]),
-    sub: _ctxConstFunc('List<String>', (ctx): string[] => [
-        ctx.currentWord.sub,
-    ]),
+    disp: _ctxConstFunc('String', (ctx): string => ctx.currentWord.disp),
+    sub: _ctxConstFunc('String', (ctx): string => ctx.currentWord.sub,),
     meaning: _ctxConstFunc('List<String>', (ctx): string[] => (
         getWordMeanings(ctx.currentWord)
     )),
@@ -141,7 +156,47 @@ export const funcDefs = {
     doc: _ctxConstFunc('List<String>', (ctx): string[] => [
         ...getWordMeanings(ctx.currentWord),
         ...getWordSentences(ctx.currentWord)
-    ])
+    ]),
+
+    testable: _ctxConstFunc('Boolean', (ctx): boolean => ctx.currentWord.mem.testAfter < Date.now())
 } as const
 
-export type IQueryFuncName = keyof typeof funcDefs
+export const funcAliases = {
+    '->': 'contains',
+    '->^': 'startswith',
+    '->$': 'endswith',
+    '&': 'and',
+    '|': 'or',
+    '!': 'not'
+} as const
+
+export type IQueryFuncName = keyof typeof funcDefs | keyof typeof funcAliases
+export type IQueryOperatorName = {
+    [K in IQueryFuncName]: K extends `${SymbolChars}${string}` ? K : never
+}[IQueryFuncName]
+
+export const symbolPriority: Record<IQueryOperatorName, number> = {
+    '|': 3,
+    '&': 4,
+
+    '<': 5,
+    '>': 5,
+    '<=': 5,
+    '>=': 5,
+    
+    '->': 5,
+    '->^': 5,
+    '->$': 5,
+
+    '==': 6,
+    '!=': 6,
+
+    '+': 6,
+    '-': 6,
+
+    '*': 7,
+    '/': 7,
+
+    '!': 8 // TODO: prefix
+}
+

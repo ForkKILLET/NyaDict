@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, toRefs, watch } from 'vue'
+import { computed, toRefs, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useDebounceFn, useRefHistory } from '@vueuse/core'
 
@@ -67,8 +67,12 @@ watch([ query, advanced ], () => {
         </div>
 
         <pre class="query-error scroll-x" v-if="queryError">{{
-            queryError.message
+            queryError.name + ': ' + queryError.message
         }}</pre>
+
+        <!-- <pre class="query-ast" v-if="queryParseResult?.state === 'success'">{{ 
+            JSON.stringify(queryParseResult.ast, null, 2)
+        }}</pre> -->
     </div>
 </template>
 
@@ -94,5 +98,9 @@ watch([ query, advanced ], () => {
     color: var(--color-wrong);
     font-family: var(--font-mono);
     font-size: .8em;
+}
+
+.query-ast {
+    position: absolute;
 }
 </style>

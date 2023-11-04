@@ -9,7 +9,7 @@ const modalStore = useModal()
 registerShortcuts([
     {
         id: 'modal:close',
-        priority: 1,
+        precedence: 1,
         key: newKey('Escape'),
         info: 'Modalを閉める', // FIXME: Japanese of 'modal window'
         isActive: () => !! modalStore.component,

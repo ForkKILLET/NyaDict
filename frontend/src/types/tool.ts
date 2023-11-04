@@ -13,9 +13,9 @@ export type DistributiveOmit<T, K extends KeyOfUnion<T>> = T extends T
     ? Omit<T, K>
     : never
 
-export type ArgumentsType<T> = T extends (...args: infer U) => any ? U : never
+export type AllCharsInString<T extends string> = T extends `${infer F}${infer L}` ? F | AllCharsInString<L> : never
 
-export type MAXIMUM_ALLOWED_BOUNDARY = 10
+export type ArgumentsType<T> = T extends (...args: infer U) => any ? U : never
 
 export type Last<T extends string[]> = T extends [...infer _, infer Last] ? Last : never;
 
@@ -24,7 +24,7 @@ export type ConcatPrevious<S extends string, T extends any[]> = Last<T> extends 
 export type RepeatedArray<
     S extends string,
     Result extends unknown[] = [S],
-> = Result['length'] extends MAXIMUM_ALLOWED_BOUNDARY
+> = Result['length'] extends 10
     ? Result
     : RepeatedArray<S, [...Result, ConcatPrevious<S, Result>]>
 
