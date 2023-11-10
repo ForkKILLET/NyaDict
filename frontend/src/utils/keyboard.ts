@@ -15,7 +15,7 @@ export type Shortcut = {
     id: string
     key: KeyCombination
     info: string
-    priority?: number
+    precedence?: number
     isActive?: () => boolean
     action?: () => void
 }
@@ -64,10 +64,14 @@ const isKeyMatched = (event: KeyboardEvent, key: KeyCombination) => (
 )
 
 window.addEventListener('keydown', (event) => {
+    const { activeElement } = window.document
+    const requiringModifier = !! activeElement && [ 'INPUT', 'TEXTAREA' ].includes(activeElement.tagName)
+    if (requiringModifier && ! (event.ctrlKey || event.altKey || event.metaKey)) return
+
     const shortcutList = Object
         .values(shortcuts)
         .filter(shortcut => shortcut.isActive?.() !== false)
-        .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0))
+        .sort((a, b) => (b.precedence ?? 0) - (a.precedence ?? 0))
 
     for (const shortcut of shortcutList) {
         if (shortcut.isActive?.() === false) continue
