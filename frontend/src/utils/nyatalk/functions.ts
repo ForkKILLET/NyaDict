@@ -1,3 +1,5 @@
+import dayjs, { Dayjs } from 'dayjs'
+
 import { unreachable } from '@util'
 import { strictToHiragana } from '@util/kana'
 
@@ -9,8 +11,8 @@ import type {
     INtCalcCtx, INtDataType, INtFunc, SymbolChars
 } from '.'
 
-const _basicTypeStrs = [ 'String', 'Boolean', 'Number' ] as const
-const _genericTypeStrs = [ 'List' ] as const
+const _basicTypeStrs = [ 'String', 'Boolean', 'Number', 'Date' ] as const
+const _genericTypeStrs = [ 'List', 'Range' ] as const
 
 export type INtDataBasicTypeStr = typeof _basicTypeStrs[number]
 export type INtDataGenericTypeStr = typeof _genericTypeStrs[number]
@@ -96,6 +98,13 @@ const _ctxConstFunc = (valueType: INtDataTypeStr, body: (ctx: INtCalcCtx) => any
     [ [ valueType ], body ]
 ])
 
+const NtRangeSymbol = Symbol('Nt.Range')
+type INtRange<T> = {
+    start: T
+    end: T
+    type: typeof NtRangeSymbol
+}
+
 export const funcDefs = {
     '->': _textMatchingFunc(s => b => b.includes(s)),
     '->^': _textMatchingFunc(s => b => b.startsWith(s)),
@@ -117,9 +126,38 @@ export const funcDefs = {
     true: _constFunc('Boolean', true),
     false: _constFunc('Boolean', false),
 
+    now: _ctxConstFunc('Date', _ => dayjs()),
+
     ..._compareFuncs([
         [ 'Number', (a: number, b: number) => a - b ],
         [ 'String', (a: string, b: string) => a < b ? - 1 : a > b ? + 1 : 0 ],
+        [ 'Date', (a: Dayjs, b: Dayjs) => a.valueOf() - b.valueOf() ]
+    ]),
+
+    '..': _newFunc([
+        [
+            [ 'Number', 'Number', 'Range<Number>' ],
+            (_, start: number, end: number): INtRange<number> => ({
+                start, end, type: NtRangeSymbol
+            })
+        ],
+        [
+            [ 'Date', 'Date', 'Range<Date>' ],
+            (_, start: Dayjs, end: Dayjs): INtRange<Dayjs> => ({
+                start, end, type: NtRangeSymbol
+            })
+        ]
+    ]),
+
+    '<-': _newFunc([
+        [
+            [ 'Number', 'Range<Number>', 'Boolean' ],
+            (_, num: number, range: INtRange<number>) => range.start <= num && num <= range.end
+        ],
+        [
+            [ 'Date', 'Range<Date>', 'Boolean' ],
+            (_, date: Dayjs, range: INtRange<Dayjs>) => date.isAfter(range.start) && date.isBefore(range.end)
+        ],
     ]),
 
     '&': _newFunc([
@@ -133,10 +171,14 @@ export const funcDefs = {
     ]),
 
     '+': _newFunc([
-        [ [ 'Number', 'Number', 'Number' ], (_, a: number, b: number) => a + b ]
+        [ [ 'Number', 'Number', 'Number' ], (_, a: number, b: number) => a + b ],
+        [ [ 'Date', 'Number', 'Date' ], (_, a: Dayjs, b: number) => a.add(b, 'millisecond') ],
+        [ [ 'Number', 'Date', 'Date' ], (_, a: number, b: Dayjs) => b.add(a, 'millisecond') ]
     ]),
     '-': _newFunc([
-        [ [ 'Number', 'Number', 'Number' ], (_, a: number, b: number) => a - b ]
+        [ [ 'Number', 'Number', 'Number' ], (_, a: number, b: number) => a - b ],
+        [ [ 'Date', 'Date', 'Number' ], (_, a: Dayjs, b: Dayjs) => a.diff(b, 'millisecond') ],
+        [ [ 'Date', 'Number', 'Date' ], (_, a: Dayjs, b: number) => a.add(- b, 'millisecond') ]
     ]),
     '*': _newFunc([
         [ [ 'Number', 'Number', 'Number' ], (_, a: number, b: number) => a * b ]
@@ -163,8 +205,24 @@ export const funcDefs = {
         ...getWordMeanings(ctx.currentWord),
         ...getWordSentences(ctx.currentWord)
     ]),
+    
+    hour: _newFunc([
+       [ [ 'Number', 'Number' ], (_, x: number) => x * 3600 * 1000 ] 
+    ]),
+    day: _newFunc([
+        [ [ 'Number', 'Number' ], (_, x: number) => x * 24 * 3600 * 1000 ]
+    ]),
+    month: _newFunc([
+        [ [ 'Number', 'Number' ], (_, x: number) => x * 30 * 24 * 3600 * 1000 ]
+    ]),
+    year: _newFunc([
+        [ [ 'Number', 'Number' ], (_, x: number) => x * 365 * 24 * 3600 * 1000 ]
+    ]),
 
-    testable: _ctxConstFunc('Boolean', (ctx): boolean => ctx.currentWord.mem.testAfter < Date.now())
+    testable: _ctxConstFunc('Boolean', (ctx): boolean => ctx.currentWord.mem.testAfter < Date.now()),
+
+    createTime: _ctxConstFunc('Date', (ctx): Dayjs => dayjs(ctx.currentWord.mem.createTime)),
+    nextTestTime: _ctxConstFunc('Date', (ctx): Dayjs => dayjs(ctx.currentWord.mem.testAfter))
 } as const
 
 export const funcAliases = {
@@ -175,6 +233,7 @@ export const funcAliases = {
     'or': '|',
     'not': '!',
     'equals': '==',
+    'in': '<-'
 } as const
 
 export type INtFuncName = keyof typeof funcDefs | keyof typeof funcAliases
@@ -190,7 +249,8 @@ export const symbolPriority: Record<INtOperatorName, number> = {
     '>': 5,
     '<=': 5,
     '>=': 5,
-    
+
+    '<-': 5,
     '->': 5,
     '->^': 5,
     '->$': 5,
@@ -198,12 +258,14 @@ export const symbolPriority: Record<INtOperatorName, number> = {
     '==': 6,
     '!=': 6,
 
-    '+': 6,
-    '-': 6,
+    '..': 7,
 
-    '*': 7,
-    '/': 7,
+    '+': 8,
+    '-': 8,
 
-    '!': 8 // TODO: prefix
+    '*': 9,
+    '/': 9,
+
+    '!': 10 // TODO: prefix
 }
 

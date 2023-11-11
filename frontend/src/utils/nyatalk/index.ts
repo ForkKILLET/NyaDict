@@ -136,11 +136,11 @@ const _isSameType = (t: INtDataType, u: INtDataType) => {
 }
 
 const whiteChars = ' \t\r\n\u3000'
-const symbolChars = '-=<>~^$[]&|!#+*/'
+const symbolChars = '-=<>~^$[]&|!#+*/.'
+const numberChars = '0123456789'
 const identifierChars
     = 'abcdefghijklmnopqrstuvwxyz'
     + 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-    + '0123456789'
 
 export type SymbolChars = AllCharsInString<typeof symbolChars>
 
@@ -212,7 +212,7 @@ const _tokenize = (state: INtProcessState): INtToken[] | null => {
             continue
         }
 
-        if (/\d/.test(char)) {
+        if (numberChars.includes(char)) {
             const start = index
             let hasDot = false
             let raw = ''
@@ -221,7 +221,10 @@ const _tokenize = (state: INtProcessState): INtToken[] | null => {
                 raw += char
                 char = query[++ index]
             }
-            while (/\d/.test(char) || (! hasDot && char === '.'))
+            while (
+                numberChars.includes(char) ||
+                (! hasDot && char === '.' && numberChars.includes(query[index + 1]))
+            )
             const end = index
             tokens.push({
                 type: NtTokenType.Number,
@@ -586,9 +589,6 @@ const _getAstType = (ast: INtAst): INtDataType => {
             return { kind: 'basic', name: 'Number' }
         case 'string':
             return { kind: 'basic', name: 'String' }
-        // case 'function':
-        //     if (ast.sig.types.length > 1) return { kind: 'function', types: ast.sig.types }
-        //     return ast.sig.types[0]
         case 'call':
             return ast.sig.types.at(- 1)!
     }
@@ -597,7 +597,6 @@ const _getAstType = (ast: INtAst): INtDataType => {
 const _inferFunction = (
     state: INtPostprocState,
     func: INtAstPreFunction,
-    // _constraints: INtTypeConstraint[]
 ): INtAst => {
     const { funcName, start, end } = func
 
@@ -620,15 +619,6 @@ const _inferCall = (
     const funcDef = funcDefs[realName]
 
     const possibleSigs = funcDef.sigs
-    // if (constraints.length) {
-    //     possibleSigs = funcDef.sigs.filter(sig => {
-    //         const ret = sig.types.at(- 1)!
-    //         return constraints.every(c => _checkConstraint(c, ret))
-    //     })
-    // }
-    // else {
-    //     possibleSigs = funcDef.sigs
-    // }
 
     const argTypes = args.map(_getAstType)
 
@@ -660,11 +650,6 @@ const _inferCall = (
         ...preCall,
         ...satisfyingSigs[0]
     }
-    // return satisfyingSigs.map(({ args, sig }) => ({
-    //     ...call,
-    //     args,
-    //     sig
-    // }))
 }
 
 type INtTypeConstraint = {
@@ -696,7 +681,6 @@ const _checkConstraint = (constraint: INtTypeConstraint, object: INtDataType): b
 const _postproc = (
     state: INtPostprocState,
     preAst: INtAstPre,
-    // constraints: C
 ): INtAst => {
     let resAst: INtAst
 
@@ -773,17 +757,6 @@ const _postproc = (
 
     if (! resAst) throw state.expect('expression', null)
     return resAst
-    // if (constraints.length) {
-    //     const filteredAsts = possibleAsts.filter(ast =>
-    //         constraints.every(constraint => ! _checkConstraint(constraint, _getAstType(ast)))
-    //     )
-    //     return filteredAsts as ResAst
-    // }
-
-    // if (! possibleAsts.length) throw state.expect('expression', null)
-    // if (possibleAsts.length > 1) throw null
-
-    // return possibleAsts[0] as ResAst
 }
 
 export type INtParseResult = {
@@ -802,7 +775,7 @@ export const parse = (query: string, options: {
     advanced: boolean
     isBoolean: boolean
 }): INtParseResult => {
-    if (! options.advanced) query = `contains text ${escapeStr(query)}`
+    if (! options.advanced) query = `text -> ${escapeStr(query)} | text -> (kana ${escapeStr(query)})`
 
     const ctx = { query }
 
