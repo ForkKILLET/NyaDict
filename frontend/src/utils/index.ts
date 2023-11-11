@@ -112,3 +112,7 @@ export const gradeBy = (x: number, base: number): Grade => {
 export const randomColor = () => '#' + ('000000' + Math.random().toString(16).replace('.', '')).slice(- 6)
 
 export const unreachable = () => Error('Unreachable')
+
+export const notNullish = <T = any>(val?: T | null | undefined): val is T => (
+    val !== null && val !== undefined
+)

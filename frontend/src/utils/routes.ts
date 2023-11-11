@@ -14,6 +14,7 @@ import ArchiveEditionTree from '@comp/views/ArchiveEditionTreeView.vue'
 import SettingsView from '@comp/views/SettingsView.vue'
 import DebugView from '@comp/views/DebugView.vue'
 import AboutView from '@comp/views/AboutView.vue'
+import AutomationView from '@comp/views/AutomationView.vue'
 
 export const routes = [
     {
@@ -71,6 +72,14 @@ export const routes = [
     {
         path: '/sync/tree',
         component: ArchiveEditionTree
+    },
+    {
+        path: '/auto',
+        component: AutomationView,
+        display: {
+            info: '自動',
+            icon: 'terminal'
+        }
     },
     {
         path: '/settings',

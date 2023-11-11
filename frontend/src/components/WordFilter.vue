@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import { computed, toRefs, watch } from 'vue'
+import { computed, ref, toRefs, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useDebounceFn, useRefHistory } from '@vueuse/core'
 
 import { useWord } from '@store/words'
 
-import { compile, parse } from '@util/filterQuery'
+import { useNyatalk } from '@util/nyatalk/reactivity'
 
 import NyaCheckbox from '@comp/NyaCheckbox.vue'
+import NtParseError from '@util/nyatalk/components/NtParseError.vue'
 
 const wordStore = useWord()
 const { queryError, queryParseResult, queryFilter } = storeToRefs(wordStore)
@@ -25,24 +26,15 @@ const queryDebounced =  computed<string>({
 })
 const queryHistory = useRefHistory(query)
 
-watch([ query, advanced ], () => {
-    const result = queryParseResult.value = parse(query.value, advanced.value)
-    switch (result.state) {
-        case 'null':
-            queryError.value = null
-            queryFilter.value = null
-            break
-        case 'error':
-            queryError.value = result.error
-            queryFilter.value = null
-            break
-        case 'success':
-            queryError.value = null
-            queryFilter.value = compile(result.ast, query.value)
-            break
-    }
-    
-}, { immediate: true })
+useNyatalk({
+    code: query,
+    advanced,
+    isBoolean: ref(true)
+}, {
+    ntParseResult: queryParseResult,
+    ntError: queryError,
+    ntFunction: queryFilter
+})
 </script>
 
 <template>
@@ -53,7 +45,7 @@ watch([ query, advanced ], () => {
 
         <div class="word-filter-query card input light">
             <input
-                class="query-input"
+                class="nt-input"
                 ref="queryEl"
                 v-model="queryDebounced"
                 @keydown.up="queryHistory.undo"
@@ -66,13 +58,7 @@ watch([ query, advanced ], () => {
             />
         </div>
 
-        <pre class="query-error scroll-x" v-if="queryError">{{
-            queryError.name + ': ' + queryError.message
-        }}</pre>
-
-        <!-- <pre class="query-ast" v-if="queryParseResult?.state === 'success'">{{ 
-            JSON.stringify(queryParseResult.ast, null, 2)
-        }}</pre> -->
+        <NtParseError v-if="queryError" :error="queryError"></NtParseError>
     </div>
 </template>
 
@@ -87,20 +73,11 @@ watch([ query, advanced ], () => {
     margin-bottom: .5em;
 }
 
-.query-input {
+.nt-input {
     width: calc(100% - 1.6em);
     padding: .2em .5em;
     font-size: 1rem;
     font-family: var(--font-mono);
 }
 
-.query-error {
-    color: var(--color-wrong);
-    font-family: var(--font-mono);
-    font-size: .8em;
-}
-
-.query-ast {
-    position: absolute;
-}
 </style>

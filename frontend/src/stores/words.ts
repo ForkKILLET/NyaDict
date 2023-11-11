@@ -15,7 +15,7 @@ import type {
     IWordDocumentWithoutId, IWordGraph, IWordDocument, IWordGraphEdge,
 } from '@type'
 import { DocumentKind } from '@type'
-import { IQueryFilter, IQueryParseResult, QueryError } from '@util/filterQuery'
+import { INtFilter, INtParseResult, NtError } from '@util/nyatalk'
 
 export const baseInterval = 5
 
@@ -58,9 +58,9 @@ export const useWord = defineStore('words', () => {
         [ 'words', 'wordMaxId', 'wordFilter', 'wordSorter', 'docMaxId' ]
     )
 
-    const queryParseResult = ref<IQueryParseResult | null>(null)
-    const queryError = ref<QueryError | null>(null)
-    const queryFilter = ref<IQueryFilter | null>(null)
+    const queryParseResult = ref<INtParseResult | null>(null)
+    const queryError = ref<NtError | null>(null)
+    const queryFilter = ref<INtFilter | null>(null)
     
     const getWordDict = () => {
         const dict: Record<string, IWord> = {}

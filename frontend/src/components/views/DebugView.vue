@@ -7,7 +7,7 @@ import { ARCHIVE_VERSION, useArchive } from '@store/archive'
 import { json5Parse, json5Stringify, json5TryParse } from '@util/storage'
 import * as notif from '@util/notif'
 
-import { parse, stringify } from '@util/filterQuery'
+import { parse, stringify } from '@util/nyatalk'
 
 Object.assign(window, { parse, stringify })
 
