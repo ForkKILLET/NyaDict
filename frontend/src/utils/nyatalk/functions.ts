@@ -84,7 +84,7 @@ const _compareFuncs = (types: [type: INtDataTypeStr, fn: (a: any, b: any) => num
         defs['<'].sigs.push(_newSig([ sigHead, (_, a, b) => cmp(a, b) < 0 ]))
         defs['>'].sigs.push(_newSig([ sigHead, (_, a, b) => cmp(a, b) > 0 ]))
         defs['<='].sigs.push(_newSig([ sigHead, (_, a, b) => cmp(a, b) <= 0 ]))
-        defs['>='].sigs.push(_newSig([ sigHead, (_, a, b) => cmp(a, b) <= 0 ]))
+        defs['>='].sigs.push(_newSig([ sigHead, (_, a, b) => cmp(a, b) >= 0 ]))
         defs['!='].sigs.push(_newSig([ sigHead, (_, a, b) => cmp(a, b) !== 0 ]))
     })
     return defs
