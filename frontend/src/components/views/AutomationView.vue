@@ -13,10 +13,11 @@ const code = storeRef('nyatalkCode', '')
 const {
     ntParseResult,
     ntError,
-} = useNyatalk({
+} = useNyatalk<{}, any, any>({
     code,
-    advanced: ref(true),
-    isBoolean: ref(false)
+    advanced: true,
+    isBoolean: false,
+    getCalcCtx: ref(() => ({}))
 }, {})
 </script>
 

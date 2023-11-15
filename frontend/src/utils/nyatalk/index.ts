@@ -1,10 +1,11 @@
-import type { IWord } from '@type'
+import type { ITest, IWord } from '@type'
 import type { AllCharsInString } from '@type/tool'
 
 import { notNullish } from '@util'
 
 import { funcDefs, funcAliases, symbolPriority as symbolPrecedence } from './functions'
-import type { INtDataBasicTypeStr, INtDataGenericTypeStr, INtFuncName, INtOperatorName } from './functions'
+import type { INtDataBasicTypeStr, INtDataGenericTypeStr, INtDataTypeVarStr, INtFuncName, INtOperatorName } from './functions'
+import { ArrayStore } from '@util/storage'
 
 export type IPos = {
     start: number
@@ -88,10 +89,17 @@ export type INtDataNestedType = {
     outer: INtDataGenericTypeStr
     inner: INtDataType
 }
+
+export type INtDataTypeVar = {
+    kind: 'typevar'
+    name: INtDataTypeVarStr
+}
+
 export type INtDataType =
     | INtDataBasicType
     | INtDataNestedType
     | INtDataFunctionType
+    | INtDataTypeVar
 
 export type INtFuncSignature = {
     types: INtDataType[]
@@ -111,6 +119,7 @@ const _getFuncRealName = (name: INtFuncName): keyof typeof funcDefs => name in f
 export const printType =  (type: INtDataType): string => {
     switch (type.kind) {
         case 'basic':
+        case 'typevar':
             return type.name
         case 'nested':
             return `${type.outer}<${printType(type.inner)}>`
@@ -393,8 +402,8 @@ export type INtAst =
     | INtAstString
     | INtAstNumber
 
-type INtCompileState = INtProcessState & {
-    cctxw: INtCalcCtxWrapper
+type INtCompileState<Ctx> = INtProcessState & {
+    cctxw: INtCalcCtxWrapper<Ctx>
 }
 
 const _newState = (ctx: INtContext, stage: INtProcessStage): INtProcessState => ({
@@ -442,7 +451,7 @@ const _newPostprocState = (ctx: INtContext): INtPostprocState => (
     _newState(ctx, 'Postproc')
 )
 
-const _newCompileState = (ctx: INtContext, cctxw: INtCalcCtxWrapper): INtCompileState => ({
+const _newCompileState = <Ctx>(ctx: INtContext, cctxw: INtCalcCtxWrapper<Ctx>): INtCompileState<Ctx> => ({
     ..._newState(ctx, 'Compile'),
     cctxw
 })
@@ -829,17 +838,22 @@ export const stringify = (ast: INtAst): string => {
     }
 }
 
-export type INtFilter = (word: IWord) => boolean
+export type INtFunction<DataIn, DataOut> = (data: DataIn) => DataOut
 
-export type INtCalcCtx = {
+export type INtCalcCtxWrapper<Ctx> = {
+    ctx: Ctx
+}
+
+export type INtCalcCtx_WordFilter = {
     currentWord: IWord
+    tests: ArrayStore<ITest>
 }
 
-export type INtCalcCtxWrapper = {
-    ctx: INtCalcCtx
+export interface INtCalcCtx extends INtCalcCtx_WordFilter {
+
 }
 
-const _calc = (state: INtCompileState, ast: INtAst): string | number | INtFilter => {
+const _calc = <Ctx>(state: INtCompileState<Ctx>, ast: INtAst): unknown => {
     switch (ast.type) {
         case 'number':
         case 'string':
@@ -849,18 +863,16 @@ const _calc = (state: INtCompileState, ast: INtAst): string | number | INtFilter
     }
 }
 
-const _getCalcCtx = (word: IWord): INtCalcCtx => {
-    return {
-        currentWord: word
-    }
-}
+export const compile = <Ctx, DataIn, DataOut>(
+    ast: INtAst,
+    query: string,
+    getCalcCtx: (inner: DataIn) => Ctx
+): INtFunction<DataIn, DataOut> => {
+    const cctxw: INtCalcCtxWrapper<Ctx> = { ctx: null as unknown as Ctx }
+    const state = _newCompileState<Ctx>({ query }, cctxw)
 
-export const compile = (ast: INtAst, query: string): INtFilter => {
-    const cctxw: INtCalcCtxWrapper = { ctx: null as unknown as INtCalcCtx }
-    const state = _newCompileState({ query }, cctxw)
-
-    return (word: IWord) => {
-        state.cctxw.ctx = _getCalcCtx(word)
-        return _calc(state, ast) as unknown as boolean
+    return (data: DataIn): DataOut => {
+        state.cctxw.ctx = getCalcCtx(data)
+        return _calc(state, ast) as DataOut
     }
 }

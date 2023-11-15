@@ -1,16 +1,21 @@
 <script setup lang="ts">
-import { computed, ref, toRefs, watch } from 'vue'
+import { computed, ref, toRefs } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useDebounceFn, useRefHistory } from '@vueuse/core'
 
 import { useWord } from '@store/words'
+import { useTest } from '@store/test'
 
 import { useNyatalk } from '@util/nyatalk/reactivity'
+import type { INtCalcCtx_WordFilter } from '@util/nyatalk'
 
-import NyaCheckbox from '@comp/NyaCheckbox.vue'
+import type { IWord } from '@type'
+
 import NtParseError from '@util/nyatalk/components/NtParseError.vue'
+import NyaCheckbox from '@comp/NyaCheckbox.vue'
 
 const wordStore = useWord()
+const testStore = useTest()
 const { queryError, queryParseResult, queryFilter } = storeToRefs(wordStore)
 const { query, advanced } = toRefs(wordStore.filter)
 
@@ -26,10 +31,14 @@ const queryDebounced =  computed<string>({
 })
 const queryHistory = useRefHistory(query)
 
-useNyatalk({
+useNyatalk<INtCalcCtx_WordFilter, IWord, boolean>({
     code: query,
     advanced,
-    isBoolean: ref(true)
+    isBoolean: true,
+    getCalcCtx: ref((word) => ({
+        currentWord: word,
+        tests: testStore.tests
+    }))
 }, {
     ntParseResult: queryParseResult,
     ntError: queryError,

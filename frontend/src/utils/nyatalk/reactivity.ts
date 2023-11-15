@@ -1,27 +1,27 @@
 import { ref, watch, type Ref } from 'vue'
+import { MaybeRef, toValue } from '@vueuse/core'
 
-import { parse, compile, type INtParseResult, type NtError } from '@util/nyatalk'
+import { parse, compile, type INtParseResult, type NtError, INtFunction } from '@util/nyatalk'
 
-import { IWord } from '@type'
-
-export const useNyatalk = (input: {
-    code: Ref<string>
-    advanced: Ref<boolean>
-    isBoolean: Ref<boolean>
+export const useNyatalk = <Ctx, DataIn, DataOut>(input: {
+    code: MaybeRef<string>
+    advanced: MaybeRef<boolean>
+    isBoolean: MaybeRef<boolean>
+    getCalcCtx: MaybeRef<(inner: DataIn) => Ctx>
 }, output: {
     ntParseResult?: Ref<INtParseResult | null>
     ntError?: Ref<NtError | null>
-    ntFunction?: Ref<((word: IWord) => boolean) | null>
+    ntFunction?: Ref<INtFunction<DataIn, DataOut> | null>
 }) => {
-    const { code, advanced, isBoolean } = input
+    const { code, advanced, isBoolean, getCalcCtx } = input
     const ntParseResult = output.ntParseResult ?? ref(null)
     const ntError = output.ntError ?? ref(null)
     const ntFunction = output.ntFunction ?? ref(null)
 
     watch([ code, advanced ], () => {
-        const result = ntParseResult.value = parse(code.value, {
-            advanced: advanced.value,
-            isBoolean: isBoolean.value
+        const result = ntParseResult.value = parse(toValue(code), {
+            advanced: toValue(advanced),
+            isBoolean: toValue(isBoolean)
         })
         switch (result.state) {
             case 'null':
@@ -34,7 +34,11 @@ export const useNyatalk = (input: {
                 break
             case 'success':
                 ntError.value = null
-                ntFunction.value = compile(result.ast, code.value)
+                ntFunction.value = compile<Ctx, DataIn, DataOut>(
+                    result.ast,
+                    toValue(code),
+                    toValue(getCalcCtx)
+                )
                 break
         }
     }, { immediate: true })

@@ -5,19 +5,25 @@ import { strictToHiragana } from '@util/kana'
 
 import { getWordMeanings, getWordSentences } from '@store/words'
 
-import { IncSub10, IntSub10 } from '@type/tool'
+import type  { ITest, ITestRec } from '@type'
+import type { IncSub10, IntSub10 } from '@type/tool'
 
 import type {
-    INtCalcCtx, INtDataType, INtFunc, SymbolChars
+    INtDataType, INtCalcCtx, INtFunc, SymbolChars
 } from '.'
 
-const _basicTypeStrs = [ 'String', 'Boolean', 'Number', 'Date' ] as const
-const _genericTypeStrs = [ 'List', 'Range' ] as const
+const _basicTypeStrs = [ 'String', 'Boolean', 'Number', 'Date', 'TestRec', 'Test' ] as const
+const _typeVarStrs = [ 'a', 'b', 'c' ] as const
+const _genericTypeStrs = [ 'List', 'Range', 'Maybe' ] as const
 
 export type INtDataBasicTypeStr = typeof _basicTypeStrs[number]
 export type INtDataGenericTypeStr = typeof _genericTypeStrs[number]
+export type INtDataTypeVarStr = typeof _typeVarStrs[number]
 export type INtDataNestedMaxDepth = 2
-export type INtDataNestedTypeStr<Depth extends IntSub10 = 0, Inner extends string = INtDataBasicTypeStr> = Depth extends INtDataNestedMaxDepth
+export type INtDataNestedTypeStr<
+    Depth extends IntSub10 = 0,
+    Inner extends string = INtDataBasicTypeStr | INtDataTypeVarStr
+> = Depth extends INtDataNestedMaxDepth
     ? never
     : `${INtDataGenericTypeStr}<${Inner}>` | INtDataNestedTypeStr<IncSub10<Depth>, `${INtDataGenericTypeStr}<${Inner}>`>
 export type INtDataTypeStr = INtDataBasicTypeStr | INtDataNestedTypeStr
@@ -98,11 +104,9 @@ const _ctxConstFunc = (valueType: INtDataTypeStr, body: (ctx: INtCalcCtx) => any
     [ [ valueType ], body ]
 ])
 
-const NtRangeSymbol = Symbol('Nt.Range')
 type INtRange<T> = {
     start: T
     end: T
-    type: typeof NtRangeSymbol
 }
 
 export const funcDefs = {
@@ -120,7 +124,12 @@ export const funcDefs = {
 
     lengthOf: _newFunc([
         [ [ 'String', 'Number' ], (_, str: string) => str.length ],
-        [ [ 'List<String>', 'Number' ], (_, strs: string[]) => strs.length ]
+        [ [ 'List<String>', 'Number' ], (_, strs: string[]) => strs.length ],
+        [ [ 'List<TestRec>', 'Number' ], (_, testRecs: ITestRec[]) => testRecs.length ]
+    ]),
+
+    '#': _newFunc([
+        [ [ 'List<Test>', 'Number', 'Maybe<Test>' ], (_, tests: ITest[], id: number) => tests.find(test => test.id === id) ]
     ]),
 
     true: _constFunc('Boolean', true),
@@ -138,13 +147,13 @@ export const funcDefs = {
         [
             [ 'Number', 'Number', 'Range<Number>' ],
             (_, start: number, end: number): INtRange<number> => ({
-                start, end, type: NtRangeSymbol
+                start, end
             })
         ],
         [
             [ 'Date', 'Date', 'Range<Date>' ],
             (_, start: Dayjs, end: Dayjs): INtRange<Dayjs> => ({
-                start, end, type: NtRangeSymbol
+                start, end
             })
         ]
     ]),
@@ -222,7 +231,13 @@ export const funcDefs = {
     testable: _ctxConstFunc('Boolean', (ctx): boolean => ctx.currentWord.mem.testAfter < Date.now()),
 
     createTime: _ctxConstFunc('Date', (ctx): Dayjs => dayjs(ctx.currentWord.mem.createTime)),
-    nextTestTime: _ctxConstFunc('Date', (ctx): Dayjs => dayjs(ctx.currentWord.mem.testAfter))
+    nextTestTime: _ctxConstFunc('Date', (ctx): Dayjs => dayjs(ctx.currentWord.mem.testAfter)),
+
+    testRec: _ctxConstFunc('List<TestRec>', (ctx): ITestRec[] => ctx.currentWord.mem.testRec),
+    tests: _ctxConstFunc('List<Test>', (ctx): ITest[] => ctx.tests),
+    inTest: _newFunc([
+        [ [ 'Maybe<Test>', 'Boolean' ], (ctx, test: ITest | undefined) => test?.wordIds.includes(ctx.currentWord.id) ]
+    ])
 } as const
 
 export const funcAliases = {
@@ -266,6 +281,7 @@ export const symbolPriority: Record<INtOperatorName, number> = {
     '*': 9,
     '/': 9,
 
-    '!': 10 // TODO: prefix
-}
+    '#': 10,
 
+    '!': 11 // TODO: prefix
+}

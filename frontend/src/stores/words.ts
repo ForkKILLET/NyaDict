@@ -15,7 +15,7 @@ import type {
     IWordDocumentWithoutId, IWordGraph, IWordDocument, IWordGraphEdge,
 } from '@type'
 import { DocumentKind } from '@type'
-import { INtFilter, INtParseResult, NtError } from '@util/nyatalk'
+import { INtFunction, INtParseResult, NtError } from '@util/nyatalk'
 
 export const baseInterval = 5
 
@@ -60,7 +60,7 @@ export const useWord = defineStore('words', () => {
 
     const queryParseResult = ref<INtParseResult | null>(null)
     const queryError = ref<NtError | null>(null)
-    const queryFilter = ref<INtFilter | null>(null)
+    const queryFilter = ref<INtFunction | null>(null)
     
     const getWordDict = () => {
         const dict: Record<string, IWord> = {}
