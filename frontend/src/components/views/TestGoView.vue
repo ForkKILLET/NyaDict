@@ -4,7 +4,8 @@ import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
 import { useTest } from '@store/test'
-import { getCorrectnessCount, useWord } from '@store/words'
+import { getCorrCount, getCorrName, useWord } from '@store/words'
+import { useConfig } from '@store/config'
 
 import { addNoti, removeNoti } from '@util/notif'
 import { getMainEl } from '@util/dom'
@@ -15,14 +16,22 @@ import WordDetail from '@comp/WordDetail.vue'
 import WordDocument from '@comp/WordDocument.vue'
 
 import { DocumentKind, TestMode, type ICorrect } from '@type'
+import { IWord } from '@type'
 
 const router = useRouter()
 
 const testStore = useTest()
 const wordStore = useWord()
 
+const { config } = storeToRefs(useConfig())
+
 const { ongoingTest } = storeToRefs(testStore)
 const testSize = computed(() => ongoingTest.value?.wordIds.length)
+const hoveringWordIndex = ref<number>()
+const hoveringWord = computed(() => {
+    if (! ongoingTest.value || ! hoveringWordIndex.value) return
+    return wordStore.getById(ongoingTest.value.wordIds[hoveringWordIndex.value])
+})
 
 const currentWord = computed(() => wordStore.getById(
     ongoingTest.value?.wordIds[ongoingTest.value.currentIndex]
@@ -30,7 +39,7 @@ const currentWord = computed(() => wordStore.getById(
 const showAnswer = ref(false)
 const nid = ref<number>()
 
-const correctnessCount = computed(() => getCorrectnessCount(ongoingTest.value!.correctness))
+const corrCount = computed(() => getCorrCount(ongoingTest.value!.corrs))
 
 const testCompleted = computed(() => ongoingTest.value!.currentIndex === testSize.value) 
 
@@ -61,7 +70,7 @@ const nextWord = (correct: ICorrect) => {
         mode: test.mode,
         testId: test.id
     })
-    test.correctness[test.currentIndex] = correct
+    test.corrs[test.currentIndex] = correct
     test.recIds[test.currentIndex] = recId
 
     if (nid.value !== undefined) removeNoti(nid.value)
@@ -96,7 +105,7 @@ const endTest = () => {
 </script>
 
 <template>
-    <div v-if="ongoingTest" class="content">
+    <div v-if="ongoingTest && testSize" class="content">
         <span class="test-progress-message">
             <fa-icon
                 v-if="! ongoingTest.locked"
@@ -113,10 +122,43 @@ const endTest = () => {
                 :class="{ disabled: ongoingTest.currentIndex >= ongoingTest.maxIndex }"
             />
         </span>
-        <div class="test-progress-bar">
+        <div
+            class="test-progress-bar"
+            :style="{ height: config.corrProgress ? '15px' : '10px' }"
+            @mouseleave="hoveringWordIndex = undefined"
+        >
+            <template
+                v-if="config.corrProgress"
+            >
+                <div
+                    v-for="corr, index of ongoingTest.corrs"
+                    @mouseover="hoveringWordIndex = index"
+                    @click="navigateTestedWord(index - ongoingTest.currentIndex)"
+                    :style="{
+                        width: (100 / testSize) + 'vw',
+                        backgroundColor: `var(--color-${getCorrName(corr)})`
+                    }"
+                    class="test-progress-corr"
+                ></div>
+                <Word
+                    v-if="hoveringWord"
+                    :word="hoveringWord"
+                    :show-mem="false"
+                    :style="{
+                        left: hoveringWordIndex! * (100 / testSize) + 'vw',
+                    }"
+                    class="hovering-word"
+                >
+                    <span
+                        class="hovering-word-easiness"
+                        :class="getCorrName(ongoingTest.corrs[hoveringWordIndex!])"
+                    >{{ hoveringWord.mem.easiness.toFixed(2) }}</span>
+                </Word>
+            </template>
             <div
+                v-else
                 class="test-progress-inner"
-                :style="{ width: (100 / testSize! * ongoingTest.currentIndex) + 'vw' }"
+                :style="{ width: (100 / testSize * ongoingTest.currentIndex) + 'vw' }"
             ></div>
         </div>
 
@@ -124,7 +166,7 @@ const endTest = () => {
             <h2>テスト・クリヤー！</h2>
             <p>
                 <Correctness
-                    v-bind="correctnessCount"
+                    v-bind="corrCount"
                     :show-acc="true"
                     :show-count="true"
                     :show-ring="true"
@@ -165,7 +207,7 @@ const endTest = () => {
             <div class="answer">
                 <Word class="inline" :word="currentWord" />
             </div>
-            <p class="choose-correctness">
+            <p class="corr-chooser">
                 <button
                     class="inline w1 card"
                     @click="nextWord(1)"
@@ -240,15 +282,30 @@ const endTest = () => {
 }
 
 .test-progress-bar {
+    position: relative;
+    display: flex;
     width: 100vw;
-    height: 10px;
+    height: 0px;
     background-color: var(--color-chart-bg);
 }
 
 .test-progress-inner {
-    height: 10px;
     background-color: var(--color-order);
+    height: 100%;
     transition: .5s width;
+}
+
+.test-progress-corr {
+    display: inline-block;
+    height: 100%;
+}
+
+.hovering-word {
+    position: absolute;
+    top: calc(100% + .5em);
+}
+.hovering-word-easiness {
+    margin-left: .5em;
 }
 
 .answer :deep(.word-disp), .answer :deep(.word-sub) {
@@ -264,7 +321,7 @@ const endTest = () => {
     margin-top: 2em;
 }
 
-.choose-correctness {
+.corr-chooser {
     white-space: nowrap;
 }
 

@@ -3,9 +3,12 @@ import type { IWord } from '@type'
 
 import WordMemBrief from '@comp/WordMemBrief.vue'
 
-defineProps<{
+withDefaults(defineProps<{
     word: IWord
-}>()
+    showMem?: boolean
+}>(), {
+    showMem: true
+})
 </script>
 
 <template>
@@ -16,11 +19,12 @@ defineProps<{
         </div>
         <div class="word-info">
             <WordMemBrief
+                v-if="showMem"
                 :mem="word.mem"
                 :show-count="false"
                 :show-ring="true"
             />
-            <slot></slot>
+            <slot :word="word"></slot>
         </div>
     </div>
 </template>

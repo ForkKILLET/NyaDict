@@ -20,7 +20,7 @@ const arc = getArc(2 * Math.PI * 8)
 </script>
 
 <template>
-    <div class="correctness">
+    <div class="corr">
         <span v-if="showRing" class="ring">
             <svg width="1em" height="1em" viewBox="0 0 20 20">
                 <circle
@@ -76,7 +76,7 @@ const arc = getArc(2 * Math.PI * 8)
 </template>
 
 <style scoped>
-.correctness {
+.corr {
     position: relative;
     display: inline-block;
     white-space: nowrap;

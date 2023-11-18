@@ -134,7 +134,7 @@ export type ITest = {
     wordIds: number[]
     currentIndex: number
     maxIndex: number
-    correctness: ICorrect[]
+    corrs: ICorrect[]
     recIds: number[]
     locked: boolean
     lockTime?: number

@@ -73,7 +73,7 @@ export const useTest = defineStore('test', () => {
             wordIds,
             maxIndex: 0,
             currentIndex: 0,
-            correctness: [],
+            corrs: [],
             recIds: [],
             locked: false
         }

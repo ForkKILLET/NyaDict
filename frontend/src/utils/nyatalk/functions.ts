@@ -261,7 +261,7 @@ export const funcDefs = {
                 if (! test) return false
                 const index = test.wordIds.findIndex(id => id === ctx.currentWord.id)
                 if (index < 0) return false
-                const corr = test.correctness[index]
+                const corr = test.corrs[index]
                 if (corr === undefined) return false
                 return corr >= maxCorr
             }

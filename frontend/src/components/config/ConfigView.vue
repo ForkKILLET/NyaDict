@@ -6,7 +6,7 @@ import { useConfig, Config } from '@store/config'
 import { groupBy } from '@util/index'
 
 import ConfigItem from '@comp/config/ConfigItem.vue'
-import ShortcutList from '@comp/ShortcutList.vue';
+import ShortcutList from '@comp/ShortcutList.vue'
 
 const { config } = storeToRefs(useConfig())
 

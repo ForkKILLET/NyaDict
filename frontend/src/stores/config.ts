@@ -28,12 +28,17 @@ export const Config = Schema.object({
         .boolean()
         .default(true)
         .extra('section', '外観')
-        .description('単語 Navigator'),
+        .description('単語ナビゲーター'),
+    corrProgress: Schema
+        .boolean()
+        .default(false)
+        .extra('section', '外観')
+        .description('プログレス・バーに正確さを表示'),
     lazySharp: Schema
         .boolean()
         .default(false)
         .extra('section', '外観')
-        .description('Tab を押すと単語 ID を挿入する'),
+        .description('Tab を押すと単語 ID を挿入'),
     deviceName: Schema
         .string()
         .extra('section', '同期')

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import * as d3 from 'd3-interpolate'
 import dayjs from 'dayjs'
-import { getCorrectnessCount, useWord } from '@store/words'
+import { getCorrCount, useWord } from '@store/words'
 import {
     useTest,
     getRelativeTestTime, relativeTestTimeColors, type RelativeTestTime
@@ -84,7 +84,7 @@ const data = {
             acc: number
             test: ITest
         }> = tests.map(test => {
-            const { acc } = getCorrectnessCount(test.correctness)
+            const { acc } = getCorrCount(test.corrs)
             return {
                 period: {
                     name: '',

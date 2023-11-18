@@ -272,18 +272,18 @@ export const getYomikataIndex = (word: IWord) => (
 
 export const getLastTestTime = (word: IWord) => word.mem.testRec.at(-1)?.time ?? 0
 
-export const getCorrectnessCount = (correctness: ICorrect[]) => {
+export const getCorrCount = (corrs: ICorrect[]) => {
     let correct = 0
     let halfCorrect = 0
     let wrong = 0
-    for (const c of correctness) {
+    for (const c of corrs) {
         if (c === 1) correct ++
         else if (c === 0) wrong ++
         else halfCorrect ++
     }
     return {
         correct, halfCorrect, wrong,
-        acc: correct / correctness.length
+        acc: correct / corrs.length
     }
 }
 
@@ -354,4 +354,10 @@ export const getWordSentences = (word: IWord) => {
         return []
     })
     return scanNode(word)
+}
+
+export const getCorrName = (corr: number) => {
+    if (corr === 1) return 'correct'
+    if (corr === 0) return 'wrong'
+    return 'half-correct'
 }
