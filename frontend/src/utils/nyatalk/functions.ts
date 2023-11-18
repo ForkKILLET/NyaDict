@@ -25,8 +25,13 @@ export type INtDataNestedTypeStr<
     Inner extends string = INtDataBasicTypeStr | INtDataTypeVarStr
 > = Depth extends INtDataNestedMaxDepth
     ? never
-    : `${INtDataGenericTypeStr}<${Inner}>` | INtDataNestedTypeStr<IncSub10<Depth>, `${INtDataGenericTypeStr}<${Inner}>`>
-export type INtDataTypeStr = INtDataBasicTypeStr | INtDataNestedTypeStr
+    :   | `${INtDataGenericTypeStr}<${Inner}>`
+        | `${Inner} => ${Inner}`
+        | INtDataNestedTypeStr<IncSub10<Depth>, `${INtDataGenericTypeStr}<${Inner}>`>
+export type INtDataTypeStr =
+    | INtDataBasicTypeStr
+    | INtDataTypeVarStr
+    | INtDataNestedTypeStr
 
 export type IParseNtDataTypeStr<S extends INtDataTypeStr> =
     S extends `${infer Outer}<${infer Inner}>`
@@ -36,12 +41,18 @@ export type IParseNtDataTypeStr<S extends INtDataTypeStr> =
         : { kind: 'basic', name: S }
 
 const _isBasicType = (typeStr: INtDataTypeStr): typeStr is INtDataBasicTypeStr => _basicTypeStrs.includes(typeStr as INtDataBasicTypeStr)
+const _isTypeVar = (typeStr: INtDataTypeStr): typeStr is INtDataTypeVarStr => _typeVarStrs.includes(typeStr as INtDataTypeVarStr)
 
 const _parseType = (typeStr: INtDataTypeStr): INtDataType => {
     if (_isBasicType(typeStr)) return {
         kind: 'basic',
         name: typeStr
     }
+    if (_isTypeVar(typeStr)) return {
+        kind: 'typevar',
+        name: typeStr
+    }
+
     const nestedRes = typeStr.match(/(?<outer>[a-zA-Z]+)<(?<inner>[a-zA-Z]+)>/)?.groups as {
         outer: INtDataGenericTypeStr
         inner: INtDataBasicTypeStr
@@ -233,11 +244,39 @@ export const funcDefs = {
     createTime: _ctxConstFunc('Date', (ctx): Dayjs => dayjs(ctx.currentWord.mem.createTime)),
     nextTestTime: _ctxConstFunc('Date', (ctx): Dayjs => dayjs(ctx.currentWord.mem.testAfter)),
 
+    correct: _constFunc('Number', 1),
+    halfCorrect: _constFunc('Number', 0.5),
+    wrong: _constFunc('Number', 0),
+    
     testRec: _ctxConstFunc('List<TestRec>', (ctx): ITestRec[] => ctx.currentWord.mem.testRec),
     tests: _ctxConstFunc('List<Test>', (ctx): ITest[] => ctx.tests),
     inTest: _newFunc([
-        [ [ 'Maybe<Test>', 'Boolean' ], (ctx, test: ITest | undefined) => test?.wordIds.includes(ctx.currentWord.id) ]
-    ])
+        [
+            [ 'Maybe<Test>', 'Boolean' ],
+            (ctx, test: ITest | undefined) => test?.wordIds.includes(ctx.currentWord.id)
+        ],
+        [
+            [ 'Maybe<Test>', 'Number', 'Boolean' ],
+            (ctx, test: ITest | undefined, maxCorr: number): boolean => { // TODO: cache
+                if (! test) return false
+                const index = test.wordIds.findIndex(id => id === ctx.currentWord.id)
+                if (index < 0) return false
+                const corr = test.correctness[index]
+                if (corr === undefined) return false
+                return corr >= maxCorr
+            }
+        ]
+    ]),
+
+    // TODO: high order functions
+
+    // ':': _newFunc([
+    //     [ [ 'a', 'a => b', 'b' ], <T, U>(_: INtCalcCtx, x: T, f: (x: T) => U): U => f(x) ]
+    // ]),
+
+    // map: _newFunc([
+    //     [ [ 'List<a>', 'a => b', 'List<b>' ], <T, U>(_: INtCalcCtx, xs: T[], f: (x: T) => U): U[] => xs.map(f) ]
+    // ])
 } as const
 
 export const funcAliases = {
@@ -283,5 +322,5 @@ export const symbolPriority: Record<INtOperatorName, number> = {
 
     '#': 10,
 
-    '!': 11 // TODO: prefix
+    '!': 11 // TODO: prefix precedence
 }

@@ -60,7 +60,7 @@ export const useWord = defineStore('words', () => {
 
     const queryParseResult = ref<INtParseResult | null>(null)
     const queryError = ref<NtError | null>(null)
-    const queryFilter = ref<INtFunction | null>(null)
+    const queryFilter = ref<INtFunction<IWord, boolean> | null>(null)
     
     const getWordDict = () => {
         const dict: Record<string, IWord> = {}
