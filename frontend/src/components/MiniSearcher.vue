@@ -1,55 +1,41 @@
-<script setup lang="ts">
-import { computed, ref } from 'vue'
+<script lang="ts">
+import type { UnwrapRef } from 'vue'
+
+export type MiniList<T> = Array<{
+    display: string
+    value: T
+}>
+
+</script>
+
+<script setup lang="ts" generic="T">
+import { ref, watch } from 'vue'
 import { vOnClickOutside } from '@vueuse/components'
 
-import { getHiragana, useWord } from '@store/words'
-
-import { filterN } from '@util'
-import { strictToHiragana } from '@util/kana'
-
-import type { IWord } from '@type'
-
-const props = withDefaults(defineProps<{
-    maxResult?: number
-}>(), {
-    maxResult: 4
-})
+const props = defineProps<{
+    getList: (search: string) => UnwrapRef<MiniList<T>>
+}>()
 
 const emit = defineEmits<{
-    (event: 'select-word', word: IWord): void
+    (event: 'select', word: UnwrapRef<T>): void
     (event: 'cancel', value?: string): void
 }>()
 
-const wordStore = useWord()
 const search = ref('')
 
-const filteredWords = computed(() => {
-    const text = search.value
-    if (! text) return []
+const list = ref<MiniList<T>>([])
 
-    const hiragana = strictToHiragana(text)
-
-    return filterN(
-        wordStore.words, props.maxResult,
-        word => (
-            hiragana
-                ? getHiragana(word).startsWith(hiragana)
-                : word.disp.startsWith(text) || word.sub.startsWith(text)
-        )
-    )
-})
-
-const sortedWords = computed(() => filteredWords.value
-    .sort((a, b) => a.disp.length - b.disp.length)
-)
+watch(search, newSearch => {
+    list.value = props.getList(newSearch)
+}, { immediate: true })
 
 const cancel = (preserve = false) => {
     emit('cancel', preserve ? search.value : undefined)
     search.value = ''
 }
 
-const submit = (word: IWord) => {
-    emit('select-word', word)
+const submit = (item: UnwrapRef<T>) => {
+    emit('select', item)
     search.value = ''
 }
 
@@ -58,15 +44,15 @@ const focus = () => {
     inputEl.value?.focus()
 }
 
-const activeWordIndex = ref(0)
-const navigateActiveWord = (delta: number) => {
-    const { length } = sortedWords.value
+const activeIndex = ref(0)
+const moveActiveItem = (delta: number) => {
+    const { length } = list.value
     if (! length) return
-    activeWordIndex.value = (activeWordIndex.value + delta + length) % length
+    activeIndex.value = (activeIndex.value + delta + length) % length
 }
-const submitActiveWord = () => {
-    const activeWord = sortedWords.value[activeWordIndex.value]
-    if (activeWord) submit(activeWord)
+const submitActiveItem = () => {
+    const activeItem = list.value[activeIndex.value]
+    if (activeItem) submit(activeItem.value)
     else cancel(true)
 }
 
@@ -84,18 +70,20 @@ defineExpose({
             v-model="search"
             ref="inputEl"
             @keydown.esc.prevent.stop="cancel()"
-            @keydown.enter.prevent="submitActiveWord"
-            @keydown.down="navigateActiveWord(+ 1)"
-            @keydown.up="navigateActiveWord(- 1)"
-            @change="activeWordIndex = 0"
+            @keydown.enter.prevent="submitActiveItem"
+            @keydown.down="moveActiveItem(+ 1)"
+            @keydown.up="moveActiveItem(- 1)"
+            @keydown.tab.exact.prevent="moveActiveItem(+ 1)"
+            @keydown.tab.shift.prevent="moveActiveItem(- 1)"
+            @change="activeIndex = 0"
             class="card light"
         />
-        <div class="word-mini-list" v-for="word, index of sortedWords">
+        <div class="word-mini-list" v-for="item, index of list">
             <div
-                @click="submit(word)"
+                @click="submit(item.value)"
                 class="word-mini-item"
-                :class="{ active: index === activeWordIndex }"
-            >{{ word.disp }}</div>
+                :class="{ active: index === activeIndex }"
+            >{{ item.display }}</div>
         </div>
     </div>
 </template>

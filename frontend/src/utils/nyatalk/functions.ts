@@ -3,7 +3,7 @@ import dayjs, { Dayjs } from 'dayjs'
 import { unreachable } from '@util'
 import { strictToHiragana } from '@util/kana'
 
-import { getWordMeanings, getWordSentences } from '@store/words'
+import { getWordMeanings, getWordSentenceTexts } from '@store/words'
 
 import type  { ITest, ITestRec } from '@type'
 import type { IncSub10, IntSub10 } from '@type/tool'
@@ -219,11 +219,11 @@ export const funcDefs = {
         getWordMeanings(ctx.currentWord)
     )),
     sentence: _ctxConstFunc('List<String>', (ctx): string[] => (
-        getWordSentences(ctx.currentWord)
+        getWordSentenceTexts(ctx.currentWord)
     )),
     doc: _ctxConstFunc('List<String>', (ctx): string[] => [
         ...getWordMeanings(ctx.currentWord),
-        ...getWordSentences(ctx.currentWord)
+        ...getWordSentenceTexts(ctx.currentWord)
     ]),
     
     hour: _newFunc([

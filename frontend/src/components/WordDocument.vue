@@ -2,21 +2,25 @@
 import { computed, nextTick, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 
-import { useWord, getFirstWordTemplateSegment } from '@store/words'
+import { useWord, getFirstWordTemplateSegment, getHiragana, getWordSentenceSegements } from '@store/words'
 import { useConfig } from '@store/config'
 
 import NyaConfirmInput, { type InputCtx } from '@comp/NyaConfirmInput.vue'
 import NyaTemplate from '@comp/NyaTemplate.vue'
-import MiniSearcher from '@comp/MiniSearcher.vue'
+import MiniSearcher, { MiniList } from '@comp/MiniSearcher.vue'
 import WordDocumentList from '@comp/WordDocumentList.vue'
 import WordLinkRelationship from '@comp/WordLinkRelationship.vue'
 import LongPressButton from '@comp/LongPressButton.vue'
 
+import { dedup, filterN } from '@util'
 import { addNoti } from '@util/notif'
+import { strictToHiragana } from '@util/kana'
 
 import { DocumentKind } from '@type'
 import type { IWordDocument, IWord, ILinkDocument } from '@type'
 import WordDocumentLabels from '@comp/WordDocumentLabels.vue'
+import { GenericComponentInstanceType } from '@type/tool'
+import { faDisplay } from '@fortawesome/free-solid-svg-icons'
 
 const props = defineProps<{
     word: IWord
@@ -39,8 +43,9 @@ if (wordStore.newlyAddedDocId === props.doc.id) {
     wordStore.newlyAddedDocId = undefined
 }
 
-const showMiniSearcher = ref(false)
-const miniSearcher = ref<InstanceType<typeof MiniSearcher>>()
+const showWordMiniSearcher = ref(false)
+const showDispMiniSearcher = ref(false)
+const miniSearcher = ref<GenericComponentInstanceType<typeof MiniSearcher>>()
 const templateInput = ref<HTMLInputElement>()
 
 const getInputState = () => {
@@ -66,34 +71,44 @@ const onKey = (key: string, inputCtx: InputCtx) => {
         inputCtx.submit()
     }
 }
-
 const onTab = (_inputCtx: InputCtx) => {
     const state = getInputState()
     if (! state) return
 
     const { currChar } = state
-    if (currChar === '#') sharpStart()
-    else if(currChar === '(') parenStart()
+    if (currChar === '#') wordCompStart()
+    else if(currChar === '(') dispCompStart()
 }
-
 const onSharp = () => {
-    if (! config.value.lazyCompletion) sharpStart()
+    if (! config.value.lazyCompletion) wordCompStart()
 }
-
 const onParen = (inputCtx: InputCtx) => {
     if (config.value.autoParen) {
         insertContentAfter(
             '(', ')', { overwrite: false, moveCursor: false }, inputCtx.model.ref
         )
     }
+    if (! config.value.lazyCompletion) dispCompStart()
 }
 
-const sharpStart = () => {
-    showMiniSearcher.value = true
+const wordCompStart = () => {
+    showWordMiniSearcher.value = true
     nextTick(() => {
         miniSearcher.value?.focus()
     })
 }
+const dispCompStart = () => {
+    const state = getInputState()
+    if (! state) return
+    const { value, start, end } = state
+    if (start === null || start !== end || value.slice(start - 2, start) !== '#(') return
+
+    showDispMiniSearcher.value = true
+    nextTick(() => {
+        miniSearcher.value?.focus()
+    })
+}
+
 const insertContentAfter = (
     baseChar: string,
     content: string,
@@ -118,8 +133,8 @@ const insertContentAfter = (
         })
     }
 }
-const sharpEnd = (word: IWord, { model }: InputCtx) => {
-    showMiniSearcher.value = false
+const wordCompEnd = (word: IWord, { model }: InputCtx) => {
+    showWordMiniSearcher.value = false
 
     const state = getInputState()
     if (! state) return
@@ -129,21 +144,76 @@ const sharpEnd = (word: IWord, { model }: InputCtx) => {
         '#', String(word.id), { overwrite: false, moveCursor: true }, model.ref
     )
 }
-const sharpCancel = (content: string | undefined, { model }: InputCtx) => {
-    showMiniSearcher.value = false
+const dispCompEnd = (disp: string, { model }: InputCtx) => {
+    showDispMiniSearcher.value = false
 
     const state = getInputState()
     if (! state) return
 
     state.el.focus()
-    if (content === undefined) return
+    insertContentAfter(
+        '(', disp, { overwrite: false, moveCursor: true }, model.ref
+    )
+}
+const wordCompCancel = (content: string | undefined, { model }: InputCtx) => {
+    showWordMiniSearcher.value = false
+
+    const state = getInputState()
+    if (! state) return
+
+    state.el.focus()
+    if (! content) return
     insertContentAfter(
         '#', content, { overwrite: true, moveCursor: true }, model.ref
     )
 }
+const dispCompCancel = (content: string | undefined, { model }: InputCtx) => {
+    showDispMiniSearcher.value = false
 
-const parenStart = () => {
+    const state = getInputState()
+    if (! state) return
 
+    state.el.focus()
+    if (! content) return
+    insertContentAfter(
+        '(', content, { overwrite: false, moveCursor: true }, model.ref
+    )
+}
+
+const getWordMiniList = (search: string): MiniList<IWord> => {
+    if (! search) return []
+
+    const hiragana = strictToHiragana(search)
+
+    const words = filterN(
+        wordStore.words, 4,
+        hiragana
+            ? word => (getHiragana(word).startsWith(hiragana))
+            : word => word.disp.startsWith(search) || word.sub.startsWith(search)
+    )
+
+    return words
+        .sort((a, b) => a.disp.length - b.disp.length)
+        .map(word => ({
+            display: word.disp,
+            value: word
+        }))
+}
+const wordDisps = computed(() => {
+    const { word } = props
+    return dedup([
+        word.disp,
+        ...getWordSentenceSegements(word)
+            .flat()
+            .filter((seg): seg is { id: undefined, disp: string } => typeof seg === 'object' && ! seg.id && !! seg.disp)
+            .map(seg => seg.disp)
+    ], (a, b) => a === b)
+})
+const getDispMiniList = (search: string): MiniList<string> => {
+    const disps = wordDisps.value
+    return (
+        search === '' ? disps : disps.filter(disp => disp.startsWith(search))
+    ).map(disp => ({ display: disp, value: disp }))
 }
 
 const oldDocText = ref(props.doc.text)
@@ -268,11 +338,20 @@ const backlink = (doc: ILinkDocument) => {
                             :edit-mode="true"
                         />
                         <MiniSearcher
-                            v-if="showMiniSearcher"
+                            v-if="showWordMiniSearcher"
                             ref="miniSearcher"
-                            @select-word="word => sharpEnd(word, inputCtx)"
-                            @cancel="value => sharpCancel(value, inputCtx)"
+                            :get-list="getWordMiniList"
+                            @select="word => wordCompEnd(word, inputCtx)"
+                            @cancel="value => wordCompCancel(value, inputCtx)"
                         />
+                        <MiniSearcher
+                            v-if="showDispMiniSearcher"
+                            ref="miniSearcher"
+                            :get-list="getDispMiniList"
+                            @select="disp => dispCompEnd(disp, inputCtx)"
+                            @cancel="value => dispCompCancel(value, inputCtx)"
+                        />
+                        
                         <input
                             class="input"
                             ref="templateInput"

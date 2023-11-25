@@ -339,21 +339,28 @@ export const getWordSegmentDisp = (word: IWord, { id, disp }: WordSegment, short
     return target.disp
 }
 
-export const getWordSentences = (word: IWord) => {
-    const scanNode = (node: { docs?: IWordDocument[] }): string[] => (node.docs ?? []).flatMap(doc => {
+export const getWordSentenceSegements = (word: IWord) => {
+    const scanNode = (node: { docs?: IWordDocument[] }): (TextSegment | WordSegment)[][] => (node.docs ?? []).flatMap(doc => {
         if (doc.kind === DocumentKind.Sentence) return [
             getTemplateSegements(doc.text)
-                .map(seg => (
-                    typeof seg === 'object'
-                        ? getWordSegmentDisp(word, seg)
-                        : seg
-                ))
-                .join('')
         ]
         if ('docs' in doc) return scanNode(doc)
         return []
     })
     return scanNode(word)
+
+}
+
+export const getWordSentenceTexts = (word: IWord) => {
+    return getWordSentenceSegements(word)
+        .map(segments => segments
+            .map(seg => (
+                typeof seg === 'object'
+                    ? getWordSegmentDisp(word, seg)
+                    : seg
+            ))
+            .join('')
+        )
 }
 
 export const getCorrName = (corr: number) => {
