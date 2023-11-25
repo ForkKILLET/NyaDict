@@ -34,11 +34,16 @@ export const Config = Schema.object({
         .default(false)
         .extra('section', '外観')
         .description('プログレス・バーに正確さを表示'),
-    lazySharp: Schema
+    lazyCompletion: Schema
         .boolean()
         .default(false)
-        .extra('section', '外観')
-        .description('Tab を押すと単語 ID を挿入'),
+        .extra('section', '辞書編集')
+        .description('Tab を押すと補完し始める'),
+    autoParen: Schema
+        .boolean()
+        .default(true)
+        .extra('section', '辞書編集')
+        .description('自動に右括弧を挿入'),
     deviceName: Schema
         .string()
         .extra('section', '同期')

@@ -5,10 +5,10 @@ import { storeToRefs } from 'pinia'
 import { useWord, getFirstWordTemplateSegment } from '@store/words'
 import { useConfig } from '@store/config'
 
-import NyaConfirmInput from '@comp/NyaConfirmInput.vue'
+import NyaConfirmInput, { type InputCtx } from '@comp/NyaConfirmInput.vue'
 import NyaTemplate from '@comp/NyaTemplate.vue'
+import MiniSearcher from '@comp/MiniSearcher.vue'
 import WordDocumentList from '@comp/WordDocumentList.vue'
-import WordMiniSearcher from '@comp/WordMiniSearcher.vue'
 import WordLinkRelationship from '@comp/WordLinkRelationship.vue'
 import LongPressButton from '@comp/LongPressButton.vue'
 
@@ -40,66 +40,112 @@ if (wordStore.newlyAddedDocId === props.doc.id) {
 }
 
 const showMiniSearcher = ref(false)
-const miniSearcher = ref<InstanceType<typeof WordMiniSearcher>>()
+const miniSearcher = ref<InstanceType<typeof MiniSearcher>>()
 const templateInput = ref<HTMLInputElement>()
+
+const getInputState = () => {
+    const el = templateInput.value
+    if (! el) return
+    const start = el.selectionStart
+    const end = el.selectionEnd
+    const value = el.value
+    return {
+        el, start, end, value,
+        currChar: start !== null && start === end ? value[start - 1] : null
+    }
+}
+
+const onKey = (key: string, inputCtx: InputCtx) => {
+    if (key === '#') {
+        onSharp()
+    }
+    else if (key === '(') {
+        setTimeout(() => onParen(inputCtx), 0)
+    }
+    else if (key === 'Enter') {
+        inputCtx.submit()
+    }
+}
+
+const onTab = (_inputCtx: InputCtx) => {
+    const state = getInputState()
+    if (! state) return
+
+    const { currChar } = state
+    if (currChar === '#') sharpStart()
+    else if(currChar === '(') parenStart()
+}
+
+const onSharp = () => {
+    if (! config.value.lazyCompletion) sharpStart()
+}
+
+const onParen = (inputCtx: InputCtx) => {
+    if (config.value.autoParen) {
+        insertContentAfter(
+            '(', ')', { overwrite: false, moveCursor: false }, inputCtx.model.ref
+        )
+    }
+}
+
 const sharpStart = () => {
     showMiniSearcher.value = true
     nextTick(() => {
         miniSearcher.value?.focus()
     })
 }
+const insertContentAfter = (
+    baseChar: string,
+    content: string,
+    option: {
+        overwrite: boolean
+        moveCursor: boolean
+    },
+    model: { value: string }
+) => {
+    const state = getInputState()
+    if (! state) return
 
-const sharpEnd = (word: IWord, model: { value: string }) => {
-    showMiniSearcher.value = false
-
-    const el = templateInput.value
-    if (! el) return
-
+    const { el, value, start, currChar } = state
     el.focus()
 
-    const pos = el.selectionStart
-    if (typeof pos === 'number' && el.value[pos - 1] === '#') {
-        const id = String(word.id)
-        model.value = model.value.slice(0, pos) + id + model.value.slice(pos)
+    if (start !== null && currChar === baseChar) {
+        const realStart = option.overwrite ? start - 1 : start
+        model.value = value.slice(0, realStart) + content + model.value.slice(start)
         nextTick(() => {
-            const el = templateInput.value
-            if (el) el.selectionStart = el.selectionEnd = pos + id.length
+            const newCursorPos = option.moveCursor ? realStart + content.length : realStart
+            el.selectionStart = el.selectionEnd = newCursorPos
         })
     }
 }
-const sharpCancel = (value: string | undefined, model: { value: string }) => {
+const sharpEnd = (word: IWord, { model }: InputCtx) => {
     showMiniSearcher.value = false
-    templateInput.value?.focus()
 
-    if (value === undefined) return
+    const state = getInputState()
+    if (! state) return
 
-    const el = templateInput.value
-    if (! el) return
+    state.el.focus()
+    insertContentAfter(
+        '#', String(word.id), { overwrite: false, moveCursor: true }, model.ref
+    )
+}
+const sharpCancel = (content: string | undefined, { model }: InputCtx) => {
+    showMiniSearcher.value = false
 
-    const pos = el.selectionStart
-    if (typeof pos === 'number' && el.value[pos - 1] === '#') {
-        model.value = model.value.slice(0, pos - 1) + value + model.value.slice(pos)
-        nextTick(() => {
-            const el = templateInput.value
-            if (el) el.selectionStart = el.selectionEnd = pos - 1 + value.length
-        })
-    }
-}
-const onSharp = () => {
-    if (! config.value.lazySharp) sharpStart()
-}
-const onTab = () => {
-    const el = templateInput.value
-    if (! el) return
+    const state = getInputState()
+    if (! state) return
 
-    const pos = el.selectionStart
-    if (typeof pos === 'number' && el.value[pos - 1] === '#') {
-        sharpStart()
-    }
+    state.el.focus()
+    if (content === undefined) return
+    insertContentAfter(
+        '#', content, { overwrite: true, moveCursor: true }, model.ref
+    )
 }
-const onTemplateCompositionEnd = (event: CompositionEvent) => {
-    if (event.data === '#' && ! config.value.lazySharp) sharpStart()
+
+const parenStart = () => {
+
 }
+
 const oldDocText = ref(props.doc.text)
 const updateGraph = (newDocText: string) => {
     wordStore.updateGraphByTemplate(props.doc.id, oldDocText.value, newDocText, props.word, props.word.id)
@@ -215,26 +261,25 @@ const backlink = (doc: ILinkDocument) => {
                             />
                         </div>
                     </template>
-                    <template #input="{ model, submit }">
+                    <template #input="inputCtx">
                         <WordLinkRelationship
                             v-if="doc.kind === DocumentKind.Link"
                             v-model:rel="doc.rel"
                             :edit-mode="true"
                         />
-                        <WordMiniSearcher
+                        <MiniSearcher
                             v-if="showMiniSearcher"
                             ref="miniSearcher"
-                            @select-word="word => sharpEnd(word, model.ref)"
-                            @cancel="value => sharpCancel(value, model.ref)"
+                            @select-word="word => sharpEnd(word, inputCtx)"
+                            @cancel="value => sharpCancel(value, inputCtx)"
                         />
                         <input
                             class="input"
                             ref="templateInput"
-                            v-model="model.ref.value"
-                            @keypress.enter="submit"
-                            @keypress.#="onSharp"
-                            @keydown.tab.prevent="onTab"
-                            @compositionend="onTemplateCompositionEnd"
+                            v-model="inputCtx.model.ref.value"
+                            @keypress="event => onKey(event.key, inputCtx)"
+                            @compositionend="event => onKey(event.data, inputCtx)"
+                            @keydown.tab.prevent="onTab(inputCtx)"
                         />
                     </template>
                     <template #more>

@@ -1,3 +1,14 @@
+<script lang="ts">
+import type { Ref } from 'vue'
+
+export type InputCtx = {
+    model: {
+        ref: Ref<string>
+    }
+    submit: () => void
+};
+</script>
+
 <script setup lang="ts">
 import { ref, toRefs, watch } from 'vue'
 import { vOnClickOutside } from '@vueuse/components'
