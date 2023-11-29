@@ -2,7 +2,7 @@
 import dayjs, { Dayjs } from 'dayjs'
 import { useEventListener } from '@vueuse/core'
 
-import { gradeBy } from '@util'
+import { grade } from '@util'
 import { getEventPoint } from '@util/dom'
 
 export const getCalendarData = <T>(source: T[], getDate: (item: T) => number) => {
@@ -29,11 +29,14 @@ export const getCalendarData = <T>(source: T[], getDate: (item: T) => number) =>
         dates.push(date)
     }
 
+    const counts = dates.map(date => nums[date] ?? 0)
+    const grades = grade(counts)
     const data = dates
-        .map(date => {
-            const count = nums[date] ?? 0
+        .map((date, index) => {
+            const count = counts[index]
+            const grade = grades[index]
             return {
-                kind: gradeBy(count, maxNum),
+                kind: grade,
                 date: dayjs(date),
                 count,
                 value: undefined

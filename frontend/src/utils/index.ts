@@ -93,6 +93,8 @@ export const dedup = <T>(items: T[], comp: IsEqual<T>): T[] => (
     items.filter((a, index) => ! items.slice(0, index).some(b => comp(a, b)))
 )
 
+export const sum = (items: number[]) => items.reduce((a, c) => a + c, 0)
+
 export type Grade = 'top' | 'high' | 'medium' | 'low' | 'none'
 export const gradeColors: Record<Grade, string> = {
     top: '#39d353',
@@ -100,13 +102,23 @@ export const gradeColors: Record<Grade, string> = {
     medium: '#006d32',
     low: '#0e4429',
     none: 'var(--color-chart-bg)'
-}  
-export const gradeBy = (x: number, base: number): Grade => {
-    if (x >= base * .9) return 'top'
-    if (x >= base * .5) return 'high'
-    if (x >= base * .1) return 'medium'
-    if (x > 0) return 'low'
-    return 'none'
+}
+
+export const grade = (items: number[]): Grade[] => {
+    const size = items.length
+    const avg = sum(items) / size
+    const deltas = items.map(x => x - avg)
+    const mad = sum(deltas) / size
+    const nmad = mad * 2.5
+    return deltas.map((d, index): Grade => {
+        if (d > nmad) return 'top'
+        const x = items[index]
+        if (x === 0) return 'none'
+        if (x >= avg * 2.5) return 'top'
+        if (x >= avg * 1) return 'high'
+        if (x >= avg * .5) return 'medium'
+        return 'low'
+    })
 }
 
 export const randomColor = () => '#' + ('000000' + Math.random().toString(16).replace('.', '')).slice(- 6)
