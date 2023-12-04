@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { computed, ref, toRefs } from 'vue'
+import { computed, ref, toRefs, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useDebounceFn, useRefHistory } from '@vueuse/core'
 
 import { useWord } from '@store/words'
 import { useTest } from '@store/test'
 
+import { mitt, useFocusSignal } from '@util/mitt'
 import { useNyatalk } from '@util/nyatalk/reactivity'
 import type { INtCalcCtx_WordFilter } from '@util/nyatalk'
 
@@ -19,6 +20,7 @@ const testStore = useTest()
 const { queryError, queryParseResult, queryFilter } = storeToRefs(wordStore)
 const { query, advanced } = toRefs(wordStore.filter)
 
+const queryEl = ref<HTMLInputElement>()
 const setQuery = useDebounceFn((val: string) => {
     query.value = val
 }, 300)
@@ -44,6 +46,8 @@ useNyatalk<INtCalcCtx_WordFilter, IWord, boolean>({
     ntError: queryError,
     ntFunction: queryFilter
 })
+
+useFocusSignal(queryEl, 'ui:word:filter')
 </script>
 
 <template>
@@ -59,6 +63,7 @@ useNyatalk<INtCalcCtx_WordFilter, IWord, boolean>({
                 v-model="queryDebounced"
                 @keydown.up="queryHistory.undo"
                 @keydown.down="queryHistory.redo"
+                autofocus="true"
             />
 
             <fa-icon
@@ -88,5 +93,4 @@ useNyatalk<INtCalcCtx_WordFilter, IWord, boolean>({
     font-size: 1rem;
     font-family: var(--font-mono);
 }
-
 </style>

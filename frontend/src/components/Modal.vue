@@ -22,7 +22,7 @@ registerShortcuts([
     <div class="modal" v-if="modalStore.component">
         <div v-on-click-outside="modalStore.forceClose" class="modal-inner card">
             <fa-icon @click="modalStore.forceClose" icon="times-circle" class="button" />
-            <component :is="modalStore.component" />
+            <component :is="modalStore.component" class="modal-slot" />
         </div>
     </div>
 </template>

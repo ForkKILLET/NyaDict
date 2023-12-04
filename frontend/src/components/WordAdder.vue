@@ -5,6 +5,7 @@ import { isHiragana } from 'wanakana'
 import { addNoti } from '@util/notif'
 
 import type { IWord } from '@type'
+import { useFocusSignal } from '@util/mitt';
 
 const props = defineProps<{
     word?: IWord
@@ -13,6 +14,8 @@ const props = defineProps<{
 const disp = ref('')
 const sub = ref('')
 const composition = ref('')
+
+const dispEl = ref<HTMLInputElement>()
 
 watch(props, () => {
     if (! props.word) return
@@ -67,17 +70,21 @@ const onCompositionEnd = (event: CompositionEvent) => {
     ) sub.value = composition.value
     composition.value = ''
 }
+
+useFocusSignal(dispEl, 'ui:word:add')
 </script>
 
 <template>
     <div class="card">
         <span class="word-disp">
             <input
+                ref="dispEl"
                 v-model="disp"
                 @compositionupdate="onCompositionUpdate"
                 @compositionend="onCompositionEnd"
                 @keydown.enter="onChange"
                 placeholder="書き方"
+                autofocus="true"
             />
         </span>
         <span class="word-sub">

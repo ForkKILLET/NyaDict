@@ -9,14 +9,16 @@ import {
 
 import { isPortrait } from '@util/media'
 import { addNoti } from '@util/notif'
+import { newKey, registerShortcuts } from '@util/keyboard'
 
-import WordEditor from '@comp/WordEditor.vue'
+import WordAdder from '@comp/WordAdder.vue'
 import WordList from '@comp/WordList.vue'
 import WordDetail from '@comp/WordDetail.vue'
 import WordNavigator from '@comp/WordNavigator.vue'
 import WordFilter from '@comp/WordFilter.vue'
 
 import type { IWord, IWordSortMethod } from '@type'
+import { mitt } from '@util/mitt'
 
 // Toolbar
 
@@ -168,6 +170,54 @@ watch(route, () => {
         if (queryingWord) currentWord.value = queryingWord
     }
 }, { immediate: true })
+
+// Shortcuts
+
+registerShortcuts([
+    {
+        id: 'words:filter:clear',
+        key: newKey('Backspace'),
+        info: 'フィルターをクリア',
+        isActive: () => route.path === '/words',
+        action: () => {
+            filter.value.query = ''
+        }
+    },
+    {
+        id: 'words:toolbar:add',
+        key: newKey('Alt + a'),
+        info: '単語作成へ',
+        action: () => {
+            toolbarMode.value = 'add'
+            mitt.emit('ui:word:add', {})
+        }
+    },
+    {
+        id: 'words:toolbar:sort',
+        key: newKey('Alt + s'),
+        info: '単語ソートへ',
+        action: () => {
+            toolbarMode.value = 'sort'
+        }
+    },
+    {
+        id: 'words:toolbar:filter',
+        key: newKey('Alt + f'),
+        info: '単語フィルターへ',
+        action: () => {
+            toolbarMode.value = 'filter'
+            mitt.emit('ui:word:filter', {})
+        }
+    },
+    {
+        id: 'words:toolbar:close',
+        key: newKey('Alt + q'),
+        info: '単語ツールバーを閉じる',
+        action: () => {
+            toolbarMode.value = null
+        }
+    }
+])
 </script>
 
 <template>
@@ -183,7 +233,7 @@ watch(route, () => {
                     />
                 </div>
                 <div class="toolbar-main">
-                    <WordEditor
+                    <WordAdder
                         v-if="toolbarMode === 'add'"
                         @change="addWord"
                     />

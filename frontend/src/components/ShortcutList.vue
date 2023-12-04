@@ -15,6 +15,16 @@ import ShortcutItem from '@comp/config/ShortcutItem.vue'
 </template>
 
 <style scoped>
+.shortcut-list.modal-slot {
+    max-height: 90vh;
+	overflow-y: auto;
+    scrollbar-width: none;
+}
+
+.shortcut-list.modal-slot::-webkit-scrollbar {
+    display: none;
+}
+
 .shortcut-item {
     font-size: .8em;
     margin-top: .5em;

@@ -50,6 +50,16 @@ export const groupBy = <R extends string, T, U = T>(items: T[], group: (item: T)
     return result
 }
 
+export const groupByPred = <T>(items: T[], pred: (item: T) => boolean): [ T[], T[] ] => {
+    const others: T[] = []
+    const filtered = items.filter(x => {
+        if (pred(x)) return true
+        others.push(x)
+        return false
+    })
+    return [ filtered, others ]
+}
+
 export const filterN = <T>(items: T[], count: number, pred: (item: T) => boolean) => {
     const filtered: T[] = []
     for(const item of items) {
@@ -93,10 +103,13 @@ export const dedup = <T>(items: T[], comp: IsEqual<T>): T[] => (
     items.filter((a, index) => ! items.slice(0, index).some(b => comp(a, b)))
 )
 
-export const sum = (items: number[]) => items.reduce((a, c) => a + c, 0)
+export const sumOf = (items: number[]) => items.reduce((a, c) => a + c, 0)
 
-export type Grade = 'top' | 'high' | 'medium' | 'low' | 'none'
+export const avgOf = (items: number[]) => sumOf(items) / items.length
+
+export type Grade = 'outliner' | 'top' | 'high' | 'medium' | 'low' | 'none'
 export const gradeColors: Record<Grade, string> = {
+    outliner: '#39d353',
     top: '#39d353',
     high: '#26a641',
     medium: '#006d32',
@@ -105,18 +118,19 @@ export const gradeColors: Record<Grade, string> = {
 }
 
 export const grade = (items: number[]): Grade[] => {
-    const size = items.length
-    const avg = sum(items) / size
+    const avg = avgOf(items)
     const deltas = items.map(x => x - avg)
-    const mad = sum(deltas) / size
+    const mad = avgOf(deltas)
     const nmad = mad * 2.5
+    const itemsT = items.filter((_, i) => deltas[i] <= nmad * 2.5)
+    const avgT = avgOf(itemsT)
     return deltas.map((d, index): Grade => {
-        if (d > nmad) return 'top'
+        if (d > nmad) return 'outliner'
         const x = items[index]
         if (x === 0) return 'none'
-        if (x >= avg * 2.5) return 'top'
-        if (x >= avg * 1) return 'high'
-        if (x >= avg * .5) return 'medium'
+        if (x >= avgT * 5) return 'top'
+        if (x >= avgT * 2.5) return 'high'
+        if (x >= avgT * .5) return 'medium'
         return 'low'
     })
 }
