@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { computed, ref, toRefs, watch } from 'vue'
+import { computed, ref, toRefs } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useDebounceFn, useRefHistory } from '@vueuse/core'
 
 import { useWord } from '@store/words'
 import { useTest } from '@store/test'
 
-import { mitt, useFocusSignal } from '@util/mitt'
+import { useFocusSignal } from '@util/mitt'
 import { useNyatalk } from '@util/nyatalk/reactivity'
 import type { INtCalcCtx_WordFilter } from '@util/nyatalk'
 
@@ -17,7 +17,7 @@ import NyaCheckbox from '@comp/NyaCheckbox.vue'
 
 const wordStore = useWord()
 const testStore = useTest()
-const { queryError, queryParseResult, queryFilter } = storeToRefs(wordStore)
+const { queryError, queryParseResult, filterFn: queryFilter } = storeToRefs(wordStore)
 const { query, advanced } = toRefs(wordStore.filter)
 
 const queryEl = ref<HTMLInputElement>()

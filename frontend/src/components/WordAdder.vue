@@ -2,14 +2,18 @@
 import { ref, watch } from 'vue'
 import { isHiragana } from 'wanakana'
 
+import { emptyMem, useWord } from '@store/words'
+
 import { addNoti } from '@util/notif'
+import { mitt, useFocusSignal } from '@util/mitt'
 
 import type { IWord } from '@type'
-import { useFocusSignal } from '@util/mitt';
 
 const props = defineProps<{
     word?: IWord
 }>()
+
+const wordStore = useWord()
 
 const disp = ref('')
 const sub = ref('')
@@ -24,7 +28,7 @@ watch(props, () => {
 }, { immediate: true })
 
 const emit = defineEmits<{
-    (event: 'change', word: Omit<IWord, 'id' | 'mem'>): void
+    (event: 'change', ): void
     (event: 'cancel'): void
 }>()
 
@@ -35,7 +39,40 @@ const clearInput = () => {
 
 const onCancel = () => {
     clearInput()
-    emit('cancel')
+}
+
+const addWord = async (word: Omit<IWord, 'id' | 'mem'>) => {
+    const similarWord = wordStore.words.find(word2 => (
+        word2.disp === word.disp && word2.sub === word.sub
+    ))
+    if (similarWord) {
+        const doAdd = await new Promise(res => addNoti({
+            type: 'info',
+            content: `「${word.disp}」という単語は重複しそうです。まだ作成しますか。`,
+            actions: [
+                {
+                    info: 'はい',
+                    onClick: () => res(true)
+                },
+                {
+                    info: 'いいえ',
+                    onClick: () => res(false)
+                },
+                {
+                    info: '重複しそうな単語をチェック',
+                    onClick: () => {
+                        mitt.emit('data:word:goto', { wordId: similarWord.id })
+                        return false
+                    }
+                }
+            ],
+            closable: false,
+            onClose: () => res(false)
+        }))
+        if (! doAdd) return
+    }
+    const id = wordStore.add({ ...word, mem: emptyMem() })
+    mitt.emit('data:word:goto', { wordId: id })
 }
 
 const onChange = () => {
@@ -51,10 +88,11 @@ const onChange = () => {
         return
     }
 
-    emit('change', {
+    addWord({
         disp: disp.value,
         sub: sub.value
     })
+
     clearInput()
 }
 

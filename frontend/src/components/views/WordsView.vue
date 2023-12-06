@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { computed, reactive, ref, toRefs, watch, type Ref, onMounted } from 'vue'
+import {
+    computed, reactive, ref, toRefs, watch, onMounted,
+    type Ref, type Component
+} from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-import {
-    useWord, emptyMem,
-    getCorrectness, getYomikataIndex, getLastTestTime
-} from '@store/words'
+import { useWord, emptyMem } from '@store/words'
 
 import { isPortrait } from '@util/media'
 import { addNoti } from '@util/notif'
@@ -19,6 +19,7 @@ import WordFilter from '@comp/WordFilter.vue'
 
 import type { IWord, IWordSortMethod } from '@type'
 import { mitt } from '@util/mitt'
+import WordSorter from '@comp/WordSorter.vue'
 
 // Toolbar
 
@@ -26,41 +27,41 @@ type ToolbarMode = 'add' | 'sort' | 'filter'
 const toolbarMode = ref<ToolbarMode | null>(null)
 const changeToolbarMode = (mode: ToolbarMode) => {
     toolbarMode.value = toolbarMode.value === mode ? null : mode
-    const item = toolbarConfig.find(i => i.mode === mode)!
+    const item = toolbarConfig[mode]
     item.action?.(item)
 }
 type ToolbarConfigItem = {
     icon: string | Ref<string>
-    mode: ToolbarMode
+    component: Component
     action?: (item: ToolbarConfigItem) => void
 }
-const toolbarConfig = reactive<ToolbarConfigItem[]>([
-    {
-        mode: 'add',
-        icon: 'circle-plus'
+const toolbarConfig: Record<ToolbarMode, ToolbarConfigItem> = {
+    add: {
+        icon: 'circle-plus',
+        component: WordAdder
     },
-    {
-        mode: 'sort',
-        icon: 'sort'
+    sort: {
+        icon: 'sort',
+        component: WordSorter
     },
-    {
-        mode: 'filter',
-        icon: 'filter'
+    filter: {
+        icon: 'filter',
+        component: WordFilter
     }
-])
+}
 
 const wordStore = useWord()
 const currentWord = ref<IWord>()
 
 // Filtering
 
-const { queryFilter, filter } = toRefs(wordStore)
+const { filterFn, filter } = toRefs(wordStore)
 
 const filteredWords = computed(() => {
-    if (queryFilter.value) {
-        return wordStore.words.filter(queryFilter.value)
+    if (filterFn.value) {
+        return wordStore.words.filter(filterFn.value)
     }
-    return [...wordStore.words]
+    return [ ...wordStore.words ]
 })
 
 onMounted(() => {
@@ -71,83 +72,14 @@ onMounted(() => {
 
 // Sorting
 
-const { method: sortMethod, direction: sortDirection } = toRefs(wordStore.sorter)
-const sortMethodInfo = {
-    id: 'ID',
-    createTime: '作成時間',
-    acc: '正確率',
-    correctCount: 'パス数',
-    wrongCount: 'ミス数',
-    halfCorrectCount: 'あやふや数',
-    yomikata: '読み方',
-    testTime: 'テスト時間',
-    easiness: 'EZ'
-}
-const sortFunction = computed(() => {
-    const { value: method } = sortMethod
-    return (a: IWord, b: IWord) => {
-        const delta =
-            method === 'id' ? b.id - a.id :
-            method === 'createTime' ? a.mem.createTime - b.mem.createTime :
-            method === 'acc' ? getCorrectness(a.mem) - getCorrectness(b.mem) :
-            method === 'correctCount' ? a.mem.correctCount - b.mem.correctCount :
-            method === 'wrongCount' ? a.mem.wrongCount - b.mem.wrongCount :
-            method === 'halfCorrectCount' ? a.mem.halfCorrectCount - b.mem.halfCorrectCount :
-            method === 'yomikata' ? getYomikataIndex(b) - getYomikataIndex(a) :
-            method === 'testTime' ? getLastTestTime(a) - getLastTestTime(b) :
-            method === 'easiness' ? a.mem.easiness - b.mem.easiness :
-            0
-        return sortDirection.value === 'up' ? - delta : + delta
-    }
-})
+const { sorterFn } = toRefs(wordStore)
+
 const sortedWords = computed(() => {
     if (! filteredWords.value) return
-    return [...filteredWords.value].sort(sortFunction.value)
+    if (sorterFn.value)
+        return [ ...filteredWords.value ].sort(sorterFn.value)
+    return filteredWords.value
 })
-const onSortMethodClick = (method: IWordSortMethod) => {
-    if (method === sortMethod.value) {
-        sortDirection.value = sortDirection.value === 'up' ? 'down' : 'up'
-    }
-    else {
-        sortMethod.value = method
-    }
-}
-
-// Adding
-
-const addWord = async (word: Omit<IWord, 'id' | 'mem'>) => {
-    const similarWord = wordStore.words.find(word2 => (
-        word2.disp === word.disp && word2.sub === word.sub
-    ))
-    if (similarWord) {
-        const doAdd = await new Promise(res => addNoti({
-            type: 'info',
-            content: `「${word.disp}」という単語は重複しそうです。まだ作成しますか。`,
-            actions: [
-                {
-                    info: 'はい',
-                    onClick: () => res(true)
-                },
-                {
-                    info: 'いいえ',
-                    onClick: () => res(false)
-                },
-                {
-                    info: '重複しそうな単語をチェック',
-                    onClick: () => {
-                        gotoWord(similarWord.id)
-                        return false
-                    }
-                }
-            ],
-            closable: false,
-            onClose: () => res(false)
-        }))
-        if (! doAdd) return
-    }
-    const id = wordStore.add({ ...word, mem: emptyMem() })
-    gotoWord(id)
-}
 
 // Route
 
@@ -162,6 +94,10 @@ const gotoWord = async (wordId: number) => {
         behavior: 'smooth'
     })
 }
+
+mitt.on('data:word:goto', ({ wordId }) => {
+    gotoWord(wordId)
+})
 
 watch(route, () => {
     const { id } = route.query
@@ -189,7 +125,7 @@ registerShortcuts([
         info: '単語作成へ',
         action: () => {
             toolbarMode.value = 'add'
-            mitt.emit('ui:word:add', {})
+            setTimeout(() => mitt.emit('ui:word:add', {}))
         }
     },
     {
@@ -206,7 +142,7 @@ registerShortcuts([
         info: '単語フィルターへ',
         action: () => {
             toolbarMode.value = 'filter'
-            mitt.emit('ui:word:filter', {})
+            setTimeout(() => mitt.emit('ui:word:filter', {}))
         }
     },
     {
@@ -226,33 +162,16 @@ registerShortcuts([
             <div class="glowing toolbar">
                 <div class="toolbar-nav">
                     <fa-icon
-                        v-for="conf of toolbarConfig"
-                        @click="changeToolbarMode(conf.mode)"
+                        v-for="conf, mode of toolbarConfig"
+                        @click="changeToolbarMode(mode)"
                         class="button"
                         :icon="conf.icon"
                     />
                 </div>
-                <div class="toolbar-main">
-                    <WordAdder
-                        v-if="toolbarMode === 'add'"
-                        @change="addWord"
-                    />
-                    <div v-else-if="toolbarMode === 'sort'" class="sort-methods">
-                        <span
-                            v-for="methodInfo, method in sortMethodInfo"
-                            @click="onSortMethodClick(method)"
-                            class="badge"
-                        >
-                            {{ methodInfo }}
-                            <fa-icon
-                                class="button"
-                                :icon="method === sortMethod ? 'sort-' + sortDirection : 'sort'"
-                            />
-                        </span>
-                    </div>
-                    <div v-else-if="toolbarMode === 'filter'">
-                        <WordFilter ref="wordFilter" />
-                    </div>
+                <div class="toolbar-main" v-if="toolbarMode">
+                    <KeepAlive>
+                        <component :is="toolbarConfig[toolbarMode].component" />
+                    </KeepAlive>
                 </div>
             </div>
             <WordList
@@ -321,10 +240,5 @@ registerShortcuts([
 }
 .toolbar-main > :first-child {
     margin-top: .5em;
-}
-
-.sort-methods {
-    display: flex;
-    flex-wrap: wrap;
 }
 </style>

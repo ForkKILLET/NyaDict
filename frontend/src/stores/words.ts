@@ -60,7 +60,9 @@ export const useWord = defineStore('words', () => {
 
     const queryParseResult = ref<INtParseResult | null>(null)
     const queryError = ref<NtError | null>(null)
-    const queryFilter = ref<INtFunction<IWord, boolean> | null>(null)
+    const filterFn = ref<INtFunction<IWord, boolean> | null>(null)
+
+    const sorterFn = ref<((a: IWord, b: IWord) => number) | null>(null)
     
     const getWordDict = () => {
         const dict: Record<string, IWord> = {}
@@ -234,8 +236,8 @@ export const useWord = defineStore('words', () => {
 
     return {
         words, getWordDict,
-        filter, queryParseResult, queryError, queryFilter,
-        sorter,
+        filter, queryParseResult, queryError, filterFn,
+        sorter, sorterFn,
         add, withdraw, restore,
         newlyAddedDocId, addDoc,
         updateGraphs, updateGraphByTemplate,
