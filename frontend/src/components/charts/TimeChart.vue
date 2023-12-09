@@ -2,7 +2,7 @@
 export type BarData<T> = Array<{
     period: {
         startPos: number
-        endPos: number
+        endPos: number | null
         startColor: string
         endColor: string
     }
@@ -17,6 +17,8 @@ export type BarData<T> = Array<{
 <script setup lang="ts" generic="T">
 import { ref } from 'vue'
 
+import NyaScroller, { useScroller } from '@comp/NyaScroller.vue'
+
 defineProps<{
     data: BarData<T>
     height: {
@@ -27,45 +29,67 @@ defineProps<{
 
 const currentIndex = ref<number>()
 const currentValue = ref<T | undefined>()
+
+const scroller = useScroller({
+    direction: 'horizontal',
+    memory: true,
+    wheel: true,
+    behavior: 'smooth'
+})
 </script>
 
 <template>
-    <div class="time-chart" :style="{ height: `${height.value}${height.unit}` }">
-        <div
-            v-for="{ period, point, value }, index of data"
-            @mouseover="currentIndex = index; currentValue = value"
-            class="bar"
-            :class="{ current: index === currentIndex }"
-        >
+    <div class="time-chart">
+        <NyaScroller :scroller="scroller">
             <div
-                class="time-terminal start"
+                class="time-chart-inner"
                 :style="{
-                    marginTop: `calc(${height.value * period.startPos}${height.unit} - .3em)`,
-                    backgroundColor: period.startColor
+                    width: `${data.length * 1.4}em`,
+                    height: `${height.value}${height.unit}`
                 }"
-            ></div>
-            <div
-                class="time-terminal end"
-                :style="{
-                    marginTop: `calc(${height.value * period.endPos}${height.unit} - .3em)`,
-                    backgroundColor: period.endColor
-                }"
-            ></div>
-            <div
-                class="point"
-                :style="{
-                    marginTop: `calc(${height.value * point.pos}${height.unit} - .2em)`,
-                    backgroundColor: point.color
-                }"
-            ></div>
-            <div class="axis"></div>
-        </div>
+            >
+                <div
+                    v-for="{ period, point, value }, index of data"
+                    @mouseover="currentIndex = index; currentValue = value"
+                    class="bar"
+                    :class="{ current: index === currentIndex }"
+                >
+                    <div
+                        class="time-terminal start"
+                        :style="{
+                            marginTop: `calc(${height.value * period.startPos}${height.unit} - .3em)`,
+                            backgroundColor: period.startColor
+                        }"
+                    ></div>
+                    <div
+                        v-if="period.endPos"
+                        class="time-terminal end"
+                        :style="{
+                            marginTop: `calc(${height.value * period.endPos}${height.unit} - .3em)`,
+                            backgroundColor: period.endColor
+                        }"
+                    ></div>
+                    <div
+                        class="point"
+                        :style="{
+                            marginTop: `calc(${height.value * point.pos}${height.unit} - .2em)`,
+                            backgroundColor: point.color
+                        }"
+                    ></div>
+                    <div class="axis"></div>
+                </div>
+            </div>
+        </NyaScroller>
+        <slot name="current" :value="currentValue"></slot>
     </div>
-    <slot name="current" :value="currentValue"></slot>
 </template>
 
 <style scoped>
 .time-chart {
+    position: relative;
+}
+
+.time-chart-inner {
     display: flex;
     margin: 1em .5em;
     padding: .5em;

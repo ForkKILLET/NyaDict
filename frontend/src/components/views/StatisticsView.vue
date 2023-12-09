@@ -1,20 +1,24 @@
 <script setup lang="ts">
 import * as d3 from 'd3-interpolate'
 import dayjs from 'dayjs'
+import { useCssVar } from '@vueuse/core'
+
 import { getCorrCount, useWord } from '@store/words'
 import {
     useTest,
     getRelativeTestTime, relativeTestTimeColors, type RelativeTestTime
 } from '@store/test'
+
 import { gradeColors } from '@util'
 import { getDecimalHour } from '@util/date'
+
 import NyaDate from '@comp/NyaDate.vue'
 import StatisticsItem from '@comp/StatisticsItem.vue'
 import Calendar, { getCalendarData } from '@comp/charts/Calendar.vue'
 import PieChart, { type PieData } from '@comp/charts/PieChart.vue'
-import TimeChart, { BarData } from '@comp/charts/TimeChart.vue'
-import { ITest } from '@type'
-import { useCssVar } from '@vueuse/core'
+import TimeChart, { type BarData } from '@comp/charts/TimeChart.vue'
+
+import type { ITest } from '@type'
 
 const wordStore = useWord()
 const testStore = useTest()
@@ -78,8 +82,8 @@ const data = {
     createTest: () => {
         return getCalendarData(testStore.tests, test => test.createTime)
     },
-    recentTests: () => {
-        const tests = testStore.tests.filter(test => test.lockTime).slice(- 7)
+    testInfo: () => {
+        const tests = testStore.tests
         const data: BarData<{
             acc: number
             test: ITest
@@ -89,7 +93,7 @@ const data = {
                 period: {
                     name: '',
                     startPos: getDecimalHour(dayjs(test.createTime)) / 24,
-                    endPos: getDecimalHour(dayjs(test.lockTime)) / 24,
+                    endPos: test.lockTime ? getDecimalHour(dayjs(test.lockTime)) / 24 : null,
                     startColor: 'var(--color-wrong)',
                     endColor: 'var(--color-order)',
                 },
@@ -182,13 +186,14 @@ const data = {
         </StatisticsItem>
 
         <StatisticsItem
-            title="最近のテスト"
-            :data="data.recentTests"
+            title="テスト内訳"
+            :data="data.testInfo"
         >
             <template #default="{ data: { data } }">
                 <TimeChart :data="data" :height="{ value: 6, unit: 'em' }">
                     <template #current="{ value }">
                         <small v-if="value">
+                            <span class="id">{{ value.test.id }}</span>&nbsp;
                             <NyaDate :date="value.test.createTime" format="hh:mm:ss" /> から
                             <NyaDate :date="value.test.lockTime!" format="hh:mm:ss" /> まで、
                             ACC [<span class="number">{{ (value.acc * 100).toFixed(2) }}%</span>]
