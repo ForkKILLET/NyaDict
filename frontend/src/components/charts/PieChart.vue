@@ -42,23 +42,36 @@ const dataWithAttr = computed<
 
 <template>
     <div class="pie-chart">
-        <svg width="8em" height="8em" viewBox="0 0 20 20" class="pie">
+        <svg
+            width="8em"
+            height="8em"
+            viewBox="0 0 20 20"
+            class="pie"
+        >
             <circle
                 v-for="{ attrs, color } of dataWithAttr"
-                cx="10" cy="10" r="10"
+                cx="10"
+                cy="10"
+                r="10"
                 fill="transparent"
                 stroke-width="10"
                 :stroke="color"
                 v-bind="attrs"
-            ></circle>
+            />
         </svg>
-        <div class="pie-chart-legends" :class="{ 'show-all': showAll }">
+        <div
+            class="pie-chart-legends"
+            :class="{ 'show-all': showAll }"
+        >
             <div
                 v-for="{ name, value, color, ratio } of data"
                 class="pie-chart-legend"
                 :class="{ insignificant: ratio < 0.01 }"
             >
-                <div class="pie-chart-legend-box" :style="{ backgroundColor: color }"></div>
+                <div
+                    class="pie-chart-legend-box"
+                    :style="{ backgroundColor: color }"
+                />
                 <span class="pie-chart-legend-name">{{ name }}</span>
                 <span class="pie-chart-legend-value">
                     <span class="number">{{ value }}</span>
@@ -67,12 +80,15 @@ const dataWithAttr = computed<
             </div>
         </div>
     </div>
-    <Teleport :disabled="! actionsEl" :to="actionsEl">
+    <Teleport
+        :disabled="! actionsEl"
+        :to="actionsEl"
+    >
         <fa-icon
             v-if="data.some(item => item.ratio < 0.01)"
-            @click="showAll = ! showAll"
             :icon="showAll ? 'compress' : 'expand'"
             class="button"
+            @click="showAll = ! showAll"
         />
     </Teleport>
 </template>

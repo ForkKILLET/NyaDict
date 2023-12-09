@@ -53,20 +53,21 @@ const addDoc = (kind: DocumentKind) => {
 <template>
     <span class="doc-adder">
         <fa-icon
+            icon="circle-plus"
+            class="button"
             @click="showKinds = ! showKinds"
-            icon="circle-plus" class="button"
         />
 
         <Transition name="fade">
             <div
-                class="doc-kinds"
                 v-if="showKinds"
                 v-on-click-outside="() => { showKinds = false }"
+                class="doc-kinds"
             >
                 <div
                     v-for="info, kind in documentKindInfo"
-                    @click="addDoc(+ kind)"
                     class="doc-kind-info badge"
+                    @click="addDoc(+ kind)"
                 >{{ info }}</div>
             </div>
         </Transition>

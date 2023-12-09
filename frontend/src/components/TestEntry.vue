@@ -24,7 +24,8 @@ const startTest = () => {
 }
 
 const showInWordsView = () => {
-    // FIXME: wordStore.filter.testId = props.test.id
+    wordStore.filter.advanced = true
+    wordStore.filter.query = `inTest (tests#${props.test.id})`
     router.push('/words')
 }
 
@@ -40,7 +41,10 @@ const currentWordText = computed(() => {
 </script>
 
 <template>
-    <div class="card test-entry" :class="{ barber: test.id === testStore.lastTestId }">
+    <div
+        class="card test-entry"
+        :class="{ barber: test.id === testStore.lastTestId }"
+    >
         <span class="test-entry-info">
             <span class="id">{{ test.id }}</span>
             <NyaDate :date="test.createTime" />
@@ -53,12 +57,14 @@ const currentWordText = computed(() => {
         <span class="test-entry-action">
             <fa-icon
                 v-if="test.locked"
+                icon="book"
+                class="button"
                 @click="showInWordsView"
-                icon="book" class="button"
             />
             <fa-icon
+                icon="arrow-circle-right"
+                class="button"
                 @click="startTest"
-                icon="arrow-circle-right" class="button"
             />
         </span>
     </div>

@@ -320,7 +320,7 @@ type INtParseTier = {
     endAt: ParseEndAt
 }
 
-type INtPostprocState = INtProcessState & {}
+type INtPostprocState = INtProcessState
 
 type INtAstOpTmp = 
     | INtAstCallInfixTmp
@@ -561,7 +561,7 @@ const _parse = (state: INtParseState, tier: INtParseTier): INtAstPre => {
                     })
                 }
                 break
-            case NtTokenType.LParen:
+            case NtTokenType.LParen: {
                 advance()
                 const expr = _parse(state, {
                     depth: tier.depth + 1,
@@ -569,6 +569,7 @@ const _parse = (state: INtParseState, tier: INtParseTier): INtAstPre => {
                 })
                 es.addExpr(expr)
                 break
+            }
             case NtTokenType.RParen:
                 if (tier.endAt === ParseEndAt.RParen) {
                     if (! es.root) throw expect('expression', token)
@@ -679,11 +680,12 @@ const _checkConstraint = (constraint: INtTypeConstraint, object: INtDataType): b
             return _isSameType(type, object)
         case 'func-head':
             return object.kind === 'function' && _isSameType(object.types[0], type)
-        case 'func-tail':
+        case 'func-tail': {
             if (object.kind !== 'function') return false
             const tail = object.types.slice(1)
             if (type.length !== tail.length) return false
             return tail.every((t, i) => _isSameType(t, type[i]))
+        }
     }
 }
 
@@ -825,13 +827,14 @@ export const stringify = (ast: INtAst): string => {
             return String(ast.value)
         case 'string':
             return escapeStr(ast.value)
-        case 'call':
+        case 'call': {
             const { args, funcName } = ast       
             return args.length
                 ? _isOperatorName(funcName)
                     ? `(${stringify(args[0])} ${funcName} ${stringify(args[1])})`
                     : `(${[ funcName, ...args.map(stringify) ].join(' ')})`
                 : ast.funcName
+        }
     }
 }
 

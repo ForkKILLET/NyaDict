@@ -36,7 +36,11 @@ const a = computed(() => {
 </script>
 
 <template>
-    <g class="arrow" v-if="a" :class="{ major: twoWay }">
+    <g
+        v-if="a"
+        class="arrow"
+        :class="{ major: twoWay }"
+    >
         <line
             :x1="a.tx1"
             :y1="a.ty1"
@@ -45,10 +49,11 @@ const a = computed(() => {
         />
         <path
             :d="`M ${a.tx2} ${a.ty2} L ${a.ax2 + a.adx} ${a.ay2 - a.ady} L ${a.ax2 - a.adx} ${a.ay2 + a.ady} Z`"
-        ></path>
-        <path v-if="twoWay"
+        />
+        <path
+            v-if="twoWay"
             :d="`M ${a.tx1} ${a.ty1} L ${a.ax1 + a.adx} ${a.ay1 - a.ady} L ${a.ax1 - a.adx} ${a.ay1 + a.ady} Z`"
-        ></path>
+        />
     </g>
 </template>
 

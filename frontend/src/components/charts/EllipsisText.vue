@@ -30,5 +30,7 @@ onMounted(() => watch(props, async () => {
 </script>
 
 <template>
-    <text ref="textEl">{{ ellipsisText }}</text>
+    <text ref="textEl">
+        {{ ellipsisText }}
+    </text>
 </template>

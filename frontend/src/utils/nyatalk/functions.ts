@@ -146,7 +146,7 @@ export const funcDefs = {
     true: _constFunc('Boolean', true),
     false: _constFunc('Boolean', false),
 
-    now: _ctxConstFunc('Date', _ => dayjs()),
+    now: _ctxConstFunc('Date', () => dayjs()),
 
     ..._compareFuncs([
         [ 'Number', (a: number, b: number) => a - b ],
@@ -263,7 +263,7 @@ export const funcDefs = {
                 if (index < 0) return false
                 const corr = test.corrs[index]
                 if (corr === undefined) return false
-                return corr >= maxCorr
+                return corr <= maxCorr
             }
         ]
     ]),

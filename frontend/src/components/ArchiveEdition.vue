@@ -10,9 +10,12 @@ defineProps<{
 
 <template>
     <span class="archive-edition">
-        <NyaDate :date="edition.time" format="MM-DD hh:mm" />
+        <NyaDate
+            :date="edition.time"
+            format="MM-DD hh:mm"
+        />
         @ <span class="archive-device">{{ edition.device }}</span>
-        <slot></slot>
+        <slot />
     </span>
 </template>
 

@@ -67,8 +67,9 @@ defineExpose({
         class="word-mini-searcher card deep"
     >
         <input
-            v-model="search"
             ref="inputEl"
+            v-model="search"
+            class="card light"
             @keydown.esc.prevent.stop="cancel()"
             @keydown.enter.prevent="submitActiveItem"
             @keydown.down="moveActiveItem(+ 1)"
@@ -76,14 +77,19 @@ defineExpose({
             @keydown.tab.exact.prevent="moveActiveItem(+ 1)"
             @keydown.tab.shift.prevent="moveActiveItem(- 1)"
             @change="activeIndex = 0"
-            class="card light"
-        />
-        <div class="word-mini-list" v-for="item, index of list">
+        >
+        <div
+            v-for="item, index of list"
+            :key="index"
+            class="word-mini-list"
+        >
             <div
-                @click="submit(item.value)"
                 class="word-mini-item"
                 :class="{ active: index === activeIndex }"
-            >{{ item.display }}</div>
+                @click="submit(item.value)"
+            >
+                {{ item.display }}
+            </div>
         </div>
     </div>
 </template>

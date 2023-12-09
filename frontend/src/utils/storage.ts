@@ -92,7 +92,7 @@ export const storeArray = <T extends object, U>(key: string, options: {
             const removed = Array(deleteCount)
 
             for (let i = 0; i < deleteCount; i ++) {
-                const from = start + i;
+                const from = start + i
                 if (from in arr) removed[i] = arr[from]
             }
 

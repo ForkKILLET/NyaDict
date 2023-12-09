@@ -15,9 +15,12 @@ const onSubmit = () => {
     <div class="content card">
         <div class="panel">
             <h2>{{ title }}</h2>
-            <slot></slot>
+            <slot />
             <div>
-                <button @click="onSubmit" class="card square inline light">
+                <button
+                    class="card square inline light"
+                    @click="onSubmit"
+                >
                     <fa-icon
                         :icon="pending ? 'spinner' : 'arrow-right'"
                         :spin="pending"

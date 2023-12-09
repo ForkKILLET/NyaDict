@@ -15,10 +15,10 @@ const toggleImportant = () => {
 
 <template>
     <LongPressButton
-        @long-press="toggleImportant"
         icon="star"
         :color="`var(${doc.labels?.i ? '--color-order' : '--color-fg'})`"
         desc="マーク"
         :delay="0.5"
+        @long-press="toggleImportant"
     />
 </template>

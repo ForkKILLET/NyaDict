@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import { useAuth } from '@store/auth'
-import { addNoti } from '@util/notif';
+import { addNoti } from '@util/notif'
 
 const authStore = useAuth()
 const { jwtPayload } = storeToRefs(authStore)
@@ -22,8 +22,9 @@ const signOut = () => {
             <fa-icon icon="user-circle" />
             <span class="username">{{ jwtPayload.name }}</span> さん &middot;
             <fa-icon
+                icon="right-from-bracket"
+                class="button"
                 @click="signOut"
-                icon="right-from-bracket" class="button"
             />
         </template>
         <template v-else>

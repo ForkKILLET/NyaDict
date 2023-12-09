@@ -16,7 +16,6 @@ import WordDetail from '@comp/WordDetail.vue'
 import WordDocument from '@comp/WordDocument.vue'
 
 import { DocumentKind, TestMode, type ICorrect } from '@type'
-import { IWord } from '@type'
 
 const router = useRouter()
 
@@ -105,21 +104,26 @@ const endTest = () => {
 </script>
 
 <template>
-    <div v-if="ongoingTest && testSize" class="content">
+    <div
+        v-if="ongoingTest && testSize"
+        class="content"
+    >
         <span class="test-progress-message">
             <fa-icon
                 v-if="! ongoingTest.locked"
-                @click="navigateTestedWord(- 1)"
-                icon="circle-arrow-left" class="button"
+                icon="circle-arrow-left"
+                class="button"
                 :class="{ disabled: ongoingTest.currentIndex === 0 }"
+                @click="navigateTestedWord(- 1)"
             />
             <span class="order">{{ ongoingTest.currentIndex }}</span> /
             <span class="order">{{ testSize }}</span>
             <fa-icon
                 v-if="! ongoingTest.locked"
-                @click="navigateTestedWord(+ 1)"
-                icon="circle-arrow-right" class="button"
+                icon="circle-arrow-right"
+                class="button"
                 :class="{ disabled: ongoingTest.currentIndex >= ongoingTest.maxIndex }"
+                @click="navigateTestedWord(+ 1)"
             />
         </span>
         <div
@@ -132,14 +136,15 @@ const endTest = () => {
             >
                 <div
                     v-for="corr, index of ongoingTest.corrs"
-                    @mouseover="hoveringWordIndex = index"
-                    @click="navigateTestedWord(index - ongoingTest.currentIndex)"
+                    :key="index"
                     :style="{
                         width: (100 / testSize) + 'vw',
                         backgroundColor: `var(--color-${getCorrName(corr)})`
                     }"
                     class="test-progress-corr"
-                ></div>
+                    @mouseover="hoveringWordIndex = index"
+                    @click="navigateTestedWord(index - ongoingTest.currentIndex)"
+                />
                 <Word
                     v-if="hoveringWord"
                     :word="hoveringWord"
@@ -159,10 +164,13 @@ const endTest = () => {
                 v-else
                 class="test-progress-inner"
                 :style="{ width: (100 / testSize * ongoingTest.currentIndex) + 'vw' }"
-            ></div>
+            />
         </div>
 
-        <div v-if="testCompleted" class="completed-area">
+        <div
+            v-if="testCompleted"
+            class="completed-area"
+        >
             <h2>テスト・クリヤー！</h2>
             <p>
                 <Correctness
@@ -177,17 +185,24 @@ const endTest = () => {
                     class="inline card"
                     @click="endTest"
                 >
-                    <fa-icon icon="arrow-right" class="button no-animation" />
+                    <fa-icon
+                        icon="arrow-right"
+                        class="button no-animation"
+                    />
                 </button>
             </p>
         </div>
-        <div v-else-if="! showAnswer && currentWord" class="test-area scroll-y">
+        <div
+            v-else-if="! showAnswer && currentWord"
+            class="test-area scroll-y"
+        >
             <div class="question">
                 <span v-if="ongoingTest.mode === TestMode.Disp">{{ currentWord.disp }}</span>
                 <span v-else-if="ongoingTest.mode === TestMode.Sub">{{ currentWord.sub }}</span>
                 <template v-else-if="ongoingTest.mode === TestMode.Meaning">
                     <WordDocument
                         v-for="doc of currentWord.docs!.filter(doc => doc.kind === DocumentKind.Meaning)"
+                        :key="doc.id"
                         :word="currentWord"
                         :doc="doc"
                         :hide-self="true"
@@ -203,16 +218,25 @@ const endTest = () => {
                 </button>
             </p>
         </div>
-        <div v-else-if="currentWord" class="test-area scroll-y">
+        <div
+            v-else-if="currentWord"
+            class="test-area scroll-y"
+        >
             <div class="answer">
-                <Word class="inline" :word="currentWord" />
+                <Word
+                    class="inline"
+                    :word="currentWord"
+                />
             </div>
             <p class="corr-chooser">
                 <button
                     class="inline w1 card"
                     @click="nextWord(1)"
                 >
-                    <fa-icon icon="check-circle" class="correct" />
+                    <fa-icon
+                        icon="check-circle"
+                        class="correct"
+                    />
                 </button>
                 <button
                     class="inline w1 card"
@@ -224,7 +248,10 @@ const endTest = () => {
                     class="inline w1 card"
                     @click="nextWord(0)"
                 >
-                    <fa-icon icon="times-circle" class="wrong" />
+                    <fa-icon
+                        icon="times-circle"
+                        class="wrong"
+                    />
                 </button>
             </p>
             <WordDetail
@@ -234,7 +261,10 @@ const endTest = () => {
         </div>
         <div v-else>
             <p>単語は見つかりません。</p>
-            <button class="inline w1 card" @click="nextWord(1)">
+            <button
+                class="inline w1 card"
+                @click="nextWord(1)"
+            >
                 <fa-icon icon="arrow-right" />
             </button>
         </div>

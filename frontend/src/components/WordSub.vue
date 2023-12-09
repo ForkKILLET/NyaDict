@@ -47,8 +47,8 @@ const onToneChange = () => {
 
 <template>
     <span
-        class="word-hiragana"
         v-if="isHiragana(word.sub)"
+        class="word-hiragana"
     >
         <span
             v-for="char, index of syllables"
@@ -66,13 +66,13 @@ const onToneChange = () => {
         >{{ word.tone ?? '-' }}</span>
         <input
             v-else
-            :value="word.tone"
             ref="toneInputEl"
+            :value="word.tone"
             class="word-tone-editor"
             @input="onToneInput"
             @change="onToneChange"
             @blur="onToneChange"
-        />
+        >
     </span>
     <span v-else>{{ word.sub }}</span>
 </template>

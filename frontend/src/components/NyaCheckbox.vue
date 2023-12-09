@@ -18,12 +18,15 @@ const value = computed({
 
 <template>
     <label class="checkbox-label">
-        <input type="checkbox" v-model="value" />
+        <input
+            v-model="value"
+            type="checkbox"
+        >
         <div
             class="checkbox"
             :class="tiny ? 'badge' : 'inline card'"
         >
-            <slot></slot>
+            <slot />
         </div>
     </label>
 </template>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed } from 'vue'
 import { getArc } from '@comp/charts/PieChart.vue'
 
 const props = defineProps<{
@@ -21,35 +21,62 @@ const arc = getArc(2 * Math.PI * 8)
 
 <template>
     <div class="corr">
-        <span v-if="showRing" class="ring">
-            <svg width="1em" height="1em" viewBox="0 0 20 20">
+        <span
+            v-if="showRing"
+            class="ring"
+        >
+            <svg
+                width="1em"
+                height="1em"
+                viewBox="0 0 20 20"
+            >
                 <circle
-                    cx="10" cy="10" r="7"
-                ></circle>
+                    cx="10"
+                    cy="10"
+                    r="7"
+                />
                 <circle
-                    cx="10" cy="10" r="8"
-                    stroke="#eee" stroke-width="3"
-                ></circle>
-                <g class="segments" v-if="total">
+                    cx="10"
+                    cy="10"
+                    r="8"
+                    stroke="#eee"
+                    stroke-width="3"
+                />
+                <g
+                    v-if="total"
+                    class="segments"
+                >
                     <circle
-                        cx="10" cy="10" r="8"
-                        stroke="var(--color-correct)" stroke-width="3"
+                        cx="10"
+                        cy="10"
+                        r="8"
+                        stroke="var(--color-correct)"
+                        stroke-width="3"
                         v-bind="arc(correct / total)"
-                    ></circle>
+                    />
                     <circle
-                        cx="10" cy="10" r="8"
-                        stroke="var(--color-half-correct)" stroke-width="3"
+                        cx="10"
+                        cy="10"
+                        r="8"
+                        stroke="var(--color-half-correct)"
+                        stroke-width="3"
                         v-bind="arc(halfCorrect / total)"
-                    ></circle>
+                    />
                     <circle
-                        cx="10" cy="10" r="8"
-                        stroke="var(--color-wrong)" stroke-width="3"
+                        cx="10"
+                        cy="10"
+                        r="8"
+                        stroke="var(--color-wrong)"
+                        stroke-width="3"
                         v-bind="arc(wrong / total)"
-                    ></circle>
+                    />
                 </g>
             </svg>
         </span>
-        <span class="count" :class="{ hide: ! showCount }">
+        <span
+            class="count"
+            :class="{ hide: ! showCount }"
+        >
             <span class="correct number">
                 <fa-icon icon="check-circle" />
                 <span>{{ correct }}</span>
@@ -62,7 +89,10 @@ const arc = getArc(2 * Math.PI * 8)
                 <fa-icon icon="times-circle" />
                 <span>{{ wrong }}</span>
             </span>
-            <span v-if="showAcc" class="number">
+            <span
+                v-if="showAcc"
+                class="number"
+            >
                 {{ total
                     ? ((1 - wrong / total) * 100).toFixed(2) + '%'
                     : 'N/A'

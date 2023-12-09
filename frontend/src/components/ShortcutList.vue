@@ -9,6 +9,7 @@ import ShortcutItem from '@comp/config/ShortcutItem.vue'
         <span class="shortcut-title">ショートカット</span>
         <ShortcutItem
             v-for="shortcut of shortcuts"
+            :key="shortcut.id"
             :shortcut="shortcut"
         />
     </div>

@@ -3,10 +3,10 @@ import { ref } from 'vue'
 
 import { storeRef } from '@util/storage'
 import { useNyatalk } from '@util/nyatalk/reactivity'
-import NtParseError from '@util/nyatalk/components/NtParseError.vue';
-import NtAst from '@util/nyatalk/components/NtAst.vue';
-import NyaTab from '@comp/NyaTab.vue';
-import { stringify } from '@util/nyatalk';
+import NtParseError from '@util/nyatalk/components/NtParseError.vue'
+import NtAst from '@util/nyatalk/components/NtAst.vue'
+import NyaTab from '@comp/NyaTab.vue'
+import { stringify } from '@util/nyatalk'
 
 const code = storeRef('nyatalkCode', '')
 
@@ -27,7 +27,7 @@ const {
             NyaTalk
 
             <div class="editor">
-                <textarea v-model="code"></textarea>
+                <textarea v-model="code" />
             </div>
         </div>
 
@@ -39,10 +39,12 @@ const {
                 <NtParseError :error="ntError" />
             </template>
             <template v-else-if="ntParseResult.state === 'success'">
-                <NyaTab :tabs="[
-                    { name: 'ast', title: 'AST' },
-                    { name: 'stringify', title: '逆解析' }
-                ]">
+                <NyaTab
+                    :tabs="[
+                        { name: 'ast', title: 'AST' },
+                        { name: 'stringify', title: '逆解析' }
+                    ]"
+                >
                     <template #ast>
                         <NtAst :ast="ntParseResult.ast" />
                     </template>

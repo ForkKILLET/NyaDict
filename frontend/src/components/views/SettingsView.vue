@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ConfigView from '@comp/config/ConfigView.vue';
+import ConfigView from '@comp/config/ConfigView.vue'
 </script>
 
 <template>

@@ -12,11 +12,13 @@ import NyaTitle from '@comp/NyaTitle.vue'
         <p class="links">
             <template v-for="route, index of routes.filter(route => route.display)">
                 <template v-if="index">
-                    <br v-if="isPortrait && index % 4 === 0" />
-                    <template v-else>・</template>
+                    <br v-if="isPortrait && index % 4 === 0">
+                    <template v-else>
+                        ・
+                    </template>
                 </template>
                 <span v-if="route.display">
-                    <fa-icon :icon="route.display.icon" />{{' '}}
+                    <fa-icon :icon="route.display.icon" />{{ ' ' }}
                     <RouterLink :to="route.path">{{ route.display.info }}</RouterLink>
                 </span>
             </template>

@@ -148,7 +148,10 @@ const data = {
             :data="data.easiness"
         >
             <template #default="{ data: { data }, actionsEl }">
-                <PieChart :data="data" :actions-el="actionsEl" />
+                <PieChart
+                    :data="data"
+                    :actions-el="actionsEl"
+                />
             </template>
         </StatisticsItem>
 
@@ -157,7 +160,10 @@ const data = {
             :data="data.testAfter"
         >
             <template #default="{ data: { data }, actionsEl }">
-                <PieChart :data="data" :actions-el="actionsEl" />
+                <PieChart
+                    :data="data"
+                    :actions-el="actionsEl"
+                />
             </template>
         </StatisticsItem>
 
@@ -190,12 +196,21 @@ const data = {
             :data="data.testInfo"
         >
             <template #default="{ data: { data } }">
-                <TimeChart :data="data" :height="{ value: 6, unit: 'em' }">
+                <TimeChart
+                    :data="data"
+                    :height="{ value: 6, unit: 'em' }"
+                >
                     <template #current="{ value }">
                         <small v-if="value">
                             <span class="id">{{ value.test.id }}</span>&nbsp;
-                            <NyaDate :date="value.test.createTime" format="hh:mm:ss" /> から
-                            <NyaDate :date="value.test.lockTime!" format="hh:mm:ss" /> まで、
+                            <NyaDate
+                                :date="value.test.createTime"
+                                format="hh:mm:ss"
+                            /> から
+                            <NyaDate
+                                :date="value.test.lockTime!"
+                                format="hh:mm:ss"
+                            /> まで、
                             ACC [<span class="number">{{ (value.acc * 100).toFixed(2) }}%</span>]
                         </small>
                     </template>

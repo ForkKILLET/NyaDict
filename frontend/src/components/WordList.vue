@@ -68,7 +68,11 @@ watch(() => props.activeWordId, () => {
 </script>
 
 <template>
-    <NyaList :items="words" ref="list" class="word-list">
+    <NyaList
+        ref="list"
+        :items="words"
+        class="word-list"
+    >
         <template #header="{ count }">
             <span class="number">{{ count }}</span> 単語
         </template>

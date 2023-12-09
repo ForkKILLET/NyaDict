@@ -12,6 +12,7 @@ const archiveStore = useArchive()
 const archiveId = computed(() => {
     const { id } = route.query
     if (id && typeof id === 'string') return id
+    return undefined
 })
 
 const isRemote = computed(() =>
@@ -38,7 +39,10 @@ onMounted(() => {
                 v-for="edition, index of [ ...archiveInfo.editionChain ].reverse()"
             >
                 <ArchiveEdition :edition="edition">
-                    <span v-if="index === 0" class="edition-pointer">
+                    <span
+                        v-if="index === 0"
+                        class="edition-pointer"
+                    >
                         <fa-icon icon="arrow-left" />
                         {{ isRemote ? 'リモート' : 'ローカル' }}
                     </span>

@@ -17,8 +17,11 @@ const value = computed({
 
 <template>
     <label class="checkbox-label">
-        <input type="checkbox" v-model="value" />
-        <div class="switch"></div>
+        <input
+            v-model="value"
+            type="checkbox"
+        >
+        <div class="switch" />
     </label>
 </template>
 

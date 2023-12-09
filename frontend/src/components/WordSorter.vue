@@ -53,8 +53,9 @@ const onSortMethodClick = (method: IWordSortMethod) => {
     <div class="word-sorter">
         <span
             v-for="methodInfo, method in sortMethodInfo"
-            @click="onSortMethodClick(method)"
+            :key="method"
             class="badge"
+            @click="onSortMethodClick(method)"
         >
             {{ methodInfo }}
             <fa-icon

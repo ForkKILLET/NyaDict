@@ -10,11 +10,17 @@ const sortedTests = computed(() => [...testStore.tests].sort((a, b) => b.id - a.
 </script>
 
 <template>
-    <NyaList :items="sortedTests" class="test-list">
+    <NyaList
+        :items="sortedTests"
+        class="test-list"
+    >
         <template #header="{ count }">
             <span class="number">{{ count }}</span> テスト
             <RouterLink to="/test/create">
-                <fa-icon icon="circle-plus" class="button" />
+                <fa-icon
+                    icon="circle-plus"
+                    class="button"
+                />
             </RouterLink>
         </template>
         <template #default="{ item: test }">

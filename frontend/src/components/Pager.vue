@@ -33,18 +33,28 @@ const pages = computed(() => {
 
 <template>
     <div class="pager">
-        <div @click="prev" class="page-button" :class="{ disabled: isFirstPage }">
+        <div
+            class="page-button"
+            :class="{ disabled: isFirstPage }"
+            @click="prev"
+        >
             <fa-icon icon="arrow-left" />
         </div>
         <div class="page-ids">
             <div
                 v-for="id of pages"
-                @click="goto(id)"
                 class="page-button"
                 :class="{ active: id === page }"
-            >{{ id }}</div>
+                @click="goto(id)"
+            >
+                {{ id }}
+            </div>
         </div>
-        <div @click="next" class="page-button" :class="{ disabled: isLastPage }">
+        <div
+            class="page-button"
+            :class="{ disabled: isLastPage }"
+            @click="next"
+        >
             <fa-icon icon="arrow-right" />
         </div>
     </div>

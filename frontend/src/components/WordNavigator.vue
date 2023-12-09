@@ -76,17 +76,19 @@ registerShortcuts([
 <template>
     <div
         v-if="config.wordNavigator"
-        class="word-navigator no-select"
         ref="root"
+        class="word-navigator no-select"
         :style="{ left: position.left + 'px', top: position.top + 'px' }"
     >
         <fa-icon
+            icon="caret-up"
+            class="button"
             @click="navigate('up')"
-            icon="caret-up" class="button"
         />
         <fa-icon
+            icon="caret-down"
+            class="button"
             @click="navigate('down')"
-            icon="caret-down" class="button"
         />
     </div>
 </template>

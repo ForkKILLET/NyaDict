@@ -69,7 +69,8 @@ const createTest = () => {
         <h2>テスト設定</h2>
         <div>
             <p>テスト・モード</p>
-            <button v-for="info, mode in testModeInfo"
+            <button
+                v-for="info, mode in testModeInfo"
                 class="inline w1 card"
                 :class="{ active: testMode === + mode }"
                 @click="testMode = + mode"
@@ -79,18 +80,24 @@ const createTest = () => {
         </div>
         <div>
             <p>フィルタ</p>
-            <NyaCheckbox v-model="preferUntested">未テスト優先</NyaCheckbox>
+            <NyaCheckbox v-model="preferUntested">
+                未テスト優先
+            </NyaCheckbox>
         </div>
         <div>
             <p>単語数</p>
-            <p>（今 <span class="number">{{ testableWords.length }}</span>
-            個の単語がテストできます。）</p>
+            <p>
+                （今 <span class="number">{{ testableWords.length }}</span>
+                個の単語がテストできます。）
+            </p>
             <input
                 v-model="testSize"
-                type="number" min="0" :max="testableWords.length"
+                type="number"
+                min="0"
+                :max="testableWords.length"
                 placeholder="単語数"
                 class="w1 card center"
-            />
+            >
         </div>
         <div>
             <button
@@ -98,7 +105,10 @@ const createTest = () => {
                 :disabled="! ableToCreateTest"
                 @click="createTest"
             >
-                <fa-icon icon="arrow-right" class="button no-animation" />
+                <fa-icon
+                    icon="arrow-right"
+                    class="button no-animation"
+                />
             </button>
         </div>
     </div>

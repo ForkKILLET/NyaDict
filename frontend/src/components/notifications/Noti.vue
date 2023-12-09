@@ -71,7 +71,7 @@ const typeIcons: Record<Exclude<NotiType, 'charge'>, string> = {
         <span>
             {{ noti.content }}
             <template v-if="noti.actions">
-                <br />
+                <br>
                 <div
                     v-for="action of noti.actions"
                     class="noti-action badge"
@@ -90,7 +90,7 @@ const typeIcons: Record<Exclude<NotiType, 'charge'>, string> = {
                 v-if="noti.type !== 'charge'"
                 class="noti-lasting-inner"
                 @animationend="onAnimationEnd"
-            ></div>
+            />
         </div>
     </div>
 </template>

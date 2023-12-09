@@ -15,10 +15,10 @@ defineProps<{
 
         <kbd class="badge">{{
             (shortcut.key.meta ? 'Meta + ' : '') +
-            (shortcut.key.ctrl ? 'Ctrl + ' : '') +
-            (shortcut.key.alt ? 'Alt + ' : '') +
-            (shortcut.key.shift ? 'Shift + ' : '') +
-            shortcut.key.key
+                (shortcut.key.ctrl ? 'Ctrl + ' : '') +
+                (shortcut.key.alt ? 'Alt + ' : '') +
+                (shortcut.key.shift ? 'Shift + ' : '') +
+                shortcut.key.key
         }}</kbd>
     </div>
 </template>

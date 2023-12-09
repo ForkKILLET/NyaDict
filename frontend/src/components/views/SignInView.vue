@@ -39,22 +39,28 @@ const submit = async () => {
         :pending="pending"
     >
         <div class="item">
-            <fa-icon icon="user-circle" :fixed-width="true" />
+            <fa-icon
+                icon="user-circle"
+                :fixed-width="true"
+            />
             <input
                 v-model="username"
                 type="text"
                 placeholder="ユーザー名"
                 class="card light"
-            />
+            >
         </div>
         <div class="item">
-            <fa-icon icon="lock" :fixed-width="true" />
+            <fa-icon
+                icon="lock"
+                :fixed-width="true"
+            />
             <input
                 v-model="password"
                 type="password"
                 placeholder="パスワード"
                 class="card light"
-            />
+            >
         </div>
     </ActionPanel>
 </template>

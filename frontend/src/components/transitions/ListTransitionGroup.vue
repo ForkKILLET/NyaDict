@@ -1,6 +1,9 @@
 <template>
-    <TransitionGroup name="list" tag="div">
-        <slot></slot>
+    <TransitionGroup
+        name="list"
+        tag="div"
+    >
+        <slot />
     </TransitionGroup>
 </template>
 

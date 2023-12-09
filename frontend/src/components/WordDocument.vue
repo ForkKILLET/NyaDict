@@ -7,10 +7,11 @@ import { useConfig } from '@store/config'
 
 import NyaConfirmInput, { type InputCtx } from '@comp/NyaConfirmInput.vue'
 import NyaTemplate from '@comp/NyaTemplate.vue'
-import MiniSearcher, { MiniList } from '@comp/MiniSearcher.vue'
+import MiniSearcher, { type MiniList } from '@comp/MiniSearcher.vue'
 import WordDocumentList from '@comp/WordDocumentList.vue'
 import WordLinkRelationship from '@comp/WordLinkRelationship.vue'
 import LongPressButton from '@comp/LongPressButton.vue'
+import WordDocumentLabels from '@comp/WordDocumentLabels.vue'
 
 import { dedup, filterN } from '@util'
 import { addNoti } from '@util/notif'
@@ -18,9 +19,7 @@ import { strictToHiragana } from '@util/kana'
 
 import { DocumentKind } from '@type'
 import type { IWordDocument, IWord, ILinkDocument } from '@type'
-import WordDocumentLabels from '@comp/WordDocumentLabels.vue'
-import { GenericComponentInstanceType } from '@type/tool'
-import { faDisplay } from '@fortawesome/free-solid-svg-icons'
+import type { GenericComponentInstanceType } from '@type/tool'
 
 const props = defineProps<{
     word: IWord
@@ -71,7 +70,7 @@ const onKey = (key: string, inputCtx: InputCtx) => {
         inputCtx.submit()
     }
 }
-const onTab = (_inputCtx: InputCtx) => {
+const onTab = () => {
     const state = getInputState()
     if (! state) return
 
@@ -273,10 +272,13 @@ const backlink = (doc: ILinkDocument) => {
 </script>
 
 <template>
-    <div class="word-doc" :class="{
-        'meaning-doc': doc.kind === DocumentKind.Meaning,
-        'template-doc': doc.kind === DocumentKind.Sentence || doc.kind === DocumentKind.Link,
-    }">
+    <div
+        class="word-doc"
+        :class="{
+            'meaning-doc': doc.kind === DocumentKind.Meaning,
+            'template-doc': doc.kind === DocumentKind.Sentence || doc.kind === DocumentKind.Link,
+        }"
+    >
         <template v-if="doc.kind === DocumentKind.Meaning">
             <div
                 class="meaning-doc-main card"
@@ -285,11 +287,11 @@ const backlink = (doc: ILinkDocument) => {
             >
                 <NyaConfirmInput
                     v-model="doc.text"
-                    @withdraw="emit('withdraw')"
                     :more="true"
                     :withdrawable="true"
                     :withdraw-when-empty="true"
                     :edit-mode="newlyAdded"
+                    @withdraw="emit('withdraw')"
                 >
                     <template #more>
                         <WordDocumentLabels :doc="doc" />
@@ -304,17 +306,20 @@ const backlink = (doc: ILinkDocument) => {
             />
         </template>
         <template v-else-if="doc.kind === DocumentKind.Sentence || doc.kind === DocumentKind.Link">
-            <div class="template-doc-main" :class="{ barber: doc.labels?.i }">
+            <div
+                class="template-doc-main"
+                :class="{ barber: doc.labels?.i }"
+            >
                 <NyaConfirmInput
                     v-model="doc.text"
-                    @before-update:modelValue="oldDocText = doc.text"
-                    @update:modelValue="updateGraph(doc.text)"
-                    @withdraw="updateGraph(''); emit('withdraw')"
                     :more="true"
                     :withdraw-when-empty="true"
                     :withdrawable="true"
                     :edit-mode="newlyAdded"
                     :disabled="hideSelf"
+                    @before-update:model-value="oldDocText = doc.text"
+                    @update:model-value="updateGraph(doc.text)"
+                    @withdraw="updateGraph(''); emit('withdraw')"
                 >
                     <template #content>
                         <div class="content">
@@ -353,22 +358,22 @@ const backlink = (doc: ILinkDocument) => {
                         />
                         
                         <input
-                            class="input"
                             ref="templateInput"
                             v-model="inputCtx.model.ref.value"
+                            class="input"
                             @keypress="event => onKey(event.key, inputCtx)"
                             @compositionend="event => onKey(event.data, inputCtx)"
-                            @keydown.tab.prevent="onTab(inputCtx)"
-                        />
+                            @keydown.tab.prevent="onTab()"
+                        >
                     </template>
                     <template #more>
                         <LongPressButton
                             v-if="doc.kind === DocumentKind.Link"
-                            @long-press="backlink(doc)"
                             icon="link"
                             :color="backlinkInfo?.backDoc ? 'var(--color-order)' : 'var(--color-fg)'"
                             desc="バックリンク"
                             :delay=".5"
+                            @long-press="backlink(doc)"
                         />
                         <WordDocumentLabels :doc="doc" />
                     </template>

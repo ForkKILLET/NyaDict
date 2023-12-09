@@ -213,16 +213,35 @@ watch(route, ({ path }) => {
             }}</span> アーカイブ 
 
             <label for="file">
-                <fa-icon icon="file-arrow-up" class="button" />
+                <fa-icon
+                    icon="file-arrow-up"
+                    class="button"
+                />
             </label>
-            <input id="file" type="file" accept=".json" @change="onSelectFile" />
+            <input
+                id="file"
+                type="file"
+                accept=".json"
+                @change="onSelectFile"
+            >
             
-            <fa-icon @click="create" icon="circle-plus" class="button" />
+            <fa-icon
+                icon="circle-plus"
+                class="button"
+                @click="create"
+            />
 
-            <fa-icon @click="archiveStore.fetchRemoteArchivesInfo(true)" icon="rotate" class="button" />
+            <fa-icon
+                icon="rotate"
+                class="button"
+                @click="archiveStore.fetchRemoteArchivesInfo(true)"
+            />
         </p>
         <div class="archive-list-entries scroll-y">
-            <div v-if="selectedFile && selectedTitle" class="archive-entry">
+            <div
+                v-if="selectedFile && selectedTitle"
+                class="archive-entry"
+            >
                 <ArchiveInfo
                     id="アップ"
                     :info="{
@@ -231,8 +250,9 @@ watch(route, ({ path }) => {
                     }"
                 >
                     <fa-icon
+                        icon="trash"
+                        class="button"
                         @click="selectedFile = undefined"
-                        icon="trash" class="button"
                     />
                 </ArchiveInfo>
 
@@ -248,55 +268,55 @@ watch(route, ({ path }) => {
                 class="archive-entry"
             >
                 <ArchiveInfo
-                    :active="id === currentId"
                     :id="id"
+                    :active="id === currentId"
                     :info="local"
                     :no-info-reason="'no-local'"
                     :is-importing="!! selectedFile"
                     @upload-here="imports(id)"
                 >
                     <fa-icon
-                        @click="currentId !== id && (currentId = id)"
                         class="button"
                         :icon="currentId === id ? 'flag-checkered' : 'flag'"
                         :fixed-width="true"
+                        @click="currentId !== id && (currentId = id)"
                     />
                     <fa-icon
-                        @click="(event: MouseEvent) => exports(id, event.shiftKey)"
                         class="button"
                         icon="file-arrow-down"
                         :fixed-width="true"
+                        @click="(event: MouseEvent) => exports(id, event.shiftKey)"
                     />
                     <LongPressButton
-                        @long-press="push(id, state)"
                         :icon="pushIcon"
                         color="var(--color-fg)"
                         desc="プッシュ"
                         :delay=".5"
+                        @long-press="push(id, state)"
                     />
                     <LongPressButton
-                        @long-press="withdraw(id)"
                         icon="trash"
                         color="var(--color-wrong)"
                         desc="削除"
                         :delay="1.5"
+                        @long-press="withdraw(id)"
                     />
                 </ArchiveInfo>
 
                 <ArchiveInfo
-                    :active="false"
                     :id="remote?.idPerUser"
+                    :active="false"
                     :remote="true"
                     :info="remote"
                     :no-info-reason="jwtPayload ? 'no-remote' : 'no-account'"
                 >
                     <template #default>
                         <LongPressButton 
-                            @long-press="pull(id, state)"
                             :icon="pullIcon"
                             color="var(--color-fg)"
                             desc="プル"
                             :delay=".5"
+                            @long-press="pull(id, state)"
                         />
                     </template>
                     <template #labels>

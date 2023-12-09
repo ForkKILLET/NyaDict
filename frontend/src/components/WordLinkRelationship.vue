@@ -28,7 +28,9 @@ const showRels = ref(false)
         :class="{ editing: editMode }"
         @click="showRels = true"
     >
-        <div class="link-doc-rel outter">{{ relInfo[rel] }}</div>
+        <div class="link-doc-rel outter">
+            {{ relInfo[rel] }}
+        </div>
         <Transition name="fade">
             <div
                 v-if="showRels && editMode"
@@ -39,7 +41,9 @@ const showRels = ref(false)
                     v-for="info, rel in relInfo"
                     class="link-doc-rel"
                     @click.stop="emit('update:rel', + rel); showRels = false"
-                >{{ info }}</div>
+                >
+                    {{ info }}
+                </div>
             </div>
         </Transition>
     </div>

@@ -43,7 +43,10 @@ defineExpose({
     <div class="nya-list">
         <div class="nya-list-header">
             <div class="nya-list-count">
-                <slot name="header" :count="items.length"></slot>
+                <slot
+                    name="header"
+                    :count="items.length"
+                />
             </div>
             <Pager
                 :page="page"
@@ -56,9 +59,15 @@ defineExpose({
                 :is-last-page="isLastPage"
             />
         </div>
-        <div class="nya-list-entries scroll-y" ref="scrollEl">
+        <div
+            ref="scrollEl"
+            class="nya-list-entries scroll-y"
+        >
             <p v-for="item of currentSlice">
-                <slot name="default" :item="item"></slot>
+                <slot
+                    name="default"
+                    :item="item"
+                />
             </p>
         </div>
     </div>

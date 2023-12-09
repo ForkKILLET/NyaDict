@@ -21,6 +21,7 @@ const segments = computed(() => getTemplateSegements(props.text))
             <WordLink
                 v-else
                 :id="seg.id ?? word.id"
+                :key="index"
                 :disp="seg.disp"
                 :self="! seg.id"
                 :hide-self="hideSelf"

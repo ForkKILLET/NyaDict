@@ -7,6 +7,6 @@ defineProps<{
 <template>
     <div class="ast-prop">
         <span class="ast-prop-key">[{{ prop }}] </span>
-        <slot></slot>
+        <slot />
     </div>
 </template>

@@ -32,7 +32,7 @@ type TypeToCompress = {
 }
 
 function compress(file: string, base: string): string {
-    let program = ts.createProgram([ file ], {})
+    const program = ts.createProgram([ file ], {})
     const f = program.getSourceFile(file)
 
     const typeDefs: Record<string, TypeToCompress> = {}
@@ -105,7 +105,7 @@ function compress(file: string, base: string): string {
         log('Generating', typeName)
 
 
-        let compressTypes: string[] = []
+        const compressTypes: string[] = []
         let typeCode = ''
         let serCode = ''
         let deserCode = ''
@@ -113,10 +113,10 @@ function compress(file: string, base: string): string {
         const typeDef = typeDefs[typeName]
 
         if (typeDef.kind === ts.SyntaxKind.TypeLiteral) {
-            let serInputs: string[] = []
-            let deserInputs: string[] = []
-            let serOutputs: string[] = []
-            let deserOutputs: string[] = []
+            const serInputs: string[] = []
+            const deserInputs: string[] = []
+            const serOutputs: string[] = []
+            const deserOutputs: string[] = []
 
             for (const propName in typeDef.propMap) {
                 const { newName, question, typeNode } = typeDef.propMap[propName]
@@ -172,13 +172,12 @@ function compress(file: string, base: string): string {
         }
 
         else if (typeDef.kind === ts.SyntaxKind.UnionType) {
-            let branches: { branchTypeText: string, tagTypeText: string }[] = []
+            const branches: { branchTypeText: string, tagTypeText: string }[] = []
 
             const tagName = typeDef.tag
             let newTagName: string
 
             typeDef.node.forEachChild(branch => {
-                let branchIndex = 0
                 if (ts.isTypeReferenceNode(branch)) {
                     const branchTypeText = branch.getText(f)
                     const branchTypeDef = typeDefs[branchTypeText]
@@ -191,8 +190,6 @@ function compress(file: string, base: string): string {
                         const tagTypeText = tagProp.typeNode.getText(f)
                         branches.push({ branchTypeText, tagTypeText })
                     }
-
-                    branchIndex ++
                 }
             })
 

@@ -163,16 +163,31 @@ useEventListener(root, 'wheel', onWheel)
             fullscreen: isFullScreen,
         }"
     >
-        <div ref="toolbarEl" class="toolbar">
+        <div
+            ref="toolbarEl"
+            class="toolbar"
+        >
             <span>
-                <fa-icon @click="zoom(- 0.1)" icon="magnifying-glass-minus" class="button" />
-                <span class="number no-select">{{ scale * 100 | 0 }}%</span>
-                <fa-icon @click="zoom(+ 0.1)" icon="magnifying-glass-plus" class="button" />
-                <fa-icon @click="center" icon="location-dot" class="button" />
                 <fa-icon
-                    @click="isFullScreen = ! isFullScreen"
+                    icon="magnifying-glass-minus"
+                    class="button"
+                    @click="zoom(- 0.1)"
+                />
+                <span class="number no-select">{{ scale * 100 | 0 }}%</span>
+                <fa-icon
+                    icon="magnifying-glass-plus"
+                    class="button"
+                    @click="zoom(+ 0.1)"
+                />
+                <fa-icon
+                    icon="location-dot"
+                    class="button"
+                    @click="center"
+                />
+                <fa-icon
                     :icon="isFullScreen ? 'compress' : 'expand'"
                     class="button"
+                    @click="isFullScreen = ! isFullScreen"
                 />
             </span>
             <span class="graph-data">

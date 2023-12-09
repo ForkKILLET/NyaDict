@@ -19,10 +19,23 @@ registerShortcuts([
 </script>
 
 <template>
-    <div class="modal" v-if="modalStore.component">
-        <div v-on-click-outside="modalStore.forceClose" class="modal-inner card">
-            <fa-icon @click="modalStore.forceClose" icon="times-circle" class="button" />
-            <component :is="modalStore.component" class="modal-slot" />
+    <div
+        v-if="modalStore.component"
+        class="modal"
+    >
+        <div
+            v-on-click-outside="modalStore.forceClose"
+            class="modal-inner card"
+        >
+            <fa-icon
+                icon="times-circle"
+                class="button"
+                @click="modalStore.forceClose"
+            />
+            <component
+                :is="modalStore.component"
+                class="modal-slot"
+            />
         </div>
     </div>
 </template>

@@ -53,26 +53,35 @@ useFocusSignal(queryEl, 'ui:word:filter')
 <template>
     <div class="word-filter">
         <div class="word-filter-settings">
-            <NyaCheckbox v-model="advanced" :tiny="true">高級フィルタ</NyaCheckbox>
+            <NyaCheckbox
+                v-model="advanced"
+                :tiny="true"
+            >
+                高級フィルタ
+            </NyaCheckbox>
         </div>
 
         <div class="word-filter-query card input light">
             <input
-                class="nt-input"
                 ref="queryEl"
                 v-model="queryDebounced"
+                class="nt-input"
+                autofocus="true"
                 @keydown.up="queryHistory.undo"
                 @keydown.down="queryHistory.redo"
-                autofocus="true"
-            />
+            >
 
             <fa-icon
+                icon="times-circle"
+                class="button"
                 @click="clearQuery"
-                icon="times-circle" class="button"
             />
         </div>
 
-        <NtParseError v-if="queryError" :error="queryError"></NtParseError>
+        <NtParseError
+            v-if="queryError"
+            :error="queryError"
+        />
     </div>
 </template>
 

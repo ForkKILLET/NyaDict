@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref } from 'vue'
 
 type TabData = {
     name: string
@@ -14,14 +14,24 @@ const activeTabName = ref<string>(props.tabs[0].name)
 </script>
 
 <template>
-    <div class="nya-tab" :data-tab="activeTabName">
+    <div
+        class="nya-tab"
+        :data-tab="activeTabName"
+    >
         <div class="nya-tab-header">
             <template v-for="tab of tabs">
-                <span v-if="tab.name === activeTabName" class="active">{{ tab.title }}</span>
-                <span v-else @click="activeTabName = tab.name">{{ tab.title }}</span>
+                <span
+                    v-if="tab.name === activeTabName"
+                    :key="tab.name"
+                    class="active"
+                >{{ tab.title }}</span>
+                <span
+                    v-else
+                    @click="activeTabName = tab.name"
+                >{{ tab.title }}</span>
             </template>
         </div>
-        <slot :name="activeTabName"></slot>
+        <slot :name="activeTabName" />
     </div>
 </template>
 

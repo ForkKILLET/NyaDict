@@ -4,8 +4,9 @@ import Schema from 'schemastery'
 import { storeReactive } from '@util/storage'
 
 declare global {
+    // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Schemastery {
-        interface Meta<T> {
+        interface Meta {
             section: string
             icon: string
             listStyle: 'icon' | 'text'

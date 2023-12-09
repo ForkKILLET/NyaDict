@@ -43,12 +43,12 @@ const onLongPressEnd = () => {
 
 <template>
     <div
+        class="long-press-button"
+        :style="{ '--duration': delay + 's', '--color': color }"
         @mousedown="onLongPressStart"
         @touchstart="onLongPressStart"
         @mouseup="onLongPressEnd"
         @touchend="onLongPressEnd"
-        class="long-press-button"
-        :style="{ '--duration': delay + 's', '--color': color }"
     >
         <fa-icon :icon="icon" />
     </div>

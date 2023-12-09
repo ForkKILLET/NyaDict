@@ -78,35 +78,48 @@ const addManyWords = () => {
 <template>
     <div class="content">
         <div>
-            <textarea v-model="json" spellcheck="false"></textarea>
+            <textarea
+                v-model="json"
+                spellcheck="false"
+            />
 
             <button
                 class="inline card deep"
                 @click="json = json5Stringify(archiveStore.exportArchive(), '&quot;')"
-            >load</button>
+            >
+                load
+            </button>
             <button
                 class="inline card deep"
                 @click="archiveStore.importArchive(archiveStore.currentId, json5Parse(json))"
-            >save</button>
+            >
+                save
+            </button>
             <button
                 class="inline card deep"
                 @click="optimizeArchive"
-            >optimize / fix</button>
+            >
+                optimize / fix
+            </button>
         </div>
 
         <div>
-            <textarea v-model="wordsText"></textarea>
+            <textarea v-model="wordsText" />
             <button
                 class="inline card deep"
                 @click="addManyWords"
-            >add many words</button>
+            >
+                add many words
+            </button>
         </div>
 
         <div>
             <button
                 class="inline card deep"
                 @click="notif.addNoti({ content: '' + Math.random(), type: 'info' })"
-            >noti</button>
+            >
+                noti
+            </button>
             <LongPressButton
                 icon="eye"
                 color="var(--color-fg)"
@@ -120,7 +133,9 @@ const addManyWords = () => {
             <button
                 class="inline card deep"
                 @click="genGraph"
-            >gen graph</button>
+            >
+                gen graph
+            </button>
         </div>
     </div>
 </template>

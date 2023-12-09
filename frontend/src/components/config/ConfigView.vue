@@ -15,13 +15,17 @@ const configSections = groupBy(Object.entries(Config.dict!), ([, schema ]) => sc
 
 <template>
     <div class="config-list">
-        <div class="card" v-for="schemas, section in configSections">
+        <div
+            v-for="schemas, section in configSections"
+            class="card"
+        >
             <span>{{ section }}</span>
             <ConfigItem
                 v-for="[ id, schema ] of schemas"
+                :id="id"
+                :key="id"
                 v-model="config[id]"
                 :schema="schema"
-                :id="id"
             />
         </div>
     </div>

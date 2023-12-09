@@ -7,7 +7,10 @@ defineProps<{
 </script>
 
 <template>
-    <pre class="nt-error scroll-x" v-if="error">{{
+    <pre
+        v-if="error"
+        class="nt-error scroll-x"
+    >{{
         error.name + ': ' + error.message
     }}</pre>
 </template>

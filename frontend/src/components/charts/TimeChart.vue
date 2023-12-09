@@ -50,9 +50,9 @@ const scroller = useScroller({
             >
                 <div
                     v-for="{ period, point, value }, index of data"
-                    @mouseover="currentIndex = index; currentValue = value"
                     class="bar"
                     :class="{ current: index === currentIndex }"
+                    @mouseover="currentIndex = index; currentValue = value"
                 >
                     <div
                         class="time-terminal start"
@@ -60,7 +60,7 @@ const scroller = useScroller({
                             marginTop: `calc(${height.value * period.startPos}${height.unit} - .3em)`,
                             backgroundColor: period.startColor
                         }"
-                    ></div>
+                    />
                     <div
                         v-if="period.endPos"
                         class="time-terminal end"
@@ -68,19 +68,22 @@ const scroller = useScroller({
                             marginTop: `calc(${height.value * period.endPos}${height.unit} - .3em)`,
                             backgroundColor: period.endColor
                         }"
-                    ></div>
+                    />
                     <div
                         class="point"
                         :style="{
                             marginTop: `calc(${height.value * point.pos}${height.unit} - .2em)`,
                             backgroundColor: point.color
                         }"
-                    ></div>
-                    <div class="axis"></div>
+                    />
+                    <div class="axis" />
                 </div>
             </div>
         </NyaScroller>
-        <slot name="current" :value="currentValue"></slot>
+        <slot
+            name="current"
+            :value="currentValue"
+        />
     </div>
 </template>
 

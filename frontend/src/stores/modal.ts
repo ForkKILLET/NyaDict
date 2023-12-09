@@ -3,7 +3,7 @@ import { ref, type Component, shallowRef } from 'vue'
 
 export const useModal = defineStore('modal', () => {
     const component = shallowRef<Component>()
-    const ownerToken = ref<Symbol>()
+    const ownerToken = ref<symbol>()
 
     const open = (comp: Component) => {
         if (component.value) return null

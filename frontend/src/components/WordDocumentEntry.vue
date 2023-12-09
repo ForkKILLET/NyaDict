@@ -28,15 +28,18 @@ const addDoc = (newDoc: IWordDocumentWithoutId) => {
 <template>
     <div class="doc-entry">
         <div class="doc-sidebar">
-            <WordDocumentAdder @add-doc="addDoc" v-if="'docs' in doc" />
+            <WordDocumentAdder
+                v-if="'docs' in doc"
+                @add-doc="addDoc"
+            />
         </div>
         <WordDocument
-            class="doc"
-            @withdraw="emit('withdraw')"
             :key="doc.id"
+            class="doc"
             :word="word"
             :doc="doc"
             :hide-self="hideSelf"
+            @withdraw="emit('withdraw')"
         />
     </div>
 </template>

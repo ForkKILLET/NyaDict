@@ -23,7 +23,9 @@ const value = computed({
 
 <template>
     <div class="config-item">
-        <div class="config-title">{{ schema.meta.description }}</div>
+        <div class="config-title">
+            {{ schema.meta.description }}
+        </div>
         <div class="config-form">
             <div v-if="schema.type === 'union'">
                 <template v-for="item of schema.list">

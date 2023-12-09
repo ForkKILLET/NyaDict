@@ -47,13 +47,13 @@ export const useScroller = (options: IScrollerOptions): IScroller => {
         scrollXBy: (deltaX, behavior = options.behavior) => whenEl(el => el.scrollBy({ left: deltaX, behavior })),
         scrollYBy: (deltaY, behavior = options.behavior) => whenEl(el => el.scrollBy({ top: deltaY, behavior })),
         scrollBy: (delta, behavior = options.behavior) => {
-            if (options.direction = 'horizontal') return scroller.scrollXBy(delta, behavior)
+            if (options.direction === 'horizontal') return scroller.scrollXBy(delta, behavior)
             else return scroller.scrollYBy(delta, behavior)
         },
         scrollXTo: (posX, behavior = options.behavior) => whenEl(el => el.scrollTo({ left: posX, behavior })),
         scrollYTo: (posY, behavior = options.behavior) => whenEl(el => el.scrollTo({ top: posY, behavior })),
         scrollTo: (pos, behavior = options.behavior) => {
-            if (options.direction = 'horizontal') return scroller.scrollXTo(pos, behavior)
+            if (options.direction === 'horizontal') return scroller.scrollXTo(pos, behavior)
             else return scroller.scrollYTo(pos, behavior)
         }
     }
@@ -115,11 +115,22 @@ onMounted(() => {
         class="nya-scroller"
         :class="options.direction === 'horizontal' ? 'scroll-x' : 'scroll-y'"
     >
-        <slot></slot>
+        <slot />
     </div>
-    <div v-if="options.buttons" class="nya-scroller-buttons">
-        <fa-icon @click="scroller.scrollBy(- 50)" icon="arrow-circle-left" class="button nya-scroller-button"></fa-icon>
-        <fa-icon @click="scroller.scrollBy(+ 50)" icon="arrow-circle-right" class="button nya-scroller-button"></fa-icon>
+    <div
+        v-if="options.buttons"
+        class="nya-scroller-buttons"
+    >
+        <fa-icon
+            icon="arrow-circle-left"
+            class="button nya-scroller-button"
+            @click="scroller.scrollBy(- 50)"
+        />
+        <fa-icon
+            icon="arrow-circle-right"
+            class="button nya-scroller-button"
+            @click="scroller.scrollBy(+ 50)"
+        />
     </div>
 </template>
 

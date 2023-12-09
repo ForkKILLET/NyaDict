@@ -22,7 +22,7 @@ import type { IWord } from '@type'
 
 // Toolbar
 
-type ToolbarMode = 'add' | 'sort' | 'filter'
+type ToolbarMode = 'add' | 'sort' | 'filter' | 'history'
 const toolbarMode = ref<ToolbarMode | null>(null)
 const changeToolbarMode = (mode: ToolbarMode) => {
     toolbarMode.value = toolbarMode.value === mode ? null : mode
@@ -31,7 +31,7 @@ const changeToolbarMode = (mode: ToolbarMode) => {
 }
 type ToolbarConfigItem = {
     icon: string | Ref<string>
-    component: Component
+    component?: Component
     action?: (item: ToolbarConfigItem) => void
 }
 const toolbarConfig: Record<ToolbarMode, ToolbarConfigItem> = {
@@ -46,6 +46,10 @@ const toolbarConfig: Record<ToolbarMode, ToolbarConfigItem> = {
     filter: {
         icon: 'filter',
         component: WordFilter
+    },
+    history: {
+        icon: '',
+
     }
 }
 
@@ -156,37 +160,49 @@ registerShortcuts([
 </script>
 
 <template>
-    <div class="content scroll-x" ref="contentEl">
+    <div
+        ref="contentEl"
+        class="content scroll-x"
+    >
         <div class="left">
             <div class="glowing toolbar">
                 <div class="toolbar-nav">
                     <fa-icon
                         v-for="conf, mode of toolbarConfig"
-                        @click="changeToolbarMode(mode)"
+                        :key="mode"
                         class="button"
                         :icon="conf.icon"
+                        @click="changeToolbarMode(mode)"
                     />
                 </div>
-                <div class="toolbar-main" v-show="toolbarMode">
-                    <component
+                <div
+                    v-show="toolbarMode"
+                    class="toolbar-main"
+                >
+                    <template
                         v-for="conf, mode of toolbarConfig"
-                        v-show="mode === toolbarMode"
-                        :is="conf.component"
-                    />
+                    >
+                        <component
+                            :is="conf.component"
+                            v-if="conf.component"
+                            v-show="mode === toolbarMode"
+                            :key="mode"
+                        />
+                    </template>
                 </div>
             </div>
             <WordList
                 v-if="sortedWords"
-                @goto-word="gotoWord"
+                class="scroll-y"
                 :active-word-id="currentWord?.id"
                 :words="sortedWords"
-                class="scroll-y"
+                @goto-word="gotoWord"
             />
         </div>
         <WordDetail
             v-if="currentWord"
-            :word="currentWord"
             class="right scroll-y"
+            :word="currentWord"
         />
         <WordNavigator />
     </div>

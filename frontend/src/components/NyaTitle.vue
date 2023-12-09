@@ -5,7 +5,10 @@ import { version } from '@/../package.json'
 <template>
     <h1 class="nya-title">
         Nya Dict
-        <RouterLink to="/about" class="version no-color-change">
+        <RouterLink
+            to="/about"
+            class="version no-color-change"
+        >
             <span>{{ version }}</span>
         </RouterLink>
     </h1>

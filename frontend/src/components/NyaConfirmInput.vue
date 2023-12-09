@@ -84,32 +84,40 @@ watch(editMode, (mode) => {
 <template>
     <div
         ref="root"
+        v-on-click-outside="() => { clickToEdit && clear() }"
         class="nya-confirm-input"
         :class="{ withdrawable }"
         @keydown.esc.prevent.stop="editMode && clear()"
-        v-on-click-outside="() => { clickToEdit && clear() }"
     >
         <template v-if="! editMode">
             <div
                 @click="clickToEdit && edit()"
             >
                 <slot name="content">
-                    <span class="content" :value="modelValue">{{ modelValue }}</span>
+                    <span
+                        class="content"
+                        :value="modelValue"
+                    >{{ modelValue }}</span>
                 </slot>
             </div>
             <div class="edit-buttons">
                 <fa-icon
                     v-if="! disabled"
+                    icon="edit"
+                    class="button"
                     @click="edit"
-                    icon="edit" class="button"
                 />
                 <fa-icon
                     v-if="more"
+                    icon="list-dots"
+                    class="button"
                     @click="showMore = true"
-                    icon="list-dots" class="button"
                 />
             </div>
-            <Transition name="fade" :duration=".3 * 1000">
+            <Transition
+                name="fade"
+                :duration=".3 * 1000"
+            >
                 <div
                     v-if="more && showMore"
                     v-on-click-outside="() => { showMore = false }"
@@ -117,32 +125,38 @@ watch(editMode, (mode) => {
                 >
                     <LongPressButton
                         v-if="withdrawable"
-                        @long-press="emit('withdraw')"
                         icon="trash"
                         color="var(--color-wrong)"
                         desc="削除"
                         :delay="1.5"
+                        @long-press="emit('withdraw')"
                     />
-                    <slot name="more"></slot>
+                    <slot name="more" />
                 </div>
             </Transition>
         </template>
         <template v-else>
-            <slot name="input" :model="model" :submit="submit">
+            <slot
+                name="input"
+                :model="model"
+                :submit="submit"
+            >
                 <input
-                    class="input"
                     v-model="model.ref.value"
+                    class="input"
                     @keypress.enter="submit"
-                />
+                >
             </slot>
             <div class="edit-buttons">
                 <fa-icon
+                    icon="times-circle"
+                    class="button"
                     @click="clear"
-                    icon="times-circle" class="button"
                 />
                 <fa-icon
+                    icon="check-circle"
+                    class="button"
                     @click="submit"
-                    icon="check-circle" class="button"
                 />
             </div>
         </template>

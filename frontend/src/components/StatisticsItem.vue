@@ -16,11 +16,18 @@ const actionsEl = ref<HTMLSpanElement>()
         <div class="statistics-item-title">
             <span>{{ title }}</span>
             <span class="statistics-item-actions">
-                <span ref="actionsEl"></span>
-                <fa-icon @click="value = data()" icon="rotate" class="button" />
+                <span ref="actionsEl" />
+                <fa-icon
+                    icon="rotate"
+                    class="button"
+                    @click="value = data()"
+                />
             </span>
         </div>
-        <slot :data="value" :actionsEl="actionsEl"></slot>
+        <slot
+            :data="value"
+            :actions-el="actionsEl"
+        />
     </div>
 </template>
 

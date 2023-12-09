@@ -13,19 +13,29 @@ const folded = ref(false)
 
 <template>
     <div>
-        <div @click="folded = ! folded" class="ast-type">
+        <div
+            class="ast-type"
+            @click="folded = ! folded"
+        >
             <fa-icon
                 :icon="folded ? 'plus' : 'minus'"
             /> {{ ast.type.toUpperCase() }}
         </div>
-        <div v-show="! folded" class="ast-indent">
+        <div
+            v-show="! folded"
+            class="ast-indent"
+        >
             <template v-if="ast.type === 'call'">
                 <NtAstProp prop="FuncName">
                     <span class="ast-symbol">{{ printFuncName(ast.funcName) }}</span>
                 </NtAstProp>
                 <NtAstProp prop="Args">
                     <div class="ast-indent">
-                        <NtAst v-for="arg of ast.args" :ast="arg" />
+                        <NtAst
+                            v-for="arg, index of ast.args"
+                            :key="index"
+                            :ast="arg"
+                        />
                     </div>
                 </NtAstProp>
                 <NtAstProp prop="Signature">

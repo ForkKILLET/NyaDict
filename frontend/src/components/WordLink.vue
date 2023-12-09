@@ -26,7 +26,9 @@ const text = computed(() => {
         :to="`/words?id=${id}`"
         class="word-link"
         :class="{ self, hidden: self && hideSelf }"
-    >{{ text }}</RouterLink>
+    >
+        {{ text }}
+    </RouterLink>
 </template>
 
 <style scoped>

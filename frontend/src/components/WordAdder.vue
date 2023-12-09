@@ -27,8 +27,8 @@ watch(props, () => {
     sub.value = props.word.sub
 }, { immediate: true })
 
-const emit = defineEmits<{
-    (event: 'change', ): void
+defineEmits<{
+    (event: 'change'): void
     (event: 'cancel'): void
 }>()
 
@@ -118,28 +118,30 @@ useFocusSignal(dispEl, 'ui:word:add')
             <input
                 ref="dispEl"
                 v-model="disp"
+                placeholder="書き方"
+                autofocus="true"
                 @compositionupdate="onCompositionUpdate"
                 @compositionend="onCompositionEnd"
                 @keydown.enter="onChange"
-                placeholder="書き方"
-                autofocus="true"
-            />
+            >
         </span>
         <span class="word-sub">
             <input
                 v-model="sub"
-                @keydown.enter="onChange"
                 placeholder="読み方"
-            />
+                @keydown.enter="onChange"
+            >
         </span>
         <div class="edit-buttons">
             <fa-icon
+                icon="times-circle"
+                class="button"
                 @click="onCancel"
-                icon="times-circle" class="button"
             />
             <fa-icon
+                icon="circle-check"
+                class="button"
                 @click="onChange"
-                icon="circle-check" class="button"
             />
         </div>
     </div>

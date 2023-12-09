@@ -69,9 +69,9 @@ const data = computed(() => {
         <div class="calendar-modes">
             <span
                 v-for="modeInfo, mode in calendarModeInfo"
-                @click="calendarMode = + mode"
                 class="badge"
                 :class="{ active: calendarMode === + mode }"
+                @click="calendarMode = + mode"
             >{{ modeInfo }}</span>
         </div>
         <WordMemBrief
@@ -99,10 +99,16 @@ const data = computed(() => {
                     <NyaDate :date="item.date" />
 
                     <template v-for="rec of item.value.recs">
-                        <span class="rec-id id" v-if="rec.testId !== undefined">{{ rec.testId }}</span>
+                        <span
+                            v-if="rec.testId !== undefined"
+                            class="rec-id id"
+                        >{{ rec.testId }}</span>
                     </template>
                 </template>
-                <div v-else class="no-current"></div>
+                <div
+                    v-else
+                    class="no-current"
+                />
             </template>
         </Calendar>
     </div>

@@ -15,10 +15,14 @@ const emit = defineEmits<{
 
 <template>
     <div class="word-entry">
-        <Word :word="word" :class="{ barber: active }">
+        <Word
+            :word="word"
+            :class="{ barber: active }"
+        >
             <fa-icon
+                icon="arrow-circle-right"
+                class="button"
                 @click="emit('goto-word', word.id)"
-                icon="arrow-circle-right" class="button"
             />
         </Word>
     </div>

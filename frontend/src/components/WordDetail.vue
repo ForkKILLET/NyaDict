@@ -22,7 +22,8 @@ const props = withDefaults(defineProps<{
     zenMode?: boolean
     container?: HTMLElement | null
 }>(), {
-    zenMode: true
+    zenMode: true,
+    container: null
 })
 
 const wordStore = useWord()
@@ -59,13 +60,22 @@ useEventListener('resize', () => {
 </script>
 
 <template>
-    <div class="word-detail" ref="wordDetailEl">
+    <div
+        ref="wordDetailEl"
+        class="word-detail"
+    >
         <RouterLink :to="`/words?id=${word.id}`">
             <span class="id">{{ word.id }}</span>
         </RouterLink>
 
-        <NyaConfirmInput v-model="word.disp" class="word-disp" />
-        <NyaConfirmInput v-model="word.sub" class="word-sub">
+        <NyaConfirmInput
+            v-model="word.disp"
+            class="word-disp"
+        />
+        <NyaConfirmInput
+            v-model="word.sub"
+            class="word-sub"
+        >
             <template #content>
                 <WordSub :word="word" />
             </template>
@@ -74,45 +84,59 @@ useEventListener('resize', () => {
         <p class="word-actions">
             <LongPressButton
                 v-if="! withdrawed"
-                @long-press="wordStore.withdraw(word.id)"
                 icon="trash"
                 color="var(--color-wrong)"
                 desc="削除"
                 :delay="1.5"
+                @long-press="wordStore.withdraw(word.id)"
             />
             <LongPressButton
                 v-else
-                @long-press="wordStore.restore(word)"
                 icon="trash-restore"
                 color="var(--color-ui)"
                 desc="削除取り消し"
                 :delay=".5"
+                @long-press="wordStore.restore(word)"
             />
 
             <LongPressButton
                 v-if="! withdrawed"
-                @long-press="nazoMode = ! nazoMode"
                 :icon="nazoMode ? 'eye' : 'eye-slash'"
                 color="var(--color-fg)"
                 :desc="'なぞモード ' + (nazoMode ? 'OFF' : 'ON')"
                 :delay="0.5"
+                @long-press="nazoMode = ! nazoMode"
             />
         </p>
 
-        <NyaTab :tabs="[
-            { name: 'dict', title: '辞書' },
-            { name: 'mem', title: 'メモリー' },
-            { name: 'link', title: 'リンク' }
-        ]">
+        <NyaTab
+            :tabs="[
+                { name: 'dict', title: '辞書' },
+                { name: 'mem', title: 'メモリー' },
+                { name: 'link', title: 'リンク' }
+            ]"
+        >
             <template #mem>
                 <div>
-                    <fa-icon icon="plus" :fixed-width="true" />
+                    <fa-icon
+                        icon="plus"
+                        :fixed-width="true"
+                    />
                     <NyaDate :date="word.mem.createTime" />
                 </div>
                 <div>
-                    <fa-icon icon="forward" :fixed-width="true" /> 
-                    <NyaDate v-if="word.mem.testAfter" :date="word.mem.testAfter" />
-                    <span v-else class="number">今</span>
+                    <fa-icon
+                        icon="forward"
+                        :fixed-width="true"
+                    /> 
+                    <NyaDate
+                        v-if="word.mem.testAfter"
+                        :date="word.mem.testAfter"
+                    />
+                    <span
+                        v-else
+                        class="number"
+                    >今</span>
                 </div>
                 <WordMemCalendar :mem="word.mem" />
             </template>
@@ -122,11 +146,11 @@ useEventListener('resize', () => {
                 </div>
 
                 <WordDocumentList
-                    @focus.capture="onFocus"
-                    @blur.capture="editingEl = undefined"
                     :word="word"
                     :node="word"
                     :hide-self="nazoMode"
+                    @focus.capture="onFocus"
+                    @blur.capture="editingEl = undefined"
                 />
             </template>
             <template #link>

@@ -1,0 +1,31 @@
+extends:
+  - 'plugin:vue/vue3-recommended'
+  - 'eslint:recommended'
+  - 'plugin:@typescript-eslint/recommended'
+  - '@vue/eslint-config-typescript'
+
+ignorePatterns:
+  - dist/*
+
+parser: 'vue-eslint-parser'
+
+parserOptions:
+  parser: '@typescript-eslint/parser'
+
+rules:
+  'semi': [ 'warn', 'never' ]
+  'no-empty': 'off'
+  'no-unused-vars': 'off'
+  'no-constant-condition': [ 'error', { checkLoops: false } ]
+  'vue/html-indent': [ 'warn', 4 ]
+  'vue/no-mutating-props': 'off'
+  'vue/multi-word-component-names': 'off'
+  'vue/require-v-for-key': 'off'
+  'vue/no-deprecated-filter': 'off'
+  'vue/valid-v-model': 'off'
+  'vue/no-template-shadow': 'off'
+  '@typescript-eslint/no-unused-vars': [ 'error', { varsIgnorePattern: '^_' } ]
+  '@typescript-eslint/no-non-null-assertion': 'off'
+  '@typescript-eslint/no-empty-interface': 'off'
+  '@typescript-eslint/ban-types': 'off'
+  '@typescript-eslint/no-explicit-any': 'off'

@@ -24,7 +24,7 @@ withDefaults(defineProps<{
                 :show-count="false"
                 :show-ring="true"
             />
-            <slot :word="word"></slot>
+            <slot :word="word" />
         </div>
     </div>
 </template>

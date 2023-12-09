@@ -1,4 +1,4 @@
-import { computed, ref, type Ref } from 'vue'
+import { ref, type Ref } from 'vue'
 import { defineStore } from 'pinia' 
 import { toHiragana, isHiragana} from 'wanakana'
 import { useArchive } from '@store/archive'

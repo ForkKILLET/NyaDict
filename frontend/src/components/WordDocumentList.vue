@@ -29,10 +29,11 @@ const withdrawDoc = (docId: number) => {
     <div class="doc-list">
         <WordDocumentEntry
             v-for="doc of sortedDocs"
-            @withdraw="withdrawDoc(doc.id)"
+            :key="doc.id"
             :word="word"
             :doc="doc"
             :hide-self="hideSelf"
+            @withdraw="withdrawDoc(doc.id)"
         />
     </div>
 </template>

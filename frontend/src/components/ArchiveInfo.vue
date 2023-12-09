@@ -39,8 +39,14 @@ const tailEdition = computed(() => props.info?.editionChain?.at(- 1))
         :class="{ barber: active, message: ! info }"
     >
         <template v-if="isImporting">
-            <div class="archive-importing-mask-switch" v-if="id">
-                <fa-icon icon="eye" class="button" />
+            <div
+                v-if="id"
+                class="archive-importing-mask-switch"
+            >
+                <fa-icon
+                    icon="eye"
+                    class="button"
+                />
             </div>
             <div
                 class="archive message importing-mask card"
@@ -48,11 +54,11 @@ const tailEdition = computed(() => props.info?.editionChain?.at(- 1))
                 <div>
                     <span class="id">{{ id ?? '新' }}</span>
                     <LongPressButton
-                        @long-press="emit('upload-here')"
                         icon="file-import"
                         color="var(--color-fg)"
                         desc="アップロード"
                         :delay=".5"
+                        @long-press="emit('upload-here')"
                     />
                 </div>
             </div>
@@ -60,7 +66,10 @@ const tailEdition = computed(() => props.info?.editionChain?.at(- 1))
         <template v-if="info">
             <div class="archive-content">
                 <div class="archive-header">
-                    <span v-if="id !== undefined" class="id">{{ id }}</span>
+                    <span
+                        v-if="id !== undefined"
+                        class="id"
+                    >{{ id }}</span>
                     <div class="archive-title">
                         <NyaConfirmInput
                             v-model="info.title"
@@ -68,28 +77,46 @@ const tailEdition = computed(() => props.info?.editionChain?.at(- 1))
                         />
                     </div>
                 </div>
-                <div v-if="tailEdition" class="archive-tail">
-                    <fa-icon icon="code-branch" :fixed-width="true" />
-                    <RouterLink :to="{
-                        path: '/sync/tree',
-                        query: {
-                            id,
-                            remote: remote ? '' : undefined
-                        }
-                    }" class="no-animation">
+                <div
+                    v-if="tailEdition"
+                    class="archive-tail"
+                >
+                    <fa-icon
+                        icon="code-branch"
+                        :fixed-width="true"
+                    />
+                    <RouterLink
+                        :to="{
+                            path: '/sync/tree',
+                            query: {
+                                id,
+                                remote: remote ? '' : undefined
+                            }
+                        }"
+                        class="no-animation"
+                    >
                         <ArchiveEdition :edition="tailEdition" />
                     </RouterLink>
                 </div>
                 <div>
-                    <fa-icon icon="folder" :fixed-width="true" />
+                    <fa-icon
+                        icon="folder"
+                        :fixed-width="true"
+                    />
                     <span><span class="number">{{ info.wordCount ?? 'N/A' }}</span> 単語</span>
                 </div>
                 <div>
-                    <fa-icon icon="box" :fixed-width="true" />
+                    <fa-icon
+                        icon="box"
+                        :fixed-width="true"
+                    />
                     <span><span class="number">{{ (info.size / 1024).toFixed(2) }}</span> KiB</span>
                 </div>
                 <div>
-                    <fa-icon icon="code" :fixed-width="true" />
+                    <fa-icon
+                        icon="code"
+                        :fixed-width="true"
+                    />
                     <span>
                         v<span class="number">{{ info.version ?? '?' }}</span>
                         <span v-if="info?.version && info.version !== ARCHIVE_VERSION">
@@ -99,14 +126,14 @@ const tailEdition = computed(() => props.info?.editionChain?.at(- 1))
                 </div>
             </div>
             <div class="archive-action">
-                <slot></slot>
+                <slot />
             </div>
         </template>
         <template v-else-if="noInfoReason">
             <span class="no-info-reason">{{ noInfoReasons[noInfoReason] }}</span>
         </template>
         <div class="archive-labels">
-            <slot name="labels"></slot>
+            <slot name="labels" />
         </div>
     </div>
 </template>
