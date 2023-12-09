@@ -79,8 +79,8 @@ const data = {
             .sort((a, b) => + b.name - + a.name)
         return { data }
     },
-    createTest: () => {
-        return getCalendarData(testStore.tests, test => test.createTime)
+    testWord: () => {
+        return getCalendarData(wordStore.words.flatMap(word => word.mem.testRec), testRec => testRec.time)
     },
     testInfo: () => {
         const tests = testStore.tests
@@ -162,8 +162,8 @@ const data = {
         </StatisticsItem>
 
         <StatisticsItem
-            title="テスト作成"
-            :data="data.createTest"
+            title="テストした単語数"
+            :data="data.testWord"
         >
             <template #default="{ data: { data, firstDate }, actionsEl }">
                 <Calendar
@@ -176,9 +176,9 @@ const data = {
                     <template #current="{ item }">
                         <div v-if="item">
                             <NyaDate :date="item.date" />
-                            にテストを
+                            に単語を
                             <span class="number">{{ item.count ?? 0 }}</span>
-                            個作成しました
+                            個テストしました
                         </div>
                     </template>
                 </Calendar>
