@@ -799,12 +799,7 @@ export const parse = (query: string, options: {
         })
         if (preAst === null) return { state: 'null' }
 
-        console.log(preAst)
-
         const ast = _postproc(_newPostprocState(ctx), preAst)
-
-        console.log(ast)
-        console.log(stringify(ast))
 
         const rootType = _getAstType(ast)
         if (options.isBoolean && (rootType.kind !== 'basic' || rootType.name !== 'Boolean')) {
@@ -817,7 +812,6 @@ export const parse = (query: string, options: {
         }
     }
     catch (error) {
-        console.error(error)
         return {
             state: 'error',
             error: error as NtError
@@ -832,8 +826,11 @@ export const stringify = (ast: INtAst): string => {
         case 'string':
             return escapeStr(ast.value)
         case 'call':
-            return ast.args.length
-                ? `(${[ ast.funcName, ...ast.args.map(stringify) ].join(' ')})`
+            const { args, funcName } = ast       
+            return args.length
+                ? _isOperatorName(funcName)
+                    ? `(${stringify(args[0])} ${funcName} ${stringify(args[1])})`
+                    : `(${[ funcName, ...args.map(stringify) ].join(' ')})`
                 : ast.funcName
     }
 }
