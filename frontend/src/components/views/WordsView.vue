@@ -1,25 +1,24 @@
 <script setup lang="ts">
 import {
-    computed, reactive, ref, toRefs, watch, onMounted,
+    computed, ref, toRefs, watch, onMounted,
     type Ref, type Component
 } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-import { useWord, emptyMem } from '@store/words'
+import { useWord } from '@store/words'
 
 import { isPortrait } from '@util/media'
-import { addNoti } from '@util/notif'
 import { newKey, registerShortcuts } from '@util/keyboard'
+import { mitt } from '@util/mitt'
 
 import WordAdder from '@comp/WordAdder.vue'
 import WordList from '@comp/WordList.vue'
 import WordDetail from '@comp/WordDetail.vue'
 import WordNavigator from '@comp/WordNavigator.vue'
 import WordFilter from '@comp/WordFilter.vue'
-
-import type { IWord, IWordSortMethod } from '@type'
-import { mitt } from '@util/mitt'
 import WordSorter from '@comp/WordSorter.vue'
+
+import type { IWord } from '@type'
 
 // Toolbar
 
@@ -168,10 +167,12 @@ registerShortcuts([
                         :icon="conf.icon"
                     />
                 </div>
-                <div class="toolbar-main" v-if="toolbarMode">
-                    <KeepAlive>
-                        <component :is="toolbarConfig[toolbarMode].component" />
-                    </KeepAlive>
+                <div class="toolbar-main" v-show="toolbarMode">
+                    <component
+                        v-for="conf, mode of toolbarConfig"
+                        v-show="mode === toolbarMode"
+                        :is="conf.component"
+                    />
                 </div>
             </div>
             <WordList
