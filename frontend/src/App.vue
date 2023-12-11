@@ -24,7 +24,7 @@ useTheme(toRefs(config.value).theme)
 
 const history: string[] = []
 router.afterEach((to) => {
-    history.unshift(to.path)
+    history.unshift(to.fullPath)
 })
 
 const modalStore = useModal()
