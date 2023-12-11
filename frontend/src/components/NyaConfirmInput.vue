@@ -57,7 +57,6 @@ const focus = () => {
 
 const edit = () => {
     editMode.value = true
-    inputStateStore.lastEditedInputId = inputId
 }
 
 mitt.on('ui:re-edit', () => {
@@ -77,7 +76,10 @@ const submit = () => {
 }
 
 watch(editMode, (mode) => {
-    if (mode) setTimeout(focus, 0)
+    if (mode) {
+        inputStateStore.lastEditedInputId = inputId
+        setTimeout(focus, 0)
+    }
 }, { immediate: true })
 </script>
 
