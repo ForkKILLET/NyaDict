@@ -113,7 +113,7 @@ export const storeArray = <T extends object, U>(key: string, options: {
             return updateLength()
         },
         reload: () => {
-            watchStopHandles.forEach(stop => stop())
+            watchDisposers.forEach(stop => stop())
             reactiveArr.splice(0)
             load()
         }
@@ -153,13 +153,13 @@ export const storeArray = <T extends object, U>(key: string, options: {
         return delete reactiveArr[+ index]
     }
 
-    const watchStopHandles: WatchStopHandle[] = []
+    const watchDisposers: WatchStopHandle[] = []
     const unwatchIndex = (index: number) => {
-        watchStopHandles[index]?.()
+        watchDisposers[index]?.()
     }
     const watchIndex = (index: number) => {
         unwatchIndex(index)
-        watchStopHandles[index] = watch(reactiveArr[index], (value) => {
+        watchDisposers[index] = watch(reactiveArr[index], (value) => {
             update(index, value)
         })
     }
@@ -170,7 +170,7 @@ export const storeArray = <T extends object, U>(key: string, options: {
     if (isInit) options.onInit?.(reactiveArr)
     return Object.assign(ref(reactiveArr) as Ref<ArrayStore<T>>, {
         [kDispose]: () => {
-            watchStopHandles.forEach(stop => stop())
+            watchDisposers.forEach(stop => stop())
         }
     })
 }

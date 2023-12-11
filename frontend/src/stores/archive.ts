@@ -126,14 +126,20 @@ export const useArchive = defineStore('archives', () => {
         const load = (data: IArchiveData) => (newId: string) => {
             const oldItem = archiveData[name]
             if (oldItem) oldItem[kDispose]()
+
             const key = `${newId}:${name}`
-            data[name] = getItem(key)
+            const item = data[name] = getItem(key)
+            const origDisposer = item[kDispose]
+            const updateWatchDiposer = watch(archiveData[name], () => {
+                mitt.emit('data:archive:update', { dataName: name })
+            }, { deep: true })
+            item[kDispose] = () => {
+                origDisposer()
+                updateWatchDiposer()
+            }
         }
         archiveItemHooks.push({ load })
         watch(currentId, load(archiveData), { immediate: true })
-        watch(archiveData[name], () => {
-            mitt.emit('data:archive:update', { dataName: name })
-        }, { deep: true })
     }
 
     const reloadArchive = () => {

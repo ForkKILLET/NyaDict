@@ -1,7 +1,7 @@
 {
   "name": "nyadict-frontend",
   "private": true,
-  "version": "0.23.2",
+  "version": "0.23.3",
   "type": "module",
   "scripts": {
     "dev": "VITE_BUILD_ENV=\"$(uname -sr)\" VITE_LAST_COMMIT=\"$(git log -1 HEAD --oneline --no-color --no-decorate)\" vite --port 1635",
