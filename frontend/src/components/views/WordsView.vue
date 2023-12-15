@@ -17,6 +17,7 @@ import WordDetail from '@comp/WordDetail.vue'
 import WordNavigator from '@comp/WordNavigator.vue'
 import WordFilter from '@comp/WordFilter.vue'
 import WordSorter from '@comp/WordSorter.vue'
+import WordHistory from '@comp/WordHistory.vue'
 
 import type { IWord } from '@type'
 
@@ -48,8 +49,8 @@ const toolbarConfig: Record<ToolbarMode, ToolbarConfigItem> = {
         component: WordFilter
     },
     history: {
-        icon: '',
-
+        icon: 'clock-rotate-left',
+        component: WordHistory
     }
 }
 
@@ -246,11 +247,13 @@ registerShortcuts([
 }
 
 .toolbar {
+    margin-top: .1em;
     margin-bottom: .5em;
 }
 
 .toolbar-nav {
     font-size: 1.2em;
+    margin-bottom: .2em;
 }
 .toolbar-nav > :first-child {
     margin: 0;

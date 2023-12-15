@@ -11,7 +11,7 @@ import {
     faListDots, faLink, faArrowsLeftRight, faTriangleExclamation, faMoon, faSun,
     faWandMagic, faCog, faMagnifyingGlassPlus, faMagnifyingGlassMinus, faStar,
     faExpand, faCompress, faLocationDot, faCaretUp, faCaretDown, faMinus, faCheck,
-    faCodeBranch, faTerminal
+    faCodeBranch, faTerminal, faClockRotateLeft, faInfinity
 } from '@fortawesome/free-solid-svg-icons'
 
 
@@ -27,5 +27,5 @@ library.add(...[
     faListDots, faLink, faArrowsLeftRight, faTriangleExclamation, faMoon, faSun,
     faWandMagic, faCog, faMagnifyingGlassPlus, faMagnifyingGlassMinus, faStar,
     faExpand, faCompress, faLocationDot, faCaretUp, faCaretDown, faMinus, faCheck,
-    faCodeBranch, faTerminal
+    faCodeBranch, faTerminal, faClockRotateLeft, faInfinity
 ])

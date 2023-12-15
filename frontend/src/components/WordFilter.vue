@@ -98,7 +98,7 @@ useFocusSignal(queryEl, 'ui:word:filter')
 
 .nt-input {
     width: calc(100% - 1.6em);
-    padding: .2em .5em;
+    padding: 0;
     font-size: 1rem;
     font-family: var(--font-mono);
 }

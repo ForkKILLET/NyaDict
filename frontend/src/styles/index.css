@@ -62,11 +62,6 @@ body {
     min-height: 100vh;
 }
 
-main {
-    margin: -1em 0;
-    padding: 1em;
-}
-
 h1 {
     font-size: 3.2em;
     line-height: 1.1;
@@ -88,6 +83,9 @@ h2:first-child {
 
 input {
     border: none;
+}
+.checkbox-label {
+    display: inline-block;
 }
 .checkbox-label > input {
     display: none;

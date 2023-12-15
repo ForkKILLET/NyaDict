@@ -13,7 +13,6 @@
     box-shadow: 0 0 .4em #dbc7b84d;
 }
 
-
 input.card[type=number]::-webkit-inner-spin-button, 
 input.card[type=number]::-webkit-outer-spin-button { 
     appearance: none;

@@ -46,7 +46,7 @@ const dataWithAttr = computed<
             width="8em"
             height="8em"
             viewBox="0 0 20 20"
-            class="pie"
+            class="pie force-radius"
         >
             <circle
                 v-for="{ attrs, color } of dataWithAttr"

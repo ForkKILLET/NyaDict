@@ -14,6 +14,7 @@ import '@style/transition.css'
 import '@style/animation.css'
 import '@style/word.css'
 import '@style/card.css'
+import '@style/themeSpecific/cosmos.css'
 
 const pinia = createPinia()
 

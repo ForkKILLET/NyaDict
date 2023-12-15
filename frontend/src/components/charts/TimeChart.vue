@@ -70,7 +70,7 @@ const scroller = useScroller({
                         }"
                     />
                     <div
-                        class="point"
+                        class="point force-radius"
                         :style="{
                             marginTop: `calc(${height.value * point.pos}${height.unit} - .2em)`,
                             backgroundColor: point.color

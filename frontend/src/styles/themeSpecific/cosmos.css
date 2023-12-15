@@ -1,0 +1,38 @@
+.cosmos *:not(.force-radius) {
+    border-radius: 0 !important;
+}
+
+.cosmos * {
+    box-shadow: none;
+}
+
+.cosmos .glowing,
+.cosmos .card {
+    box-shadow:
+        1px 1px 0 1px var(--color-ui),
+        -1px -1px 0 1px var(--color-shad-ui);
+}
+.cosmos button.card:hover,
+.cosmos .input.card:hover,
+.cosmos .input.card:focus-within {
+    box-shadow:
+        1px 1px 0 1px var(--color-shad-ui-hl),
+        -1px -1px 0 1px var(--color-ui);
+}
+
+.cosmos .switch::after {
+    border-radius: 0;
+    width: .8em;
+    height: .8em;
+    margin: .2em;
+}
+
+.cosmos input[type=checkbox]:checked + .switch::after {
+    transform: rotate(135deg);
+}
+
+.cosmos .badge {
+    box-shadow:
+        1px 1px 0 1px var(--color-ui),
+        -1px -1px 0 1px var(--color-shad-ui);
+}

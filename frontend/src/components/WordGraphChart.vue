@@ -5,6 +5,7 @@ import { storeToRefs } from 'pinia'
 import { useElementSize, useEventListener } from '@vueuse/core'
 
 import { IDragTarget, IDragTargetInfo, ISimulationNode, IView, useWordGraph } from '@store/wordGraph'
+import { useConfig } from '@store/config'
 
 import { getEventPoint } from '@util/dom'
 import { depRef } from '@util/reactivity'
@@ -152,6 +153,8 @@ useEventListener([ 'mousedown', 'touchstart' ], onDragStart)
 useEventListener([ 'mousemove', 'touchmove' ], onDragMove)
 useEventListener([ 'mouseup', 'touchend' ], onDragEnd)
 useEventListener(root, 'wheel', onWheel)
+
+const { config } = storeToRefs(useConfig())
 </script>
 
 <template>

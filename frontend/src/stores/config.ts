@@ -19,7 +19,8 @@ export const Config = Schema.object({
         .union([
             Schema.const('default').extra('icon', 'wand-magic').comment('自動'),
             Schema.const('light').extra('icon', 'sun').comment('Light'),
-            Schema.const('dark').extra('icon', 'moon').comment('Dark')
+            Schema.const('dark').extra('icon', 'moon').comment('Dark'),
+            Schema.const('cosmos').extra('icon', 'infinity').comment('Cosmos')
         ])
         .default('default')
         .extra('section', '外観')
