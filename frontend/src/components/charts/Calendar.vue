@@ -52,7 +52,7 @@ export const getCalendarData = <T>(source: T[], getDate: (item: T) => number) =>
 </script>
 
 <script setup lang="ts" generic="T">
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref } from 'vue'
 
 type DataItem = {
     date: Dayjs
@@ -231,7 +231,7 @@ useEventListener(calendarInner, [ 'mousemove', 'touchmove' ], onCalendarMove)
             <slot name="current" :item="current?.item"></slot>
         </div>
     </div>
-    <Teleport :disabled="! actionsEl" :to="actionsEl">
+    <Teleport v-if="hasCount" :disabled="! actionsEl" :to="actionsEl">
         <fa-icon
             @click="lineMode = ! lineMode"
             :icon="lineMode ? 'calendar' : 'chart-line'"

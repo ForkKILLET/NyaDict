@@ -58,7 +58,7 @@ const value = computed({
     border-radius: .6em;
     background-color: var(--color-ui);
 
-    transition: .3s left, .3s background-color;
+    transition: .5s all;
 }
 
 input[type=checkbox]:checked + .switch {

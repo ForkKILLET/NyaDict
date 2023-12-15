@@ -2,7 +2,7 @@ import { watch, type Ref } from 'vue'
 
 import { isPreferDark } from '@util/media'
 
-export const themeNames = [ 'default', 'light', 'dark' ] as const
+export const themeNames = [ 'default', 'light', 'dark', 'cosmos' ] as const
 export type ThemeName = typeof themeNames[number]
 
 export const useTheme = (theme: Ref<ThemeName>) => {

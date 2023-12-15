@@ -117,6 +117,7 @@ const data = computed(() => {
 <style scoped>
 .calendar-modes {
     white-space: nowrap;
+    margin-bottom: .5em;
 }
 
 .no-current {
