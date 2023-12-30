@@ -7,6 +7,7 @@ export type Events = {
     'data:archive:update': { dataName: string }
 
     'ui:shortcut': { shortcutId: string }
+    'ui:shortcut:edit': { shortcutId: string }
     'ui:word:navigate': { action: 'up' | 'down' }
     'ui:word:filter': {}
     'ui:word:add': {}

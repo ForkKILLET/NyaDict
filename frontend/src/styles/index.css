@@ -16,6 +16,9 @@
 
     --font-ja-serif: 'Noto Serif CJK JP', serif;
     --font-mono: 'Fira Code', 'Consolas', monospace;
+
+    --zi-noti: 20;
+    --zi-modal: 10;
 }
 
 @media screen and (orientation: portrait) and (max-device-width: 600px) {

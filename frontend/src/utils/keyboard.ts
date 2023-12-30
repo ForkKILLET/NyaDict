@@ -1,18 +1,21 @@
 import { reactive } from 'vue'
 
+import { useConfigData } from '@store/config'
+
 import { kDispose } from '@util/disposable'
 import { mitt } from '@util/mitt'
 
 export type KeyCombination = {
-    ctrl: boolean
-    alt: boolean
-    shift: boolean
-    meta: boolean
+    ctrlKey: boolean
+    altKey: boolean
+    shiftKey: boolean
+    metaKey: boolean
     key: string
 }
 
 export type Shortcut = {
     id: string
+    defaultKey: KeyCombination
     key: KeyCombination
     info: string
     precedence?: number
@@ -22,10 +25,20 @@ export type Shortcut = {
 
 export const shortcuts: Record<string, Shortcut> = reactive({})
 
-export const registerShortcut = (shortcut: Shortcut) => {
+export const registerShortcut = (shortcut: Omit<Shortcut, 'defaultKey'>) => {
     const { id } = shortcut
     if (id in shortcuts) return null
-    shortcuts[id] = shortcut
+    shortcuts[id] = {
+        ...shortcut,
+        defaultKey: shortcut.key
+    }
+    const config = useConfigData()
+    const keyStr = config.value.shortcuts[id]
+    if (keyStr) try {
+        shortcuts[id].key = newKey(keyStr)
+    }
+    catch {}
+
     return {
         [kDispose]: () => {
             delete shortcuts[id]
@@ -33,7 +46,7 @@ export const registerShortcut = (shortcut: Shortcut) => {
     }
 }
 
-export const registerShortcuts = (shortcuts: Shortcut[]) => shortcuts.map(registerShortcut)
+export const registerShortcuts = (shortcuts: Omit<Shortcut, 'defaultKey'>[]) => shortcuts.map(registerShortcut)
 
 export const disposeShortcuts = (handles: ReturnType<typeof registerShortcuts>) => {
     handles.forEach(handle => {
@@ -41,26 +54,34 @@ export const disposeShortcuts = (handles: ReturnType<typeof registerShortcuts>) 
     })
 }
 
-export const newKey = (keyCombinationStr: string) => {
+export const newKey = (keyCombinationStr: string): KeyCombination => {
     const [ key, ...modifiers ] = keyCombinationStr
         .split(/\s*\+\s*/)
         .reverse()
         .map((s, i) => i ? s.toLowerCase() : s)
     return {
         key,
-        ctrl: modifiers.includes('ctrl'),
-        alt: modifiers.includes('alt'),
-        shift: modifiers.includes('shift'),
-        meta: modifiers.includes('meta'),
+        ctrlKey: modifiers.includes('ctrl'),
+        altKey: modifiers.includes('alt'),
+        shiftKey: modifiers.includes('shift'),
+        metaKey: modifiers.includes('meta'),
     }
 }
 
+export const fromKey = (key: KeyCombination): string => (
+    (key.metaKey ? 'Meta + ' : '') +
+    (key.ctrlKey ? 'Ctrl + ' : '') +
+    (key.altKey ? 'Alt + ' : '') +
+    (key.shiftKey ? 'Shift + ' : '') +
+    key.key
+)
+
 const isKeyMatched = (event: KeyboardEvent, key: KeyCombination) => (
     event.key === key.key &&
-    event.ctrlKey === key.ctrl &&
-    event.altKey === key.alt &&
-    event.shiftKey === key.shift &&
-    event.metaKey === key.meta
+    event.ctrlKey === key.ctrlKey &&
+    event.altKey === key.altKey &&
+    event.shiftKey === key.shiftKey &&
+    event.metaKey === key.metaKey
 )
 
 window.addEventListener('keydown', (event) => {

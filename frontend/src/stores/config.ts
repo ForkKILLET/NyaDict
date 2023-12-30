@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia'
+import { defineStore, storeToRefs } from 'pinia'
 import Schema from 'schemastery'
 
 import { storeReactive } from '@util/storage'
@@ -55,7 +55,10 @@ export const Config = Schema.object({
         .string()
         .extra('section', '同期')
         .default(import.meta.env.VITE_SYNC_API)
-        .description('同期 API の URL')
+        .description('同期 API の URL'),
+    shortcuts: Schema
+        .dict(Schema.string())
+        .hidden()
 })
 
 export const useConfig = defineStore('config', () => {
@@ -63,3 +66,8 @@ export const useConfig = defineStore('config', () => {
 
     return { config }
 })
+
+export const useConfigData = () => {
+    const { config } = storeToRefs(useConfig())
+    return config
+}

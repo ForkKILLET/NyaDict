@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 
 import {
-    getNotiId, removeNoti,
+    removeNoti,
     type NotiAction, type Noti, type NotiType
 } from '@util/notif'
 
@@ -13,7 +13,7 @@ const props = defineProps<{
 const transparent = ref(false)
 
 const remove = (cause?: string) => {
-    removeNoti(getNotiId(props.noti), cause)
+    removeNoti(props.noti.id, cause)
 }
 
 const onAnimationEnd = (event: AnimationEvent) => {
@@ -38,7 +38,7 @@ const onClick = () => {
 
 const handleAction = (action: NotiAction) => {
     const toClose = action.onClick() ?? true
-    if (toClose) removeNoti(getNotiId(props.noti))
+    if (toClose) removeNoti(props.noti.id)
 }
 
 const typeIcons: Record<Exclude<NotiType, 'charge'>, string> = {

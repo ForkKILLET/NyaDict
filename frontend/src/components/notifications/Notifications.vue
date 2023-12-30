@@ -25,7 +25,7 @@ import ListTransitionGroup from '@comp/transitions/ListTransitionGroup.vue'
     position: fixed;
     width: 100%;
     pointer-events: none;
-    z-index: 1;
+    z-index: var(--zi-noti);
     top: 0;
     display: flex;
     flex-flow: column;

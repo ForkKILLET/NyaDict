@@ -20,13 +20,17 @@ const configSections = groupBy(Object.entries(Config.dict!), ([, schema ]) => sc
             class="card"
         >
             <span>{{ section }}</span>
-            <ConfigItem
+            <template
                 v-for="[ id, schema ] of schemas"
-                :id="id"
                 :key="id"
-                v-model="config[id]"
-                :schema="schema"
-            />
+            >
+                <ConfigItem
+                    v-if="! schema.meta.hidden"
+                    :id="id"
+                    v-model="config[id]"
+                    :schema="schema"
+                />
+            </template>
         </div>
     </div>
 

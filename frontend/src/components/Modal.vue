@@ -24,7 +24,7 @@ registerShortcuts([
         class="modal"
     >
         <div
-            v-on-click-outside="modalStore.forceClose"
+            v-on-click-outside="[ modalStore.forceClose, { capture: false } ]"
             class="modal-inner card"
         >
             <fa-icon
@@ -47,7 +47,7 @@ registerShortcuts([
     top: 0;
     width: 100vw;
     height: 100vh;
-    z-index: 10;
+    z-index: var(--zi-modal);
     display: flex;
     align-items: center;
     background-color: #000000aa;

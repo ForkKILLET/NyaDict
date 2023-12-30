@@ -1,4 +1,4 @@
-import { reactive, type CSSProperties } from 'vue'
+import { reactive, type CSSProperties, MaybeRef } from 'vue'
 import type { NyaResp } from '@type/network'
 import type { DistributiveOmit } from '@type/tool'
 
@@ -12,8 +12,9 @@ export type NotiAction = {
 }
 
 export type Noti = {
+    id: number
     createTime: number
-    content: string
+    content: MaybeRef<string>
     duration?: number
     style?: CSSProperties
     actions?: NotiAction[]
@@ -31,9 +32,14 @@ export type Noti = {
 
 export const notis = reactive<Noti[]>([])
 
-export const addNoti = (noti: DistributiveOmit<Noti, 'createTime'>): number => {
-    notis.push(reactive({ ...noti, createTime: Date.now() }))
-    return notis.length - 1
+export const addNoti = (noti: DistributiveOmit<Noti, 'createTime' | 'id'>): number => {
+    const id = notis.length
+    notis.push(reactive({
+        ...noti,
+        id,
+        createTime: Date.now()
+    }))
+    return id
 }
 
 export const removeNoti = (notiId: number, cause?: string): boolean => {
@@ -42,10 +48,6 @@ export const removeNoti = (notiId: number, cause?: string): boolean => {
     delete notis[notiId]
     noti.onClose?.({ cause })
     return true
-}
-
-export const getNotiId = (noti: Noti): number => {
-    return notis.indexOf(noti)
 }
 
 export const handleResp = async <T>(options: {

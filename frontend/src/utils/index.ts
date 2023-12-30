@@ -41,10 +41,15 @@ export const shuffle = <T>(items: T[]) => {
 export type GroupByResult<R extends string, U> = {
     [key in R]?: U[]
 }
-export const groupBy = <R extends string, T, U = T>(items: T[], group: (item: T) => R, map?: (item: T) => U): GroupByResult<R, U> => {
+export const groupBy = <R extends string, T, U = T>(
+    items: T[],
+    group: (item: T) => R | undefined,
+    map?: (item: T) => U
+): GroupByResult<R, U> => {
     const result: GroupByResult<R, U> = {}
     items.forEach(item => {
         const groupName = group(item)
+        if (groupName === undefined) return
         ; (result[groupName] ??= []).push((map ? map(item) : item) as U)
     })
     return result
