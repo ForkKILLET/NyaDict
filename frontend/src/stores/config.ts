@@ -2,6 +2,8 @@ import { defineStore, storeToRefs } from 'pinia'
 import Schema from 'schemastery'
 
 import { storeReactive } from '@util/storage'
+import { Ref, computed } from 'vue'
+import { RemoveIndex } from '@type/tool'
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -58,11 +60,31 @@ export const Config = Schema.object({
         .description('同期 API の URL'),
     shortcuts: Schema
         .dict(Schema.string())
+        .hidden(),
+    wordGraphScale: Schema
+        .number()
+        .extra('section', '単語リンク・グラフ')
+        .default(1)
+        .description('グラフのズーム倍率')
+        .hidden(),
+    wordGraphEdgeType: Schema
+        .union([
+            Schema.const('all'),
+            Schema.const('rel')
+        ])
+        .extra('section', '単語リンク・グラフ')
+        .default('all')
+        .description('グラフに表現するリンクの種類')
         .hidden()
 })
 
+type ConfigDataRO = ReturnType<typeof Config>
+export type ConfigData = {
+    -readonly [K in keyof ConfigDataRO]: ConfigDataRO[K]
+}
+
 export const useConfig = defineStore('config', () => {
-    const config = storeReactive<ReturnType<typeof Config>>('config', new Config(), Config)
+    const config = storeReactive<ConfigData>('config', new Config(), Config)
 
     return { config }
 })
@@ -71,3 +93,8 @@ export const useConfigData = () => {
     const { config } = storeToRefs(useConfig())
     return config
 }
+
+export const useConfigItem = <K extends keyof RemoveIndex<ConfigData>>(config: Ref<ConfigData>, key: K) => computed({
+    get: () => config.value[key],
+    set: val => config.value[key] = val
+})

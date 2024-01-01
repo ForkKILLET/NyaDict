@@ -11,7 +11,7 @@ registerShortcuts([
         id: 'modal:close',
         precedence: 1,
         key: newKey('Escape'),
-        info: 'Modalを閉める', // FIXME: Japanese of 'modal window'
+        info: 'モーダル・ウィンドウを閉める',
         isActive: () => !! modalStore.component,
         action: modalStore.forceClose
     }

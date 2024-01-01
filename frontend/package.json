@@ -12,13 +12,13 @@
     "lint": "eslint --ext .ts,.vue ."
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^6.4.2",
-    "@fortawesome/free-solid-svg-icons": "^6.4.2",
-    "@fortawesome/vue-fontawesome": "^3.0.3",
+    "@fortawesome/fontawesome-svg-core": "^6.5.1",
+    "@fortawesome/free-solid-svg-icons": "^6.5.1",
+    "@fortawesome/vue-fontawesome": "^3.0.5",
     "@typescript-eslint/parser": "^5.62.0",
-    "@vueuse/components": "^10.5.0",
-    "@vueuse/core": "^10.5.0",
-    "axios": "^1.5.1",
+    "@vueuse/components": "^10.7.1",
+    "@vueuse/core": "^10.7.1",
+    "axios": "^1.6.3",
     "d3-force": "^3.0.0",
     "d3-interpolate": "^3.0.1",
     "dayjs": "^1.11.10",
@@ -28,22 +28,22 @@
     "mitt": "^3.0.1",
     "normalize.css": "^8.0.1",
     "pinia": "^2.1.7",
-    "schemastery": "^3.13.1",
-    "vue": "^3.3.4",
+    "schemastery": "^3.14.2",
+    "vue": "^3.4.3",
     "vue-router": "^4.2.5",
-    "wanakana": "^5.2.0"
+    "wanakana": "^5.3.1"
   },
   "devDependencies": {
-    "@types/d3-force": "^3.0.6",
-    "@types/d3-interpolate": "^3.0.2",
-    "@types/wanakana": "^4.0.4",
+    "@types/d3-force": "^3.0.9",
+    "@types/d3-interpolate": "^3.0.4",
+    "@types/wanakana": "^4.0.6",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
-    "@vitejs/plugin-vue": "^4.4.0",
+    "@vitejs/plugin-vue": "^5.0.2",
     "@vue/eslint-config-typescript": "^12.0.0",
-    "@vue/runtime-core": "^3.3.4",
-    "eslint": "^8.51.0",
-    "typescript": "^5.2.2",
-    "vite": "^4.4.11",
-    "vue-tsc": "^1.8.19"
+    "@vue/runtime-core": "^3.4.3",
+    "eslint": "^8.56.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10",
+    "vue-tsc": "^1.8.27"
   }
 }
